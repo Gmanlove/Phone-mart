@@ -32,7 +32,7 @@ export function DropdownMenuTrigger({ className, asChild, ...props }: React.Butt
 
 export function DropdownMenuContent({ className, align, ...props }: React.HTMLAttributes<HTMLDivElement> & { align?: string }) {
   const context = React.useContext(DropdownMenuContext);
-  if (!context || !context.open) return null;
+  if (!cocntext || !context.open) return null;
   return <div className={cn("absolute right-0 mt-2 w-48 rounded-md bg-white shadow-lg z-50", className)} {...props} />;
 }
 
