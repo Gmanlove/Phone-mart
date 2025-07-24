@@ -18,18 +18,4 @@ router.post('/signup', async (req, res) => {
   }
 });
 
-// Signin
-router.post('/signin', async (req, res) => {
-  const { email, password } = req.body;
-  try {
-    const user = await User.findOne({ email });
-    if (!user) return res.status(400).json({ error: 'Invalid credentials' });
-    const isMatch = await user.comparePassword(password);
-    if (!isMatch) return res.status(400).json({ error: 'Invalid credentials' });
-    res.json({ message: 'Signin successful' });
-  } catch (err) {
-    res.status(400).json({ error: err.message });
-  }
-});
-
 module.exports = router;

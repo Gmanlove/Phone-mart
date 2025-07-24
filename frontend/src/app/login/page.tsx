@@ -25,26 +25,19 @@ export default function LoginPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setIsLoading(true)
     setMessage("")
-
-    // Simulate login process
-    setTimeout(() => {
-      setIsLoading(false)
-      toast({
-        title: "Login successful!",
-        description: "Welcome back to PhoneHub.",
-      })
-    }, 2000)
-
     const res = await fetch("http://localhost:5000/api/auth/signin", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(form),
     })
     const data = await res.json()
-    if (res.ok) setMessage("Signin successful!")
-    else setMessage(data.error || "Signin failed")
+    if (res.ok) {
+      setMessage("Signin successful!")
+      window.location.href = "/products"
+    } else {
+      setMessage(data.error || "Signin failed")
+    }
   }
 
   return (

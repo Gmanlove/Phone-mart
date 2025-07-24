@@ -33,13 +33,11 @@ export default function RegisterPage() {
       setIsLoading(false)
       return
     }
-    // Only send required fields
     const payload = {
       email: form.email,
       phone: form.phone,
       password: form.password,
     }
-    console.log('Signup payload:', payload) // Debug log
     const res = await fetch("http://localhost:5000/api/auth/signup", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -47,12 +45,20 @@ export default function RegisterPage() {
     })
     const data = await res.json()
     setIsLoading(false)
-    if (res.ok) setMessage("Signup successful!")
-    else setMessage(data.error || "Signup failed")
-    toast({
-      title: res.ok ? "Account created successfully!" : "Signup failed",
-      description: res.ok ? "Welcome to PhoneHub. You can now start shopping." : data.error || "Signup failed",
-    })
+    if (res.ok) {
+      setMessage("Signup successful!")
+      toast({
+        title: "Account created successfully!",
+        description: "Welcome to PhoneHub. You can now start shopping.",
+      })
+      window.location.href = "/products"
+    } else {
+      setMessage(data.error || "Signup failed")
+      toast({
+        title: "Signup failed",
+        description: data.error || "Signup failed",
+      })
+    }
   }
 
   return (
