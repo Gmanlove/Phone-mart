@@ -1,139 +1,116 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import ProductCard from "@/components/product/product-card"
 import { Button } from "@/components/ui/button"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-
-// Mock data - In real app, this would come from your API
-const allProducts = [
-  {
-    id: "1",
-    name: "iPhone 15 Pro Max",
-    brand: "Apple",
-    price: 1199,
-    originalPrice: 1299,
-    image: "/placeholder.svg?height=300&width=300",
-    rating: 4.8,
-    reviews: 1250,
-    features: ["A17 Pro Chip", "256GB Storage", "Pro Camera System"],
-    inStock: true,
-    isNew: true,
-  },
-  {
-    id: "2",
-    name: "Samsung Galaxy S24 Ultra",
-    brand: "Samsung",
-    price: 1099,
-    originalPrice: 1199,
-    image: "/placeholder.svg?height=300&width=300",
-    rating: 4.7,
-    reviews: 980,
-    features: ["S Pen Included", "512GB Storage", "200MP Camera"],
-    inStock: true,
-    isNew: true,
-  },
-  {
-    id: "3",
-    name: "Google Pixel 8 Pro",
-    brand: "Google",
-    price: 899,
-    originalPrice: 999,
-    image: "/placeholder.svg?height=300&width=300",
-    rating: 4.6,
-    reviews: 750,
-    features: ["Google Tensor G3", "Magic Eraser", "Pure Android"],
-    inStock: true,
-    isNew: false,
-  },
-  // Add more products...
-]
+import { fetchProducts } from "@/lib/api"
+import type { Product } from "@/components/product/product-card"
 
 export default function ProductsGrid() {
-  const [sortBy, setSortBy] = useState("featured")
-  const [currentPage, setCurrentPage] = useState(1)
-  const productsPerPage = 12
+	const [sortBy, setSortBy] = useState("featured")
+	const [currentPage, setCurrentPage] = useState(1)
+	const [products, setProducts] = useState<Product[]>([])
+	const [loading, setLoading] = useState(true)
+	const [error, setError] = useState("")
+	const productsPerPage = 12
 
-  const sortedProducts = [...allProducts].sort((a, b) => {
-    switch (sortBy) {
-      case "price-low":
-        return a.price - b.price
-      case "price-high":
-        return b.price - a.price
-      case "rating":
-        return b.rating - a.rating
-      case "newest":
-        return (b.isNew ? 1 : 0) - (a.isNew ? 1 : 0)
-      default:
-        return 0
-    }
-  })
+	useEffect(() => {
+		setLoading(true)
+		fetchProducts()
+			.then((data) => {
+				setProducts(data)
+				setLoading(false)
+			})
+			.catch((err) => {
+				setError("Failed to load products")
+				setLoading(false)
+			})
+	}, [])
 
-  const totalPages = Math.ceil(sortedProducts.length / productsPerPage)
-  const startIndex = (currentPage - 1) * productsPerPage
-  const displayedProducts = sortedProducts.slice(startIndex, startIndex + productsPerPage)
+	const sortedProducts = [...products].sort((a, b) => {
+		switch (sortBy) {
+			case "price-low":
+				return a.price - b.price
+			case "price-high":
+				return b.price - a.price
+			case "rating":
+				return b.rating - a.rating
+			case "newest":
+				return (b.isNew ? 1 : 0) - (a.isNew ? 1 : 0)
+			default:
+				return 0
+		}
+	})
 
-  return (
-    <div className="space-y-6">
-      {/* Results header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <p className="text-gray-600">
-          Showing {startIndex + 1}-{Math.min(startIndex + productsPerPage, sortedProducts.length)} of{" "}
-          {sortedProducts.length} products
-        </p>
+	const totalPages = Math.ceil(sortedProducts.length / productsPerPage)
+	const startIndex = (currentPage - 1) * productsPerPage
+	const displayedProducts = sortedProducts.slice(startIndex, startIndex + productsPerPage)
 
-        <Select value={sortBy} onValueChange={setSortBy}>
-          <SelectTrigger className="w-48">
-            <SelectValue placeholder="Sort by" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="featured">Featured</SelectItem>
-            <SelectItem value="newest">Newest First</SelectItem>
-            <SelectItem value="price-low">Price: Low to High</SelectItem>
-            <SelectItem value="price-high">Price: High to Low</SelectItem>
-            <SelectItem value="rating">Highest Rated</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
+	if (loading)
+		return <div className="py-12 text-center text-lg text-gray-500">Loading products...</div>
+	if (error)
+		return <div className="py-12 text-center text-lg text-red-500">{error}</div>
 
-      {/* Products grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-        {displayedProducts.map((product) => (
-          <ProductCard key={product.id} product={product} />
-        ))}
-      </div>
+	return (
+		<div className="space-y-6">
+			{/* Results header */}
+			<div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+				<p className="text-gray-600">
+					Showing {startIndex + 1}-{Math.min(startIndex + productsPerPage, sortedProducts.length)} of{" "}
+					{sortedProducts.length} products
+				</p>
 
-      {/* Pagination */}
-      {totalPages > 1 && (
-        <div className="flex justify-center items-center gap-2 mt-8">
-          <Button
-            variant="outline"
-            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-            disabled={currentPage === 1}
-          >
-            Previous
-          </Button>
+				<select
+					className="w-48 block rounded-md border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-blue-500 focus:ring-blue-500 focus:outline-none"
+					value={sortBy}
+					onChange={(e) => setSortBy(e.target.value)}
+				>
+					<option value="featured">Featured</option>
+					<option value="newest">Newest First</option>
+					<option value="price-low">Price: Low to High</option>
+					<option value="price-high">Price: High to Low</option>
+					<option value="rating">Highest Rated</option>
+				</select>
+			</div>
 
-          {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-            <Button
-              key={page}
-              variant={currentPage === page ? "default" : "outline"}
-              onClick={() => setCurrentPage(page)}
-              className="w-10"
-            >
-              {page}
-            </Button>
-          ))}
+			{/* Products grid */}
+			<div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+				{displayedProducts.map((product) => (
+					<ProductCard key={product.id} product={product} />
+				))}
+			</div>
 
-          <Button
-            variant="outline"
-            onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-            disabled={currentPage === totalPages}
-          >
-            Next
-          </Button>
-        </div>
-      )}
-    </div>
-  )
+			{/* Pagination */}
+			{totalPages > 1 && (
+				<div className="flex justify-center items-center gap-2 mt-8">
+					<Button
+						variant="outline"
+						onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+						disabled={currentPage === 1}
+					>
+						Previous
+					</Button>
+
+					{Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+						<Button
+							key={page}
+							variant={currentPage === page ? "default" : "outline"}
+							onClick={() => setCurrentPage(page)}
+							className="w-10"
+						>
+							{page}
+						</Button>
+					))}
+
+					<Button
+						variant="outline"
+						onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+						disabled={currentPage === totalPages}
+					>
+						Next
+					</Button>
+				</div>
+			)}
+		</div>
+	)
 }

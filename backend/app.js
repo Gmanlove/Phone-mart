@@ -2,6 +2,7 @@ const express = require('express')
 const cors = require('cors')
 const bodyParser = require('body-parser')
 const mongoose = require('mongoose')
+const Product = require('./models/productModel')
 require('dotenv').config()
 
 const app = express()
@@ -16,6 +17,16 @@ mongoose.connect(process.env.MONGODB_URI)
 // Basic route
 app.get('/', (req, res) => {
   res.json({ message: 'Phone Mart API is running' })
+})
+
+// Get all products
+app.get('/api/products', async (req, res) => {
+  try {
+    const products = await Product.find()
+    res.json(products)
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch products' })
+  }
 })
 
 const PORT = process.env.PORT || 5000

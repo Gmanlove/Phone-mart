@@ -11,7 +11,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { useCart } from "@/contexts/cart-context"
 import { useToast } from "@/hooks/use-toast"
 
-interface Product {
+export interface Product {
   id: string
   name: string
   brand: string

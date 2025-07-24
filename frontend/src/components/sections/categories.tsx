@@ -1,47 +1,39 @@
+"use client"
+
 import Link from "next/link"
 import Image from "next/image"
 import { Card, CardContent } from "@/components/ui/card"
+import { useEffect, useState } from "react"
+import { fetchCategories } from "@/lib/api"
 
-const categories = [
-  {
-    name: "iPhone",
-    href: "/products?brand=apple",
-    image: "/placeholder.svg?height=200&width=200",
-    count: "25+ models",
-  },
-  {
-    name: "Samsung",
-    href: "/products?brand=samsung",
-    image: "/placeholder.svg?height=200&width=200",
-    count: "30+ models",
-  },
-  {
-    name: "Google Pixel",
-    href: "/products?brand=google",
-    image: "/placeholder.svg?height=200&width=200",
-    count: "15+ models",
-  },
-  {
-    name: "OnePlus",
-    href: "/products?brand=oneplus",
-    image: "/placeholder.svg?height=200&width=200",
-    count: "12+ models",
-  },
-  {
-    name: "Accessories",
-    href: "/accessories",
-    image: "/placeholder.svg?height=200&width=200",
-    count: "100+ items",
-  },
-  {
-    name: "Refurbished",
-    href: "/products?condition=refurbished",
-    image: "/placeholder.svg?height=200&width=200",
-    count: "Great deals",
-  },
-]
+type Category = {
+  name: string
+  href: string
+  image?: string
+  count?: number
+}
 
 export default function Categories() {
+  const [categories, setCategories] = useState<Category[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState("")
+
+  useEffect(() => {
+    setLoading(true)
+    fetchCategories()
+      .then((data) => {
+        setCategories(data)
+        setLoading(false)
+      })
+      .catch(() => {
+        setError("Failed to load categories")
+        setLoading(false)
+      })
+  }, [])
+
+  if (loading) return <div className="py-12 text-center text-lg text-gray-500">Loading categories...</div>
+  if (error) return <div className="py-12 text-center text-lg text-red-500">{error}</div>
+
   return (
     <section className="py-16 bg-white">
       <div className="container mx-auto px-4">
