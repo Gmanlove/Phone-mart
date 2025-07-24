@@ -41,6 +41,7 @@ export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState("")
   const { items } = useCart()
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
   
   const itemCount = items?.reduce((sum, item) => sum + item.quantity, 0) ?? 0
 
@@ -70,6 +71,10 @@ export default function Header() {
       document.body.style.overflow = "unset"
     }
   }, [isMenuOpen])
+
+  useEffect(() => {
+    setIsLoggedIn(localStorage.getItem("isLoggedIn") === "true")
+  }, [])
 
   const toggleMobileMenu = useCallback(() => {
     setIsMenuOpen(prev => !prev)
@@ -159,7 +164,6 @@ export default function Header() {
               <DropdownMenuTrigger asChild>
                 <Button 
                   variant="ghost" 
-                  // ...existing code...
                   className="hidden items-center space-x-2 rounded-lg px-3 py-2 transition-colors duration-200 hover:bg-gray-50 lg:flex"
                   aria-label="User account menu"
                 >
@@ -167,48 +171,28 @@ export default function Header() {
                   <ChevronDown className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent 
-                align="end" 
-                className="w-48 overflow-hidden rounded-lg border border-gray-200 bg-white shadow-lg"
-                // ...existing code...
-              >
-                <div className="py-1">
-                  <DropdownMenuItem asChild>
-                    <Link 
-                      href="/login" 
-                      className="block w-full px-4 py-2 text-sm text-gray-700 rounded transition-colors duration-200 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none"
-                    >
-                      Sign In
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link 
-                      href="/register" 
-                      className="block w-full px-4 py-2 text-sm text-gray-700 rounded transition-colors duration-200 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none"
-                    >
-                      Create Account
-                    </Link>
-                  </DropdownMenuItem>
-                </div>
-                <DropdownMenuSeparator className="my-2" />
-                <div className="py-1">
-                  <DropdownMenuItem asChild>
-                    <Link 
-                      href="/profile" 
-                      className="block w-full px-4 py-2 text-sm text-gray-700 rounded transition-colors duration-200 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none"
-                    >
-                      My Account
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link 
-                      href="/orders" 
-                      className="block w-full px-4 py-2 text-sm text-gray-700 rounded transition-colors duration-200 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none"
-                    >
-                      My Orders
-                    </Link>
-                  </DropdownMenuItem>
-                </div>
+              <DropdownMenuContent align="end" className="w-48 overflow-hidden rounded-lg border border-gray-200 bg-white shadow-lg">
+                {isLoggedIn ? (
+                  <div className="py-1">
+                    <DropdownMenuItem asChild>
+                      <Link href="/profile" className="block w-full px-4 py-2 text-sm text-gray-700 rounded transition-colors duration-200 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none">My Account</Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link href="/orders" className="block w-full px-4 py-2 text-sm text-gray-700 rounded transition-colors duration-200 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none">My Orders</Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator className="my-2" />
+                    <DropdownMenuItem onClick={() => { localStorage.removeItem("isLoggedIn"); window.location.href = "/"; }} className="block w-full px-4 py-2 text-sm text-gray-700 rounded transition-colors duration-200 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none">Sign Out</DropdownMenuItem>
+                  </div>
+                ) : (
+                  <div className="py-1">
+                    <DropdownMenuItem asChild>
+                      <Link href="/login" className="block w-full px-4 py-2 text-sm text-gray-700 rounded transition-colors duration-200 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none">Sign In</Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link href="/register" className="block w-full px-4 py-2 text-sm text-gray-700 rounded transition-colors duration-200 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none">Create Account</Link>
+                    </DropdownMenuItem>
+                  </div>
+                )}
               </DropdownMenuContent>
             </DropdownMenu>
 
@@ -216,7 +200,6 @@ export default function Header() {
             <Link href="/cart" aria-label={`Shopping cart with ${itemCount} items`}>
               <Button 
                 variant="ghost" 
-                // ...existing code...
                 className="relative rounded-lg p-3 transition-colors duration-200 hover:bg-gray-50"
               >
                 <ShoppingCart className="h-5 w-5" />
@@ -234,7 +217,6 @@ export default function Header() {
             {/* Mobile menu toggle */}
             <Button 
               variant="ghost" 
-              // ...existing code...
               className="rounded-lg p-3 transition-colors duration-200 hover:bg-gray-50 lg:hidden" 
               onClick={toggleMobileMenu}
               aria-label={isMenuOpen ? "Close menu" : "Open menu"}

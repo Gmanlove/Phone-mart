@@ -51,6 +51,7 @@ export default function RegisterPage() {
         title: "Account created successfully!",
         description: "Welcome to PhoneHub. You can now start shopping.",
       })
+      localStorage.setItem("isLoggedIn", "true")
       window.location.href = "/products"
     } else {
       setMessage(data.error || "Signup failed")

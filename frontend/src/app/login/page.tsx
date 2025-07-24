@@ -34,6 +34,7 @@ export default function LoginPage() {
     const data = await res.json()
     if (res.ok) {
       setMessage("Signin successful!")
+      localStorage.setItem("isLoggedIn", "true")
       window.location.href = "/products"
     } else {
       setMessage(data.error || "Signin failed")
