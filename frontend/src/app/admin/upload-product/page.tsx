@@ -44,8 +44,8 @@ export default function AdminUploadProduct() {
         body: imgData
       })
       const imgJson = await imgRes.json()
-      if (imgRes.ok && imgJson.path) {
-        imagePath = imgJson.path
+      if (imgRes.ok && imgJson.url) {
+        imagePath = imgJson.url
       } else {
         setMessage("Image upload failed")
         setUploading(false)

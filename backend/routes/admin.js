@@ -30,7 +30,19 @@ const isAdmin = async (req, res, next) => {
 router.post('/product', isAdmin, async (req, res) => {
   try {
     const { name, brand, price, description, category, specs, images } = req.body;
-    const product = new Product({ name, brand, price, description, category, specs, images });
+    // Accept description as plain text, specs as plain text or object
+    let parsedSpecs = {};
+    if (typeof specs === 'string') {
+      try { parsedSpecs = JSON.parse(specs); } catch { parsedSpecs = {}; }
+    } else if (typeof specs === 'object') {
+      parsedSpecs = specs;
+    }
+    // Accept images as array or single string
+    let imageArr = [];
+    if (Array.isArray(images)) imageArr = images;
+    else if (typeof images === 'string') imageArr = [images];
+    if (!imageArr.length || !imageArr[0]) return res.status(400).json({ error: 'Image is required.' });
+    const product = new Product({ name, brand, price, description, category, specs: parsedSpecs, images: imageArr });
     await product.save();
     res.status(201).json({ message: 'Product uploaded', product });
   } catch (err) {

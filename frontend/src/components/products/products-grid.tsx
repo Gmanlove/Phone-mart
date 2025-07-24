@@ -77,14 +77,16 @@ export default function ProductsGrid() {
 					<ProductCard
 						key={product._id || product.id}
 						product={{
+							_id: product._id || product.id,
 							id: product._id || product.id,
 							name: product.name,
 							brand: product.brand,
 							price: product.price,
-							image: product.images && product.images.length > 0 ? product.images[0] : "/placeholder.svg",
+							image: product.image || "/placeholder.svg",
 							originalPrice: product.originalPrice,
 							rating: product.rating || 4.5,
 							reviews: product.reviews || 0,
+							specs: product.specs || {},
 							features: product.specs ? Object.entries(product.specs).map(([k, v]) => `${k}: ${v}`) : [],
 							inStock: product.inStock !== false,
 							isNew: product.isNew || false
