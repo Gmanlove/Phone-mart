@@ -7,8 +7,14 @@ async function fetchProduct(id: string) {
   return res.json()
 }
 
-export default async function ProductDetailPage({ params }: { params: { id: string } }) {
-  const product = await fetchProduct(params.id)
+export default async function ProductDetailPage({ 
+  params 
+}: { 
+  params: Promise<{ id: string }> 
+}) {
+  const resolvedParams = await params;
+  const product = await fetchProduct(resolvedParams.id);
+  
   if (!product) return notFound()
 
   return (
