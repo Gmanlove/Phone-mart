@@ -56,8 +56,7 @@ export default function ProductsGrid() {
 			{/* Results header */}
 			<div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
 				<p className="text-gray-600">
-					Showing {startIndex + 1}-{Math.min(startIndex + productsPerPage, sortedProducts.length)} of{" "}
-					{sortedProducts.length} products
+					Showing {startIndex + 1}-{Math.min(startIndex + productsPerPage, sortedProducts.length)} of {sortedProducts.length} products
 				</p>
 
 				<select
@@ -69,46 +68,45 @@ export default function ProductsGrid() {
 					<option value="newest">Newest First</option>
 					<option value="price-low">Price: Low to High</option>
 					<option value="price-high">Price: High to Low</option>
-					<option value="rating">Highest Rated</option>
 				</select>
 			</div>
 
 			{/* Products grid */}
 			<div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
 				{displayedProducts.map((product) => (
-					<ProductCard key={product.id} product={product} />
+					<ProductCard
+						key={product._id || product.id}
+						product={{
+							_id: product._id || product.id,
+							id: product._id || product.id,
+							name: product.name,
+							brand: product.brand,
+							price: product.price,
+							image: product.image || "/placeholder.svg",
+							originalPrice: product.originalPrice,
+							rating: product.rating || 4.5,
+							reviews: product.reviews || 0,
+							specs: product.specs || {},
+							features: product.specs ? Object.entries(product.specs).map(([k, v]) => `${k}: ${v}`) : [],
+							inStock: product.inStock !== false,
+							isNew: product.isNew || false
+						}}
+					/>
 				))}
 			</div>
 
 			{/* Pagination */}
 			{totalPages > 1 && (
-				<div className="flex justify-center items-center gap-2 mt-8">
-					<Button
-						variant="outline"
-						onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-						disabled={currentPage === 1}
-					>
-						Previous
-					</Button>
-
-					{Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-						<Button
-							key={page}
-							variant={currentPage === page ? "default" : "outline"}
-							onClick={() => setCurrentPage(page)}
-							className="w-10"
+				<div className="flex justify-center mt-8 space-x-2">
+					{Array.from({ length: totalPages }).map((_, i) => (
+						<button
+							key={i}
+							className={`px-3 py-1 rounded ${currentPage === i + 1 ? "bg-blue-600 text-white" : "bg-gray-200 text-gray-700"}`}
+							onClick={() => setCurrentPage(i + 1)}
 						>
-							{page}
-						</Button>
+							{i + 1}
+						</button>
 					))}
-
-					<Button
-						variant="outline"
-						onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-						disabled={currentPage === totalPages}
-					>
-						Next
-					</Button>
 				</div>
 			)}
 		</div>

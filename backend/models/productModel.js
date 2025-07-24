@@ -17,14 +17,19 @@ const productSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  image: {
-    type: String,
-    required: true
-  },
   category: {
     type: String,
+    enum: ['iPhone', 'Samsung', 'Android/Pixel', 'Accessories', 'Other'],
     required: true
-  }
+  },
+  specs: {
+    type: Object,
+    default: {}
+  },
+  images: [{
+    type: String,
+    required: true
+  }]
 }, {
   timestamps: true
 })

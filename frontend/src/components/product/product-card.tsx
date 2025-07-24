@@ -12,6 +12,8 @@ import { useCart } from "@/contexts/cart-context"
 import { useToast } from "@/hooks/use-toast"
 
 export interface Product {
+  specs: any
+  _id: string
   id: string
   name: string
   brand: string

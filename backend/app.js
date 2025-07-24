@@ -4,6 +4,7 @@ const bodyParser = require('body-parser')
 const mongoose = require('mongoose')
 const Product = require('./models/productModel')
 const authRoutes = require('./routes/auth')
+const adminRoutes = require('./routes/admin')
 require('dotenv').config()
 
 const app = express()
@@ -14,6 +15,9 @@ app.use(bodyParser.json())
 mongoose.connect(process.env.MONGODB_URI)
   .then(() => console.log('Connected to MongoDB'))
   .catch(err => console.error('Could not connect to MongoDB', err))
+
+// Serve uploaded images statically from the /uploads directory.
+app.use('/uploads', express.static(require('path').join(__dirname, 'uploads')))
 
 // Basic route
 app.get('/', (req, res) => {
@@ -32,6 +36,9 @@ app.get('/api/products', async (req, res) => {
 
 // Authentication routes
 app.use('/api/auth', authRoutes)
+
+// Admin routes
+app.use('/api/admin', adminRoutes)
 
 const PORT = process.env.PORT || 5000
 app.listen(PORT, () => {
