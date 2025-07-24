@@ -8,7 +8,7 @@ import { ShoppingBag, ArrowLeft } from "lucide-react"
 import Link from "next/link"
 
 export default function CartPage() {
-  const { items, total } = useCart()
+  const { items } = useCart()
 
   if (items.length === 0) {
     return (
@@ -19,7 +19,7 @@ export default function CartPage() {
           </div>
           <h1 className="text-2xl font-bold text-gray-900 mb-4">Your cart is empty</h1>
           <p className="text-gray-600 mb-8">
-            Looks like you haven't added any items to your cart yet. Start shopping to fill it up!
+            Looks like you haven&apos;t added any items to your cart yet. Start shopping to fill it up!
           </p>
           <Button asChild>
             <Link href="/products">
@@ -36,7 +36,7 @@ export default function CartPage() {
     <div className="container mx-auto px-4 py-8">
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900 mb-4">Shopping Cart</h1>
-        <p className="text-gray-600">Review your items and proceed to checkout when you're ready</p>
+        <p className="text-gray-600">Review your items and proceed to checkout when you&apos;re ready</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">

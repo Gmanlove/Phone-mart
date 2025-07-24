@@ -30,10 +30,21 @@ export function DropdownMenuTrigger({ className, asChild, ...props }: React.Butt
   );
 }
 
-export function DropdownMenuContent({ className, align, ...props }: React.HTMLAttributes<HTMLDivElement> & { align?: string }) {
+type DropdownMenuContentProps = React.HTMLAttributes<HTMLDivElement> & {
+  align?: 'start' | 'center' | 'end';
+};
+
+export function DropdownMenuContent({ className, align = 'end', ...props }: DropdownMenuContentProps) {
   const context = React.useContext(DropdownMenuContext);
-  if (!cocntext || !context.open) return null;
-  return <div className={cn("absolute right-0 mt-2 w-48 rounded-md bg-white shadow-lg z-50", className)} {...props} />;
+  if (!context || !context.open) return null;
+  
+  const alignmentClasses = {
+    start: 'left-0',
+    center: 'left-1/2 transform -translate-x-1/2',
+    end: 'right-0'
+  };
+  
+  return <div className={cn("absolute mt-2 w-48 rounded-md bg-white shadow-lg z-50", alignmentClasses[align], className)} {...props} />;
 }
 
 export function DropdownMenuItem({ className, asChild, ...props }: React.HTMLAttributes<HTMLDivElement> & { asChild?: boolean }) {

@@ -13,7 +13,7 @@ export default function ProductsPage() {
     <div className="container mx-auto px-4 py-8">
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900 mb-4">All Phones</h1>
-        <p className="text-gray-600">Discover our complete collection of smartphones from the world's leading brands</p>
+        <p className="text-gray-600">Discover our complete collection of smartphones from the world&apos;s leading brands</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">

@@ -43,8 +43,7 @@ export default function ProductCard({ product }: ProductCardProps) {
       id: product.id,
       name: product.name,
       price: product.price,
-      image: product.image,
-      quantity: 1,
+      image: product.image
     })
 
     toast({
@@ -97,7 +96,7 @@ export default function ProductCard({ product }: ProductCardProps) {
 
             {/* Quick actions overlay */}
             <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
-              <Button size="sm" variant="secondary">
+              <Button size="default" variant="outline" className="bg-white">
                 <Eye className="h-4 w-4 mr-1" />
                 Quick View
               </Button>
