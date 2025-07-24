@@ -23,8 +23,16 @@ const productSchema = new mongoose.Schema({
   },
   category: {
     type: String,
+    enum: ['iPhone', 'Samsung', 'Android/Pixel', 'Accessories', 'Other'],
     required: true
-  }
+  },
+  specs: {
+    type: Object,
+    default: {}
+  },
+  images: [{
+    type: String
+  }]
 }, {
   timestamps: true
 })
