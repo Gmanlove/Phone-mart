@@ -1,94 +1,212 @@
+
+"use client"
 import Link from "next/link"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
-import { ArrowRight, Star, Shield, Truck } from "lucide-react"
+import { ArrowRight, Star, Shield, Truck, Zap, Award, Clock } from "lucide-react"
 
 export default function Hero() {
   return (
-    <section className="relative bg-gradient-to-br from-blue-50 to-indigo-100 overflow-hidden">
-      <div className="container mx-auto px-4 py-16 lg:py-24">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+    <section className="relative min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 overflow-hidden">
+      {/* Animated background elements */}
+      <div className="absolute inset-0">
+        <div className="absolute top-20 left-10 w-72 h-72 bg-blue-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-blob"></div>
+        <div className="absolute top-40 right-10 w-72 h-72 bg-purple-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-blob animation-delay-2000"></div>
+        <div className="absolute -bottom-8 left-20 w-72 h-72 bg-pink-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-blob animation-delay-4000"></div>
+      </div>
+
+      <div className="relative container mx-auto px-4 pt-16 pb-20 lg:pt-24 lg:pb-32">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center min-h-[calc(100vh-8rem)]">
           {/* Left content */}
-          <div className="space-y-8">
-            <div className="space-y-4">
-              <div className="inline-flex items-center bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
-                <Star className="h-4 w-4 mr-1" />
-                Rated #1 Phone Store
-              </div>
-              <h1 className="text-4xl lg:text-6xl font-bold text-gray-900 leading-tight">
-                Latest <span className="text-blue-600">Smartphones</span> at Unbeatable Prices
+          <div className="space-y-8 z-10">
+            {/* Trust badge */}
+            <div className="inline-flex items-center bg-gradient-to-r from-blue-100 to-purple-100 text-blue-800 px-4 py-2 rounded-full text-sm font-semibold shadow-sm">
+              <Award className="h-4 w-4 mr-2" />
+              Nigeria's Trusted Phone Store
+              <span className="ml-2 animate-pulse">✨</span>
+            </div>
+
+            {/* Main heading */}
+            <div className="space-y-6">
+              <h1 className="text-4xl sm:text-5xl lg:text-7xl font-bold text-gray-900 leading-tight">
+                Premium 
+                <span className="block bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 bg-clip-text text-transparent">
+                  Smartphones
+                </span>
+                <span className="text-3xl sm:text-4xl lg:text-5xl text-gray-700">
+                  at Unbeatable Prices
+                </span>
               </h1>
-              <p className="text-xl text-gray-600 leading-relaxed">
-                Discover premium mobile phones from top brands. Free shipping, warranty protection, and 30-day returns
-                on all devices.
+              <p className="text-xl lg:text-2xl text-gray-600 leading-relaxed max-w-2xl">
+                Discover the latest mobile technology from top global brands. Authentic products, 
+                competitive prices, and exceptional service guaranteed.
               </p>
             </div>
 
+            {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row gap-4">
-              <Button asChild size="lg" className="bg-blue-600 hover:bg-blue-700">
+              <Button 
+                asChild 
+                size="lg" 
+                className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold px-8 py-4 rounded-full shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300"
+              >
                 <Link href="/products">
+                  <Zap className="mr-2 h-5 w-5" />
                   Shop Now
-                  <ArrowRight className="ml-2 h-4 w-4" />
+                  <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>
               </Button>
-              <Button asChild variant="outline" size="lg">
-                <Link href="/deals">View Deals</Link>
+              <Button 
+                asChild 
+                variant="outline" 
+                size="lg"
+                className="border-2 border-gray-300 text-gray-700 hover:border-blue-500 hover:text-blue-600 font-semibold px-8 py-4 rounded-full shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300"
+              >
+                <Link href="/deals">
+                  <Star className="mr-2 h-5 w-5" />
+                  View Hot Deals
+                </Link>
               </Button>
             </div>
 
-            {/* Features */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 pt-8">
-              <div className="flex items-center space-x-3">
-                <div className="bg-green-100 p-2 rounded-lg">
-                  <Truck className="h-5 w-5 text-green-600" />
+            {/* Enhanced Features Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2 gap-6 pt-8">
+              <div className="flex items-center space-x-4 p-4 bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
+                <div className="bg-gradient-to-r from-green-500 to-emerald-500 p-3 rounded-xl shadow-lg">
+                  <Truck className="h-6 w-6 text-white" />
                 </div>
                 <div>
-                  <p className="font-medium text-gray-900">Free Shipping</p>
-                  <p className="text-sm text-gray-600">On orders over $100</p>
+                  <p className="font-bold text-gray-900 text-lg">Free Delivery</p>
+                  <p className="text-sm text-gray-600">Orders over ₦500,000</p>
                 </div>
               </div>
-              <div className="flex items-center space-x-3">
-                <div className="bg-blue-100 p-2 rounded-lg">
-                  <Shield className="h-5 w-5 text-blue-600" />
+
+              <div className="flex items-center space-x-4 p-4 bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
+                <div className="bg-gradient-to-r from-blue-500 to-cyan-500 p-3 rounded-xl shadow-lg">
+                  <Shield className="h-6 w-6 text-white" />
                 </div>
                 <div>
-                  <p className="font-medium text-gray-900">2-Year Warranty</p>
+                  <p className="font-bold text-gray-900 text-lg">1-Year Warranty</p>
                   <p className="text-sm text-gray-600">On all devices</p>
                 </div>
               </div>
-              <div className="flex items-center space-x-3">
-                <div className="bg-purple-100 p-2 rounded-lg">
-                  <Star className="h-5 w-5 text-purple-600" />
+
+              <div className="flex items-center space-x-4 p-4 bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
+                <div className="bg-gradient-to-r from-purple-500 to-pink-500 p-3 rounded-xl shadow-lg">
+                  <Clock className="h-6 w-6 text-white" />
                 </div>
                 <div>
-                  <p className="font-medium text-gray-900">Expert Support</p>
-                  <p className="text-sm text-gray-600">24/7 customer care</p>
+                  <p className="font-bold text-gray-900 text-lg">24/7 Support</p>
+                  <p className="text-sm text-gray-600">Expert assistance</p>
                 </div>
+              </div>
+
+              <div className="flex items-center space-x-4 p-4 bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
+                <div className="bg-gradient-to-r from-orange-500 to-red-500 p-3 rounded-xl shadow-lg">
+                  <Star className="h-6 w-6 text-white" />
+                </div>
+                <div>
+                  <p className="font-bold text-gray-900 text-lg">Authentic Only</p>
+                  <p className="text-sm text-gray-600">100% genuine products</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Social proof */}
+            <div className="flex items-center space-x-8 pt-4">
+              <div className="text-center">
+                <div className="text-2xl lg:text-3xl font-bold text-gray-900">50K+</div>
+                <div className="text-sm text-gray-600">Happy Customers</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl lg:text-3xl font-bold text-gray-900">4.9</div>
+                <div className="flex items-center justify-center text-yellow-400">
+                  {[...Array(5)].map((_, i) => (
+                    <Star key={i} className="h-4 w-4 fill-current" />
+                  ))}
+                </div>
+                <div className="text-sm text-gray-600">Rating</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl lg:text-3xl font-bold text-gray-900">1000+</div>
+                <div className="text-sm text-gray-600">Products</div>
               </div>
             </div>
           </div>
 
-          {/* Right content - Hero image */}
-          <div className="relative">
-            <div className="relative z-10">
-              <Image
-                src="/placeholder.svg?height=600&width=500"
-                alt="Latest Smartphones"
-                width={500}
-                height={600}
-                className="w-full h-auto"
-                priority
-              />
+          {/* Right content - Enhanced hero image */}
+          <div className="relative z-10">
+            {/* Main image container */}
+            <div className="relative">
+              <div className="relative z-20 transform hover:scale-105 transition-transform duration-500">
+                <div className="bg-gradient-to-br from-white to-gray-100 rounded-3xl p-8 shadow-2xl">
+                  <Image
+                    src="/love.webp?height=600&width=500"
+                    alt="Latest Premium Smartphones"
+                    width={500}
+                    height={600}
+                    className="w-full h-auto rounded-2xl"
+                    priority
+                  />
+                </div>
+              </div>
+
+              {/* Floating elements */}
+              <div className="absolute top-4 right-4 bg-gradient-to-r from-red-500 to-pink-500 text-white px-4 py-2 rounded-full text-sm font-bold z-30 shadow-xl animate-bounce">
+                Up to 40% OFF
+              </div>
+
+              
+
+            
+
+              {/* Background decorative elements */}
+              <div className="absolute -top-8 -left-8 w-32 h-32 bg-gradient-to-r from-blue-200 to-purple-200 rounded-full opacity-50 animate-pulse"></div>
+              <div className="absolute -bottom-8 -right-8 w-40 h-40 bg-gradient-to-r from-pink-200 to-orange-200 rounded-full opacity-30 animate-pulse animation-delay-2000"></div>
+              
+              {/* Floating particles */}
+              <div className="absolute top-1/4 left-1/4 w-2 h-2 bg-blue-400 rounded-full animate-ping"></div>
+              <div className="absolute top-3/4 right-1/4 w-3 h-3 bg-purple-400 rounded-full animate-ping animation-delay-1000"></div>
+              <div className="absolute bottom-1/4 left-1/3 w-2 h-2 bg-pink-400 rounded-full animate-ping animation-delay-3000"></div>
             </div>
-            {/* Decorative elements */}
-            <div className="absolute top-4 right-4 bg-red-500 text-white px-3 py-1 rounded-full text-sm font-bold z-20">
-              30% OFF
-            </div>
-            <div className="absolute -top-4 -left-4 w-24 h-24 bg-blue-200 rounded-full opacity-50"></div>
-            <div className="absolute -bottom-4 -right-4 w-32 h-32 bg-purple-200 rounded-full opacity-30"></div>
+
+            {/* Stats overlay */}
+            
+          </div>
+        </div>
+
+        {/* Scroll indicator */}
+        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
+          <div className="w-6 h-10 border-2 border-gray-400 rounded-full flex justify-center">
+            <div className="w-1 h-3 bg-gray-400 rounded-full mt-2 animate-pulse"></div>
           </div>
         </div>
       </div>
+
+      {/* Custom animations */}
+      <style jsx>{`
+        @keyframes blob {
+          0% { transform: translate(0px, 0px) scale(1); }
+          33% { transform: translate(30px, -50px) scale(1.1); }
+          66% { transform: translate(-20px, 20px) scale(0.9); }
+          100% { transform: translate(0px, 0px) scale(1); }
+        }
+        .animate-blob {
+          animation: blob 7s infinite;
+        }
+        .animation-delay-2000 {
+          animation-delay: 2s;
+        }
+        .animation-delay-4000 {
+          animation-delay: 4s;
+        }
+        .animation-delay-1000 {
+          animation-delay: 1s;
+        }
+        .animation-delay-3000 {
+          animation-delay: 3s;
+        }
+      `}</style>
     </section>
   )
 }
