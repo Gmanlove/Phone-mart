@@ -16,20 +16,43 @@ export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+  const [form, setForm] = useState({ email: "", phone: "", password: "", confirmPassword: "" })
+  const [message, setMessage] = useState("")
   const { toast } = useToast()
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setForm({ ...form, [e.target.name]: e.target.value })
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
-
-    // Simulate registration process
-    setTimeout(() => {
+    setMessage("")
+    if (form.password !== form.confirmPassword) {
+      setMessage("Passwords do not match")
       setIsLoading(false)
-      toast({
-        title: "Account created successfully!",
-        description: "Welcome to PhoneHub. You can now start shopping.",
-      })
-    }, 2000)
+      return
+    }
+    // Only send required fields
+    const payload = {
+      email: form.email,
+      phone: form.phone,
+      password: form.password,
+    }
+    console.log('Signup payload:', payload) // Debug log
+    const res = await fetch("http://localhost:5000/api/auth/signup", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    })
+    const data = await res.json()
+    setIsLoading(false)
+    if (res.ok) setMessage("Signup successful!")
+    else setMessage(data.error || "Signup failed")
+    toast({
+      title: res.ok ? "Account created successfully!" : "Signup failed",
+      description: res.ok ? "Welcome to PhoneHub. You can now start shopping." : data.error || "Signup failed",
+    })
   }
 
   return (
@@ -54,33 +77,6 @@ export default function RegisterPage() {
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="firstName">First name</Label>
-                  <Input
-                    id="firstName"
-                    name="firstName"
-                    type="text"
-                    autoComplete="given-name"
-                    required
-                    placeholder="John"
-                    className="mt-1"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="lastName">Last name</Label>
-                  <Input
-                    id="lastName"
-                    name="lastName"
-                    type="text"
-                    autoComplete="family-name"
-                    required
-                    placeholder="Doe"
-                    className="mt-1"
-                  />
-                </div>
-              </div>
-
               <div>
                 <Label htmlFor="email">Email address</Label>
                 <Input
@@ -91,9 +87,10 @@ export default function RegisterPage() {
                   required
                   placeholder="john@example.com"
                   className="mt-1"
+                  value={form.email}
+                  onChange={handleChange}
                 />
               </div>
-
               <div>
                 <Label htmlFor="phone">Phone number</Label>
                 <Input
@@ -102,11 +99,12 @@ export default function RegisterPage() {
                   type="tel"
                   autoComplete="tel"
                   required
-                  placeholder="+1 (555) 123-4567"
+                  placeholder="07043163283"
                   className="mt-1"
+                  value={form.phone}
+                  onChange={handleChange}
                 />
               </div>
-
               <div>
                 <Label htmlFor="password">Password</Label>
                 <div className="relative mt-1">
@@ -118,6 +116,8 @@ export default function RegisterPage() {
                     required
                     placeholder="Create a strong password"
                     className="pr-10"
+                    value={form.password}
+                    onChange={handleChange}
                   />
                   <Button
                     type="button"
@@ -134,7 +134,6 @@ export default function RegisterPage() {
                   </Button>
                 </div>
               </div>
-
               <div>
                 <Label htmlFor="confirmPassword">Confirm password</Label>
                 <div className="relative mt-1">
@@ -146,6 +145,8 @@ export default function RegisterPage() {
                     required
                     placeholder="Confirm your password"
                     className="pr-10"
+                    value={form.confirmPassword}
+                    onChange={handleChange}
                   />
                   <Button
                     type="button"
@@ -162,7 +163,6 @@ export default function RegisterPage() {
                   </Button>
                 </div>
               </div>
-
               <div className="flex items-start space-x-2">
                 <input
                   id="terms"
@@ -182,23 +182,12 @@ export default function RegisterPage() {
                   </Link>
                 </Label>
               </div>
-
-              <div className="flex items-start space-x-2">
-                <input
-                  id="newsletter"
-                  name="newsletter"
-                  type="checkbox"
-                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded mt-1"
-                />
-                <Label htmlFor="newsletter" className="text-sm leading-5">
-                  I want to receive emails about new products and exclusive deals
-                </Label>
-              </div>
-
               <Button type="submit" className="w-full" size="lg" disabled={isLoading}>
                 {isLoading ? "Creating account..." : "Create account"}
               </Button>
             </form>
+
+            {message && <p className="mt-4 text-center text-red-500">{message}</p>}
 
             <div className="mt-6">
               <Separator className="my-4" />

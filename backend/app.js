@@ -3,6 +3,7 @@ const cors = require('cors')
 const bodyParser = require('body-parser')
 const mongoose = require('mongoose')
 const Product = require('./models/productModel')
+const authRoutes = require('./routes/auth')
 require('dotenv').config()
 
 const app = express()
@@ -28,6 +29,9 @@ app.get('/api/products', async (req, res) => {
     res.status(500).json({ error: 'Failed to fetch products' })
   }
 })
+
+// Authentication routes
+app.use('/api/auth', authRoutes)
 
 const PORT = process.env.PORT || 5000
 app.listen(PORT, () => {

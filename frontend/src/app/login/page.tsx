@@ -15,11 +15,18 @@ import { useToast } from "@/hooks/use-toast"
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+  const [form, setForm] = useState({ email: "", password: "" })
+  const [message, setMessage] = useState("")
   const { toast } = useToast()
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setForm({ ...form, [e.target.name]: e.target.value })
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
+    setMessage("")
 
     // Simulate login process
     setTimeout(() => {
@@ -29,6 +36,15 @@ export default function LoginPage() {
         description: "Welcome back to PhoneHub.",
       })
     }, 2000)
+
+    const res = await fetch("http://localhost:5000/api/auth/signin", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(form),
+    })
+    const data = await res.json()
+    if (res.ok) setMessage("Signin successful!")
+    else setMessage(data.error || "Signin failed")
   }
 
   return (
@@ -64,6 +80,8 @@ export default function LoginPage() {
                     required
                     placeholder="Enter your email"
                     className="mt-1"
+                    value={form.email}
+                    onChange={handleChange}
                   />
                 </div>
 
@@ -78,6 +96,8 @@ export default function LoginPage() {
                       required
                       placeholder="Enter your password"
                       className="pr-10"
+                      value={form.password}
+                      onChange={handleChange}
                     />
                     <Button
                       type="button"
@@ -118,6 +138,8 @@ export default function LoginPage() {
                 {isLoading ? "Signing in..." : "Sign in"}
               </Button>
             </form>
+
+            {message && <p className="mt-4 text-center text-red-500">{message}</p>}
 
             <div className="mt-6">
               <Separator className="my-4" />
