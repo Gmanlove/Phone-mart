@@ -106,7 +106,18 @@ export default function ProductsFilters() {
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            <Slider value={priceRange} onValueChange={setPriceRange} max={2000} min={0} step={50} className="w-full" />
+            <Slider 
+              value={priceRange}
+              min={0}
+              max={2000}
+              step={50}
+              className="w-full"
+              onChange={e => {
+                const val = e.target.value
+                // If range, handle array, else single value
+                setPriceRange([Number(val), priceRange[1]])
+              }}
+            />
             <div className="flex justify-between text-sm text-gray-600">
               <span>${priceRange[0]}</span>
               <span>${priceRange[1]}</span>
@@ -128,7 +139,7 @@ export default function ProductsFilters() {
                   <Checkbox
                     id={brand.id}
                     checked={selectedBrands.includes(brand.id)}
-                    onCheckedChange={(checked) => handleBrandChange(brand.id, checked as boolean)}
+                    onChange={e => handleBrandChange(brand.id, e.target.checked)}
                   />
                   <Label htmlFor={brand.id} className="text-sm font-normal cursor-pointer">
                     {brand.name}
@@ -154,7 +165,7 @@ export default function ProductsFilters() {
                   <Checkbox
                     id={feature.id}
                     checked={selectedFeatures.includes(feature.id)}
-                    onCheckedChange={(checked) => handleFeatureChange(feature.id, checked as boolean)}
+                    onChange={e => handleFeatureChange(feature.id, e.target.checked)}
                   />
                   <Label htmlFor={feature.id} className="text-sm font-normal cursor-pointer">
                     {feature.name}

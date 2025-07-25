@@ -13,6 +13,8 @@ export default function Hero() {
         <div className="absolute top-20 left-10 w-72 h-72 bg-blue-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-blob"></div>
         <div className="absolute top-40 right-10 w-72 h-72 bg-purple-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-blob animation-delay-2000"></div>
         <div className="absolute -bottom-8 left-20 w-72 h-72 bg-pink-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-blob animation-delay-4000"></div>
+        {/* Gradient overlay for readability */}
+        <div className="absolute inset-0 bg-gradient-to-t from-white/80 via-transparent to-transparent pointer-events-none"></div>
       </div>
 
       <div className="relative container mx-auto px-4 pt-16 pb-20 lg:pt-24 lg:pb-32">
@@ -22,48 +24,46 @@ export default function Hero() {
             {/* Trust badge */}
             <div className="inline-flex items-center bg-gradient-to-r from-blue-100 to-purple-100 text-blue-800 px-4 py-2 rounded-full text-sm font-semibold shadow-sm">
               <Award className="h-4 w-4 mr-2" />
-              Nigeria's Trusted Phone Store
-              <span className="ml-2 animate-pulse">✨</span>
+              Nigeria's #1 Trusted Phone Store
+              <span className="ml-2 animate-pulse" aria-hidden="true">✨</span>
             </div>
 
-            {/* Main heading */}
-            <div className="space-y-6">
+            {/* Main heading and value proposition */}
+            <div className="space-y-4">
               <h1 className="text-4xl sm:text-5xl lg:text-7xl font-bold text-gray-900 leading-tight">
-                Premium 
+                Premium Mobile Experience
                 <span className="block bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 bg-clip-text text-transparent">
-                  Smartphones
-                </span>
-                <span className="text-3xl sm:text-4xl lg:text-5xl text-gray-700">
-                  at Unbeatable Prices
+                  Smartphones & Accessories
                 </span>
               </h1>
-              <p className="text-xl lg:text-2xl text-gray-600 leading-relaxed max-w-2xl">
-                Discover the latest mobile technology from top global brands. Authentic products, 
-                competitive prices, and exceptional service guaranteed.
+              <p className="text-lg lg:text-xl text-gray-700 font-medium max-w-2xl">
+                Shop the latest devices, unbeatable prices, and enjoy fast delivery, warranty, and expert support. Your satisfaction is our priority.
               </p>
             </div>
 
-            {/* CTA Buttons */}
+            {/* CTA Buttons - improved accessibility */}
             <div className="flex flex-col sm:flex-row gap-4">
               <Button 
                 asChild 
                 size="lg" 
-                className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold px-8 py-4 rounded-full shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300"
+                className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold px-8 py-4 rounded-full shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                aria-label="Shop Now - Browse Products"
               >
                 <Link href="/products">
-                  <Zap className="mr-2 h-5 w-5" />
+                  <Zap className="mr-2 h-5 w-5" aria-hidden="true" />
                   Shop Now
-                  <ArrowRight className="ml-2 h-5 w-5" />
+                  <ArrowRight className="ml-2 h-5 w-5" aria-hidden="true" />
                 </Link>
               </Button>
               <Button 
                 asChild 
                 variant="outline" 
                 size="lg"
-                className="border-2 border-gray-300 text-gray-700 hover:border-blue-500 hover:text-blue-600 font-semibold px-8 py-4 rounded-full shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300"
+                className="border-2 border-gray-300 text-gray-700 hover:border-blue-500 hover:text-blue-600 font-semibold px-8 py-4 rounded-full shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                aria-label="View Hot Deals"
               >
                 <Link href="/deals">
-                  <Star className="mr-2 h-5 w-5" />
+                  <Star className="mr-2 h-5 w-5" aria-hidden="true" />
                   View Hot Deals
                 </Link>
               </Button>
@@ -77,7 +77,7 @@ export default function Hero() {
                 </div>
                 <div>
                   <p className="font-bold text-gray-900 text-lg">Free Delivery</p>
-                  <p className="text-sm text-gray-600">Orders over ₦500,000</p>
+                  <p className="text-sm text-gray-600">Orders over ₦100,000</p>
                 </div>
               </div>
 
@@ -86,7 +86,7 @@ export default function Hero() {
                   <Shield className="h-6 w-6 text-white" />
                 </div>
                 <div>
-                  <p className="font-bold text-gray-900 text-lg">1-Year Warranty</p>
+                  <p className="font-bold text-gray-900 text-lg">2-Year Warranty</p>
                   <p className="text-sm text-gray-600">On all devices</p>
                 </div>
               </div>
@@ -115,11 +115,11 @@ export default function Hero() {
             {/* Social proof */}
             <div className="flex items-center space-x-8 pt-4">
               <div className="text-center">
-                <div className="text-2xl lg:text-3xl font-bold text-gray-900">50K+</div>
+                <div className="text-2xl lg:text-3xl font-bold text-blue-700">50K+</div>
                 <div className="text-sm text-gray-600">Happy Customers</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl lg:text-3xl font-bold text-gray-900">4.9</div>
+                <div className="text-2xl lg:text-3xl font-bold text-blue-700">4.9</div>
                 <div className="flex items-center justify-center text-yellow-400">
                   {[...Array(5)].map((_, i) => (
                     <Star key={i} className="h-4 w-4 fill-current" />
@@ -128,7 +128,7 @@ export default function Hero() {
                 <div className="text-sm text-gray-600">Rating</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl lg:text-3xl font-bold text-gray-900">1000+</div>
+                <div className="text-2xl lg:text-3xl font-bold text-blue-700">1000+</div>
                 <div className="text-sm text-gray-600">Products</div>
               </div>
             </div>
@@ -156,30 +156,43 @@ export default function Hero() {
                 Up to 40% OFF
               </div>
 
-              
-
-            
-
               {/* Background decorative elements */}
               <div className="absolute -top-8 -left-8 w-32 h-32 bg-gradient-to-r from-blue-200 to-purple-200 rounded-full opacity-50 animate-pulse"></div>
               <div className="absolute -bottom-8 -right-8 w-40 h-40 bg-gradient-to-r from-pink-200 to-orange-200 rounded-full opacity-30 animate-pulse animation-delay-2000"></div>
-              
               {/* Floating particles */}
               <div className="absolute top-1/4 left-1/4 w-2 h-2 bg-blue-400 rounded-full animate-ping"></div>
               <div className="absolute top-3/4 right-1/4 w-3 h-3 bg-purple-400 rounded-full animate-ping animation-delay-1000"></div>
               <div className="absolute bottom-1/4 left-1/3 w-2 h-2 bg-pink-400 rounded-full animate-ping animation-delay-3000"></div>
             </div>
 
-            {/* Stats overlay */}
-            
+            {/* Stats overlay - visible and engaging */}
+            <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1/2 z-30">
+              <div className="bg-white rounded-2xl shadow-2xl p-6 border border-gray-100 flex items-center space-x-6">
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-blue-600">24h</div>
+                  <div className="text-xs text-gray-600">Delivery</div>
+                </div>
+                <div className="w-px h-8 bg-gray-200"></div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-green-600">99%</div>
+                  <div className="text-xs text-gray-600">Satisfaction</div>
+                </div>
+                <div className="w-px h-8 bg-gray-200"></div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-purple-600">5⭐</div>
+                  <div className="text-xs text-gray-600">Reviews</div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* Scroll indicator */}
-        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
+        {/* Scroll indicator with hint */}
+        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce flex flex-col items-center">
           <div className="w-6 h-10 border-2 border-gray-400 rounded-full flex justify-center">
             <div className="w-1 h-3 bg-gray-400 rounded-full mt-2 animate-pulse"></div>
           </div>
+          <span className="mt-2 text-xs text-gray-500">Scroll down</span>
         </div>
       </div>
 
