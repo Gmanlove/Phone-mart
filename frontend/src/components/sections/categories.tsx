@@ -1,11 +1,12 @@
 "use client"
 
 import Link from "next/link"
-import Image from "next/image"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { useEffect, useState } from "react"
 import { ArrowRight, Smartphone, Headphones, Zap, Shield } from "lucide-react"
+import { CldImage } from "next-cloudinary"
+import { extractCloudinaryPublicId } from "@/lib/utils"
 
 type Category = {
   id: string
@@ -183,12 +184,23 @@ export default function Categories() {
                   {/* Category image */}
                   <div className="relative overflow-hidden">
                     <div className="aspect-square relative">
-                      <Image
-                        src={category.image || "/placeholder.svg"}
-                        alt={category.name}
-                        fill
-                        className="object-cover transition-all duration-500 group-hover:scale-110"
-                      />
+                      {category.image && category.image.startsWith("http") ? (
+                        <CldImage
+                          width={200}
+                          height={200}
+                          src={extractCloudinaryPublicId(category.image) || "placeholder"}
+                          alt={category.name}
+                          className="object-cover transition-all duration-500 group-hover:scale-110"
+                        />
+                      ) : (
+                        <CldImage
+                          width={200}
+                          height={200}
+                          src={category.image || "placeholder"}
+                          alt={category.name}
+                          className="object-cover transition-all duration-500 group-hover:scale-110"
+                        />
+                      )}
                       {/* Gradient overlay */}
                       <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                     </div>

@@ -192,7 +192,7 @@ export default function Header() {
                 <div className="absolute inset-y-0 right-0 flex items-center pr-2">
                   <Button 
                     type="submit" 
-                    size="sm" 
+                    size="default" 
                     className="rounded-full bg-blue-600 hover:bg-blue-700 text-white px-6"
                   >
                     Search

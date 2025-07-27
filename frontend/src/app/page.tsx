@@ -3,7 +3,10 @@ import Hero from "@/components/sections/hero"
 import FeaturedProducts from "@/components/sections/featured-products"
 import Categories from "@/components/sections/categories"
 import Newsletter from "@/components/sections/newsletter"
+// Make sure that "@/components/sections/newsletter" exports a React component that returns JSX.Element, not void.
 import { Skeleton } from "@/components/ui/skeleton"
+import { CldImage } from "next-cloudinary";
+import { extractCloudinaryPublicId } from "@/lib/utils";
 
 export default function HomePage() {
   return (

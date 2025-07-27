@@ -2,7 +2,6 @@
 
 import type React from "react"
 
-import Image from "next/image"
 import Link from "next/link"
 import { Star, Heart, ShoppingCart, Eye } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -10,6 +9,8 @@ import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
 import { useCart } from "@/contexts/cart-context"
 import { useToast } from "@/hooks/use-toast"
+import { CldImage } from "next-cloudinary";
+import { extractCloudinaryPublicId } from "@/lib/utils";
 
 export interface Product {
   specs: any
@@ -88,13 +89,23 @@ export default function ProductCard({ product }: ProductCardProps) {
         <CardContent className="p-0">
           {/* Product Image */}
           <div className="relative overflow-hidden bg-gray-50">
-            <Image
-              src={product.image || "/placeholder.svg"}
-              alt={product.name}
-              width={300}
-              height={300}
-              className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300"
-            />
+            {product.image && product.image.startsWith("http") ? (
+              <CldImage
+                width={300}
+                height={300}
+                src={extractCloudinaryPublicId(product.image) || "placeholder"}
+                alt={product.name}
+                className="w-full h-56 object-contain p-4"
+              />
+            ) : (
+              <CldImage
+                width={300}
+                height={300}
+                src={product.image || "placeholder"}
+                alt={product.name}
+                className="w-full h-56 object-contain p-4"
+              />
+            )}
 
             {/* Quick actions overlay */}
             <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">

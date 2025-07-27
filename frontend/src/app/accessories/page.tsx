@@ -1,5 +1,7 @@
 import { Card } from "@/components/ui/card"
 import { Star, ShoppingCart, Heart, Eye } from "lucide-react"
+import { CldImage } from "next-cloudinary";
+import { extractCloudinaryPublicId } from "@/lib/utils";
 
 export default function AccessoriesPage() {
   const accessories = [

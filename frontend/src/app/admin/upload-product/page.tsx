@@ -1,6 +1,7 @@
 "use client"
 import { useState } from "react"
-import { Upload, Package, DollarSign, FileText, Tag, Smartphone, Image, Loader2, CheckCircle, AlertCircle } from "lucide-react"
+import { Upload, Package, DollarSign, FileText, Tag, Smartphone, Loader2, CheckCircle, AlertCircle } from "lucide-react"
+import { CldImage } from "next-cloudinary"
 
 const categories = [
   "iPhone",
@@ -262,7 +263,7 @@ export default function AdminUploadProduct() {
               {/* Image Upload Section */}
               <div className="space-y-4">
                 <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2 pb-2 border-b border-gray-200">
-                  <Image className="w-5 h-5 text-blue-600" />
+                  <FileText className="w-5 h-5 text-blue-600" />
                   Product Image
                 </h3>
                 
