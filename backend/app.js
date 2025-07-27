@@ -1,3 +1,4 @@
+require('dotenv').config()
 const express = require('express')
 const cors = require('cors')
 const bodyParser = require('body-parser')
@@ -5,7 +6,6 @@ const mongoose = require('mongoose')
 const Product = require('./models/productModel')
 const authRoutes = require('./routes/auth')
 const adminRoutes = require('./routes/admin')
-require('dotenv').config()
 
 const app = express()
 app.use(cors())

@@ -2,12 +2,12 @@ const express = require('express');
 const router = express.Router();
 const Product = require('../models/productModel');
 const User = require('../models/userModel');
-const multer = require('multer');
-const path = require('path');
 const cloudinary = require('cloudinary').v2;
 const { CloudinaryStorage } = require('multer-storage-cloudinary');
+const multer = require('multer');
+const path = require('path');
 
-// Multer config for image upload
+// Multer config for image upload (local disk, not used for Cloudinary)
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, path.join(__dirname, '../uploads'));
@@ -18,10 +18,18 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage });
 
+// Cloudinary config
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
+// Debug logs for Cloudinary config
+console.log('Cloudinary config:', {
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME || "dn7zah8um",
+  api_key: process.env.CLOUDINARY_API_KEY || '626199732678851',
+  api_secret: process.env.CLOUDINARY_API_SECRET || "R-YWdGVQlebAhRHmXtUaw5E5U_o" ? '***' : undefined,
 });
 
 const cloudinaryStorage = new CloudinaryStorage({
@@ -31,7 +39,6 @@ const cloudinaryStorage = new CloudinaryStorage({
     allowed_formats: ['jpg', 'jpeg', 'png'],
   },
 });
-
 const uploadCloud = multer({ storage: cloudinaryStorage });
 
 // Middleware to check admin

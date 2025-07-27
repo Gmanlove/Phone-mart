@@ -82,7 +82,7 @@ export default function ProductsGrid() {
 							name: product.name,
 							brand: product.brand,
 							price: product.price,
-							image: product.image && product.image.startsWith("http") ? product.image : "/placeholder.svg",
+							image: product.image && product.image.startsWith("http") ? product.image : "sample",
 							originalPrice: product.originalPrice,
 							rating: product.rating || 4.5,
 							reviews: product.reviews || 0,

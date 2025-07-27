@@ -107,7 +107,7 @@ const DealCard = ({ deal, viewMode }: { deal: any, viewMode: string }) => {
         <div className="flex flex-col sm:flex-row gap-4 sm:gap-6">
           <div className="relative flex-shrink-0 w-full sm:w-32 md:w-40">
             <div className="aspect-square rounded-xl overflow-hidden bg-gray-100">
-              <CldImage width={200} height={200} src={extractCloudinaryPublicId(deal.image) || "placeholder"} alt={deal.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+              <CldImage width={200} height={200} src={extractCloudinaryPublicId(deal.image) || "sample"} alt={deal.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
             </div>
             <div className="absolute top-2 left-2">
               <span className={`px-2 py-1 text-xs font-bold rounded-full text-white ${
@@ -184,7 +184,7 @@ const DealCard = ({ deal, viewMode }: { deal: any, viewMode: string }) => {
           <CldImage 
             width={200} 
             height={200} 
-            src={extractCloudinaryPublicId(deal.image) || "placeholder"} 
+            src={extractCloudinaryPublicId(deal.image) || "sample"} 
             alt={deal.name} 
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
           />

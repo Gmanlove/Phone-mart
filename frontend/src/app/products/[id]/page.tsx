@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation"
 import { CldImage } from "next-cloudinary"
+import { extractCloudinaryPublicId } from "@/lib/utils"
 
 async function fetchProduct(id: string) {
   const res = await fetch(`http://localhost:5000/api/products/${id}`)
@@ -44,7 +45,7 @@ export default async function ProductDetailPage({
               <div className="aspect-square relative overflow-hidden rounded-xl bg-white shadow-lg">
                 {product.images && product.images.length > 0 ? (
                   <CldImage
-                    src={product.images[0].replace(/^.*\/([^/]+)\.[a-zA-Z]+$/, '$1')}
+                    src={extractCloudinaryPublicId(product.images[0]) || "sample"}
                     alt={product.name}
                     width={500}
                     height={500}
@@ -55,7 +56,7 @@ export default async function ProductDetailPage({
                   />
                 ) : (
                   <CldImage
-                    src="placeholder"
+                    src="sample"
                     alt="No image"
                     width={500}
                     height={500}

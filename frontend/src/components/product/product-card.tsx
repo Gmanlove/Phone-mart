@@ -93,7 +93,7 @@ export default function ProductCard({ product }: ProductCardProps) {
               <CldImage
                 width={300}
                 height={300}
-                src={extractCloudinaryPublicId(product.image) || "placeholder"}
+                src={extractCloudinaryPublicId(product.image) || "sample"}
                 alt={product.name}
                 className="w-full h-56 object-contain p-4"
               />
@@ -101,7 +101,7 @@ export default function ProductCard({ product }: ProductCardProps) {
               <CldImage
                 width={300}
                 height={300}
-                src={product.image || "placeholder"}
+                src={"sample"}
                 alt={product.name}
                 className="w-full h-56 object-contain p-4"
               />

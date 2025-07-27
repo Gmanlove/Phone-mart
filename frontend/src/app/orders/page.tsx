@@ -163,7 +163,7 @@ const OrderCard = ({ order }: { order: any }) => {
               <CldImage
                 width={100}
                 height={100}
-                src={extractCloudinaryPublicId(item.image) || "placeholder"}
+                src={extractCloudinaryPublicId(item.image) || "sample"}
                 alt={item.name}
                 className="w-8 h-8 rounded-lg object-cover"
               />
@@ -233,7 +233,7 @@ const OrderCard = ({ order }: { order: any }) => {
                     <CldImage
                       width={100}
                       height={100}
-                      src={extractCloudinaryPublicId(item.image) || "placeholder"}
+                      src={extractCloudinaryPublicId(item.image) || "sample"}
                       alt={item.name}
                       className="w-12 h-12 rounded-lg object-cover"
                     />

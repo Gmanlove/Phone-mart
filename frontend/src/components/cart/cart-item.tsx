@@ -42,7 +42,7 @@ export default function CartItem({ item }: CartItemProps) {
             <CldImage
               width={80}
               height={80}
-              src={extractPublicId(item.image)}
+              src={extractPublicId(item.image) || "sample"}
               alt={item.name}
               className="w-20 h-20 object-cover rounded-lg"
             />
