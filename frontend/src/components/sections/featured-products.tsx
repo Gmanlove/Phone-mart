@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button"
 import ProductCard from "@/components/product/product-card"
 import { useEffect, useState } from "react"
 import { fetchProducts } from "@/lib/api"
+import { CldImage } from "next-cloudinary";
+import { extractCloudinaryPublicId } from "@/lib/utils";
 
 // Mock data - In real app, this would come from your API
 const featuredProducts = [
@@ -150,8 +152,17 @@ export default function FeaturedProducts() {
 				</div>
 
 				<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-					{products.map((product: any) => (
-						<ProductCard key={product.id} product={product} />
+					{featuredProducts.map((product) => (
+						<div key={product.id} className="...">
+							<CldImage
+								width={300}
+								height={300}
+								src={extractCloudinaryPublicId(product.image) || "placeholder"}
+								alt={product.name}
+								className="w-full h-56 object-contain p-4"
+							/>
+							{/* ...existing code... */}
+						</div>
 					))}
 				</div>
 

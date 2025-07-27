@@ -81,10 +81,14 @@ export default function AdminProductsPage() {
     filtered.sort((a, b) => {
       let aValue = a[sortBy as keyof Product]
       let bValue = b[sortBy as keyof Product]
-      
+
+      // Provide default values if undefined
+      if (typeof aValue === "undefined" || aValue === null) aValue = ""
+      if (typeof bValue === "undefined" || bValue === null) bValue = ""
+
       if (typeof aValue === "string") aValue = aValue.toLowerCase()
       if (typeof bValue === "string") bValue = bValue.toLowerCase()
-      
+
       if (sortOrder === "asc") {
         return aValue > bValue ? 1 : -1
       } else {

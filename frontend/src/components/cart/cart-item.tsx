@@ -1,6 +1,6 @@
 "use client"
 
-import Image from "next/image"
+import { CldImage } from "next-cloudinary"
 import { Minus, Plus, Trash2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
@@ -27,17 +27,23 @@ export default function CartItem({ item }: CartItemProps) {
     }
   }
 
+  const extractPublicId = (url: string) => {
+    const regex = /\/([^\/]+)\.(jpg|jpeg|png|gif|bmp|webp)(\?.*)?$/
+    const match = url.match(regex)
+    return match ? match[1] : null
+  }
+
   return (
     <Card>
       <CardContent className="p-6">
         <div className="flex items-center space-x-4">
           {/* Product Image */}
           <div className="flex-shrink-0">
-            <Image
-              src={item.image || "/placeholder.svg"}
-              alt={item.name}
+            <CldImage
               width={80}
               height={80}
+              src={extractPublicId(item.image)}
+              alt={item.name}
               className="w-20 h-20 object-cover rounded-lg"
             />
           </div>

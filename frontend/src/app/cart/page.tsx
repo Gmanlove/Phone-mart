@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { ShoppingBag, ArrowLeft, Trash2, Plus, Minus, Heart, ShoppingCart, Lock, Truck, Shield } from "lucide-react"
+import { CldImage } from "next-cloudinary"
 
 // Mock cart context and components for demonstration
 const useCart = () => {
@@ -46,7 +47,9 @@ const CartItem = ({ item, onUpdateQuantity, onRemove }: any) => {
         {/* Product Image */}
         <div className="flex-shrink-0 w-full sm:w-24 md:w-32">
           <div className="aspect-square rounded-xl overflow-hidden bg-gray-100">
-            <img
+            <CldImage
+              width={96}
+              height={96}
               src={item.image}
               alt={item.name}
               className="w-full h-full object-cover"

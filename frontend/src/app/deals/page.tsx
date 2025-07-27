@@ -1,6 +1,8 @@
 "use client"
 import { useState } from "react"
 import { Flame, Clock, Star, Heart, ArrowRight, Filter, Grid3X3, List, Zap, Gift, Percent, Timer } from "lucide-react"
+import { CldImage } from "next-cloudinary";
+import { extractCloudinaryPublicId } from "@/lib/utils";
 
 const deals = [
   {
@@ -105,7 +107,7 @@ const DealCard = ({ deal, viewMode }: { deal: any, viewMode: string }) => {
         <div className="flex flex-col sm:flex-row gap-4 sm:gap-6">
           <div className="relative flex-shrink-0 w-full sm:w-32 md:w-40">
             <div className="aspect-square rounded-xl overflow-hidden bg-gray-100">
-              <img src={deal.image} alt={deal.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+              <CldImage width={200} height={200} src={extractCloudinaryPublicId(deal.image) || "placeholder"} alt={deal.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
             </div>
             <div className="absolute top-2 left-2">
               <span className={`px-2 py-1 text-xs font-bold rounded-full text-white ${
@@ -179,8 +181,10 @@ const DealCard = ({ deal, viewMode }: { deal: any, viewMode: string }) => {
     <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-300 group">
       <div className="relative">
         <div className="aspect-square bg-gray-100 overflow-hidden">
-          <img 
-            src={deal.image} 
+          <CldImage 
+            width={200} 
+            height={200} 
+            src={extractCloudinaryPublicId(deal.image) || "placeholder"} 
             alt={deal.name} 
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
           />

@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation"
-import Image from "next/image"
+import { CldImage } from "next-cloudinary"
 
 async function fetchProduct(id: string) {
   const res = await fetch(`http://localhost:5000/api/products/${id}`)
@@ -43,23 +43,25 @@ export default async function ProductDetailPage({
             <div className="relative bg-gray-50 p-4 sm:p-6 lg:p-8">
               <div className="aspect-square relative overflow-hidden rounded-xl bg-white shadow-lg">
                 {product.images && product.images.length > 0 ? (
-                  <Image
-                    src={product.images[0].startsWith("/uploads") ? `http://localhost:5000${product.images[0]}` : product.images[0]}
+                  <CldImage
+                    src={product.images[0].replace(/^.*\/([^/]+)\.[a-zA-Z]+$/, '$1')}
                     alt={product.name}
-                    fill
+                    width={500}
+                    height={500}
+                    crop={{ type: 'fill' }}
                     className="object-contain p-4"
                     sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
                     priority
                   />
                 ) : (
-                  <div className="flex items-center justify-center h-full bg-gray-100">
-                    <div className="text-center text-gray-400">
-                      <svg className="mx-auto h-12 w-12 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                      </svg>
-                      <p className="text-sm">No image available</p>
-                    </div>
-                  </div>
+                  <CldImage
+                    src="placeholder"
+                    alt="No image"
+                    width={500}
+                    height={500}
+                    crop={{ type: 'fill' }}
+                    className="object-contain p-4"
+                  />
                 )}
               </div>
               
@@ -68,11 +70,12 @@ export default async function ProductDetailPage({
                 <div className="flex gap-2 mt-4 overflow-x-auto pb-2">
                   {product.images.slice(1, 5).map((image: string, index: number) => (
                     <div key={index} className="flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden bg-white shadow-md">
-                      <Image
-                        src={image.startsWith("/uploads") ? `http://localhost:5000${image}` : image}
+                      <CldImage
+                        src={image.replace(/^.*\/([^/]+)\.[a-zA-Z]+$/, '$1')}
                         alt={`${product.name} view ${index + 2}`}
                         width={64}
                         height={64}
+                        crop={{ type: 'fill' }}
                         className="object-cover w-full h-full"
                       />
                     </div>

@@ -2,6 +2,8 @@
 
 import { useState } from "react"
 import { Package, Truck, CheckCircle, Clock, Search, Filter, Eye, Download, Star, MessageCircle, RefreshCw, MapPin, Calendar, CreditCard } from "lucide-react"
+import { CldImage } from "next-cloudinary";
+import { extractCloudinaryPublicId } from "@/lib/utils";
 
 const orders = [
   {
@@ -158,8 +160,10 @@ const OrderCard = ({ order }: { order: any }) => {
         <div className="flex flex-wrap gap-2 mb-4">
           {order.items.slice(0, 3).map((item: any, index: number) => (
             <div key={index} className="flex items-center gap-2 bg-gray-50 rounded-lg px-3 py-2">
-              <img
-                src={item.image}
+              <CldImage
+                width={100}
+                height={100}
+                src={extractCloudinaryPublicId(item.image) || "placeholder"}
                 alt={item.name}
                 className="w-8 h-8 rounded-lg object-cover"
               />
@@ -226,8 +230,10 @@ const OrderCard = ({ order }: { order: any }) => {
               <div className="space-y-3">
                 {order.items.map((item: any, index: number) => (
                   <div key={index} className="flex items-center gap-3 p-3 bg-white rounded-xl">
-                    <img
-                      src={item.image}
+                    <CldImage
+                      width={100}
+                      height={100}
+                      src={extractCloudinaryPublicId(item.image) || "placeholder"}
                       alt={item.name}
                       className="w-12 h-12 rounded-lg object-cover"
                     />
