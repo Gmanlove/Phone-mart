@@ -1,11 +1,12 @@
 "use client"
 
 import Link from "next/link"
-import Image from "next/image"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { useEffect, useState } from "react"
 import { ArrowRight, Smartphone, Headphones, Zap, Shield } from "lucide-react"
+import { CldImage } from "next-cloudinary"
+import { extractCloudinaryPublicId } from "@/lib/utils"
 
 type Category = {
   id: string
@@ -25,7 +26,7 @@ const mockCategories: Category[] = [
     id: "1",
     name: "iPhone",
     href: "/products?brand=apple",
-    image: "/placeholder.svg?height=200&width=200",
+    image: "sample",
     count: 45,
     description: "Latest iOS devices",
     isPopular: true,
@@ -36,7 +37,7 @@ const mockCategories: Category[] = [
     id: "2",
     name: "Samsung Galaxy",
     href: "/products?brand=samsung",
-    image: "/placeholder.svg?height=200&width=200",
+    image: "sample",
     count: 38,
     description: "Android powerhouses",
     isPopular: true,
@@ -47,7 +48,7 @@ const mockCategories: Category[] = [
     id: "3",
     name: "Google Pixel",
     href: "/products?brand=google",
-    image: "/placeholder.svg?height=200&width=200",
+    image: "sample",
     count: 22,
     description: "Pure Android experience",
     discount: "Up to 20% OFF",
@@ -57,7 +58,7 @@ const mockCategories: Category[] = [
     id: "4",
     name: "OnePlus",
     href: "/products?brand=oneplus",
-    image: "/placeholder.svg?height=200&width=200",
+    image: "sample",
     count: 18,
     description: "Never Settle phones",
     icon: <Zap className="h-6 w-6" />
@@ -66,7 +67,7 @@ const mockCategories: Category[] = [
     id: "5",
     name: "Accessories",
     href: "/accessories",
-    image: "/placeholder.svg?height=200&width=200",
+    image: "sample",
     count: 150,
     description: "Cases, chargers & more",
     discount: "Up to 40% OFF",
@@ -76,7 +77,7 @@ const mockCategories: Category[] = [
     id: "6",
     name: "Refurbished",
     href: "/products?condition=refurbished",
-    image: "/placeholder.svg?height=200&width=200",
+    image: "sample",
     count: 35,
     description: "Quality pre-owned devices",
     discount: "Up to 50% OFF",
@@ -183,12 +184,23 @@ export default function Categories() {
                   {/* Category image */}
                   <div className="relative overflow-hidden">
                     <div className="aspect-square relative">
-                      <Image
-                        src={category.image || "/placeholder.svg"}
-                        alt={category.name}
-                        fill
-                        className="object-cover transition-all duration-500 group-hover:scale-110"
-                      />
+                      {category.image && category.image.startsWith("http") ? (
+                        <CldImage
+                          width={200}
+                          height={200}
+                          src={extractCloudinaryPublicId(category.image) || "placeholder"}
+                          alt={category.name}
+                          className="object-cover transition-all duration-500 group-hover:scale-110"
+                        />
+                      ) : (
+                        <CldImage
+                          width={200}
+                          height={200}
+                          src={category.image || "placeholder"}
+                          alt={category.name}
+                          className="object-cover transition-all duration-500 group-hover:scale-110"
+                        />
+                      )}
                       {/* Gradient overlay */}
                       <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                     </div>

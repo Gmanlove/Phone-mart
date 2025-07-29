@@ -1,9 +1,8 @@
-
 "use client"
 import Link from "next/link"
-import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { ArrowRight, Star, Shield, Truck, Zap, Award, Clock } from "lucide-react"
+import { CldImage } from "next-cloudinary"
 
 export default function Hero() {
   return (
@@ -140,8 +139,8 @@ export default function Hero() {
             <div className="relative">
               <div className="relative z-20 transform hover:scale-105 transition-transform duration-500">
                 <div className="bg-gradient-to-br from-white to-gray-100 rounded-3xl p-8 shadow-2xl">
-                  <Image
-                    src="/love.webp?height=600&width=500"
+                  <CldImage
+                    src="love"
                     alt="Latest Premium Smartphones"
                     width={500}
                     height={600}

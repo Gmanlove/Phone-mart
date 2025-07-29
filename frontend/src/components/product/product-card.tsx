@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { Star, Heart, ShoppingCart, Eye, Zap, Shield, Truck } from "lucide-react"
 
+<<<<<<< HEAD
 // Mock components for demonstration
 const Button = ({ variant = "default", size = "default", className = "", children, disabled = false, ...props }) => {
   const baseClasses = "inline-flex items-center justify-center font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
@@ -29,6 +30,17 @@ const Button = ({ variant = "default", size = "default", className = "", childre
     </button>
   )
 }
+=======
+import Link from "next/link"
+import { Star, Heart, ShoppingCart, Eye } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
+import { Card, CardContent } from "@/components/ui/card"
+import { useCart } from "@/contexts/cart-context"
+import { useToast } from "@/hooks/use-toast"
+import { CldImage } from "next-cloudinary";
+import { extractCloudinaryPublicId } from "@/lib/utils";
+>>>>>>> 02f93b0cb1dfd9fea933d00a5c5335a5bdba8927
 
 const Badge = ({ variant = "default", className = "", children, ...props }) => {
   const variants = {
@@ -364,52 +376,24 @@ export default function ProductCard({ product = sampleProduct, layout = 'grid' }
       <Link href={`/products/${product.id}`}>
         <CardContent className="p-0">
           {/* Product Image */}
-          <div className="relative overflow-hidden bg-gradient-to-br from-gray-50 to-gray-100 aspect-square">
-            <img
-              src={product.image}
-              alt={product.name}
-              className={`w-full h-full object-cover transition-all duration-500 group-hover:scale-110 ${
-                imageLoaded ? 'opacity-100' : 'opacity-0'
-              }`}
-              onLoad={() => setImageLoaded(true)}
-            />
-            {!imageLoaded && (
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="w-8 h-8 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-              </div>
+          <div className="relative overflow-hidden bg-gray-50">
+            {product.image && product.image.startsWith("http") ? (
+              <CldImage
+                width={300}
+                height={300}
+                src={extractCloudinaryPublicId(product.image) || "sample"}
+                alt={product.name}
+                className="w-full h-56 object-contain p-4"
+              />
+            ) : (
+              <CldImage
+                width={300}
+                height={300}
+                src={"sample"}
+                alt={product.name}
+                className="w-full h-56 object-contain p-4"
+              />
             )}
-            
-            {/* Badges */}
-            <div className="absolute top-3 left-3 flex flex-col gap-1.5">
-              {product.isNew && (
-                <Badge className="bg-green-500 text-white shadow-lg">
-                  <Zap className="w-3 h-3 mr-1" />
-                  New
-                </Badge>
-              )}
-              {discountPercentage > 0 && (
-                <Badge className="bg-red-500 text-white shadow-lg font-bold">
-                  -{discountPercentage}%
-                </Badge>
-              )}
-              {product.isFeatured && (
-                <Badge className="bg-purple-500 text-white shadow-lg">
-                  Featured
-                </Badge>
-              )}
-            </div>
-
-            {/* Wishlist Button */}
-            <Button
-              variant="ghost"
-              size="icon"
-              className={`absolute top-3 right-3 bg-white/90 backdrop-blur-sm border border-gray-200 opacity-0 group-hover:opacity-100 transition-all duration-300 hover:scale-110 ${
-                isWishlisted ? 'text-red-500' : 'text-gray-600 hover:text-red-500'
-              }`}
-              onClick={handleWishlist}
-            >
-              <Heart className={`h-4 w-4 transition-all ${isWishlisted ? 'fill-current' : ''}`} />
-            </Button>
 
             {/* Quick actions overlay */}
             <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center">

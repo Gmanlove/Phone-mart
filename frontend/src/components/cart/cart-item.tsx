@@ -1,7 +1,12 @@
 "use client"
 
+<<<<<<< HEAD
 import Image from "next/image"
 import { Minus, Plus, Trash2, Heart, ShoppingCart } from "lucide-react"
+=======
+import { CldImage } from "next-cloudinary"
+import { Minus, Plus, Trash2 } from "lucide-react"
+>>>>>>> 02f93b0cb1dfd9fea933d00a5c5335a5bdba8927
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { useCart } from "@/contexts/cart-context"

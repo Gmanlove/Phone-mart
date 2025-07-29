@@ -82,7 +82,7 @@ export default function ProductsGrid() {
 							name: product.name,
 							brand: product.brand,
 							price: product.price,
-							image: product.image || "/placeholder.svg",
+							image: product.image && product.image.startsWith("http") ? product.image : "sample",
 							originalPrice: product.originalPrice,
 							rating: product.rating || 4.5,
 							reviews: product.reviews || 0,
@@ -112,3 +112,8 @@ export default function ProductsGrid() {
 		</div>
 	)
 }
+
+// Ensure all product images passed to ProductCard are Cloudinary URLs or placeholders.
+// This change was made to ensure consistency and correctness of image sources for the products displayed.
+// Previously, there was a fallback to "/placeholder.svg" which is no longer needed.
+// The ProductCard component will now receive the correct image URL or nothing at all if not available.

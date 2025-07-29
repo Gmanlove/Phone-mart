@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button"
 import ProductCard from "@/components/product/product-card"
 import { useEffect, useState } from "react"
 import { fetchProducts } from "@/lib/api"
+import { CldImage } from "next-cloudinary";
+import { extractCloudinaryPublicId } from "@/lib/utils";
 
 // Mock data - In real app, this would come from your API
 const featuredProducts = [
@@ -14,7 +16,7 @@ const featuredProducts = [
 		brand: "Apple",
 		price: 1199,
 		originalPrice: 1299,
-		image: "/placeholder.svg?height=300&width=300",
+		image: "sample",
 		rating: 4.8,
 		reviews: 1250,
 		features: ["A17 Pro Chip", "256GB Storage", "Pro Camera System"],
@@ -27,7 +29,7 @@ const featuredProducts = [
 		brand: "Samsung",
 		price: 1099,
 		originalPrice: 1199,
-		image: "/placeholder.svg?height=300&width=300",
+		image: "sample",
 		rating: 4.7,
 		reviews: 980,
 		features: ["S Pen Included", "512GB Storage", "200MP Camera"],
@@ -40,7 +42,7 @@ const featuredProducts = [
 		brand: "Google",
 		price: 899,
 		originalPrice: 999,
-		image: "/placeholder.svg?height=300&width=300",
+		image: "sample",
 		rating: 4.6,
 		reviews: 750,
 		features: ["Google Tensor G3", "Magic Eraser", "Pure Android"],
@@ -53,7 +55,7 @@ const featuredProducts = [
 		brand: "OnePlus",
 		price: 799,
 		originalPrice: 899,
-		image: "/placeholder.svg?height=300&width=300",
+		image: "sample",
 		rating: 4.5,
 		reviews: 620,
 		features: ["Snapdragon 8 Gen 3", "Fast Charging", "OxygenOS"],
@@ -66,7 +68,7 @@ const featuredProducts = [
 		brand: "Apple",
 		price: 699,
 		originalPrice: 799,
-		image: "/placeholder.svg?height=300&width=300",
+		image: "sample",
 		rating: 4.7,
 		reviews: 2100,
 		features: ["A15 Bionic", "Dual Camera", "All-Day Battery"],
@@ -79,7 +81,7 @@ const featuredProducts = [
 		brand: "Samsung",
 		price: 449,
 		originalPrice: 499,
-		image: "/placeholder.svg?height=300&width=300",
+		image: "sample",
 		rating: 4.4,
 		reviews: 890,
 		features: ["50MP Camera", "5000mAh Battery", "Super AMOLED"],
@@ -92,7 +94,7 @@ const featuredProducts = [
 		brand: "Google",
 		price: 399,
 		originalPrice: 449,
-		image: "/placeholder.svg?height=300&width=300",
+		image: "sample",
 		rating: 4.5,
 		reviews: 1100,
 		features: ["Google Tensor G2", "Wireless Charging", "Pixel Camera"],
@@ -105,7 +107,7 @@ const featuredProducts = [
 		brand: "OnePlus",
 		price: 329,
 		originalPrice: 379,
-		image: "/placeholder.svg?height=300&width=300",
+		image: "sample",
 		rating: 4.3,
 		reviews: 450,
 		features: ["MediaTek Dimensity", "Triple Camera", "Fast Charging"],
@@ -150,8 +152,17 @@ export default function FeaturedProducts() {
 				</div>
 
 				<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-					{products.map((product: any) => (
-						<ProductCard key={product.id} product={product} />
+					{featuredProducts.map((product) => (
+						<div key={product.id} className="...">
+							<CldImage
+								width={300}
+								height={300}
+								src={extractCloudinaryPublicId(product.image) || "placeholder"}
+								alt={product.name}
+								className="w-full h-56 object-contain p-4"
+							/>
+							{/* ...existing code... */}
+						</div>
 					))}
 				</div>
 

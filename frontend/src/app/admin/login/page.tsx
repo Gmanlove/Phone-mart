@@ -1,6 +1,7 @@
 "use client"
 import { useState } from "react"
 import { Eye, EyeOff, Lock, Mail, Shield, AlertCircle, Loader2 } from "lucide-react"
+import { useRouter } from "next/navigation"
 
 export default function AdminLoginPage() {
   const [form, setForm] = useState({ email: "", password: "" })
@@ -9,6 +10,7 @@ export default function AdminLoginPage() {
   const [showPassword, setShowPassword] = useState(false)
   const [errors, setErrors] = useState({ email: "", password: "" })
   const [loginSuccess, setLoginSuccess] = useState(false)
+  const router = useRouter()
 
   const validateForm = () => {
     const newErrors = { email: "", password: "" }
@@ -69,12 +71,7 @@ export default function AdminLoginPage() {
         sessionStorage.setItem("isAdmin", "true")
         setLoginSuccess(true)
         setMessage("Login successful! Redirecting to admin dashboard...")
-        
-        // Simulate redirect after success message
-        setTimeout(() => {
-          // In a real app, this would redirect to /admin/upload-product
-          console.log("Redirecting to admin dashboard...")
-        }, 2000)
+        router.push("/admin/upload-product")
       } else {
         setMessage(data.error || "Invalid credentials or insufficient privileges")
       }

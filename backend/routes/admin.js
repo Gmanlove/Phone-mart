@@ -2,10 +2,12 @@ const express = require('express');
 const router = express.Router();
 const Product = require('../models/productModel');
 const User = require('../models/userModel');
+const cloudinary = require('cloudinary').v2;
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
 const multer = require('multer');
 const path = require('path');
 
-// Multer config for image upload
+// Multer config for image upload (local disk, not used for Cloudinary)
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, path.join(__dirname, '../uploads'));
@@ -15,6 +17,29 @@ const storage = multer.diskStorage({
   }
 });
 const upload = multer({ storage });
+
+// Cloudinary config
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
+// Debug logs for Cloudinary config
+console.log('Cloudinary config:', {
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME || "dn7zah8um",
+  api_key: process.env.CLOUDINARY_API_KEY || '626199732678851',
+  api_secret: process.env.CLOUDINARY_API_SECRET || "R-YWdGVQlebAhRHmXtUaw5E5U_o" ? '***' : undefined,
+});
+
+const cloudinaryStorage = new CloudinaryStorage({
+  cloudinary,
+  params: {
+    folder: 'phone-mart-products',
+    allowed_formats: ['jpg', 'jpeg', 'png'],
+  },
+});
+const uploadCloud = multer({ storage: cloudinaryStorage });
 
 // Middleware to check admin
 const isAdmin = async (req, res, next) => {
@@ -50,11 +75,10 @@ router.post('/product', isAdmin, async (req, res) => {
   }
 });
 
-// Image upload route (admin only)
-router.post('/upload-image', isAdmin, upload.single('image'), (req, res) => {
+// Image upload route (admin only) - Cloudinary
+router.post('/upload-image', isAdmin, uploadCloud.single('image'), (req, res) => {
   if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
-  const url = `/uploads/${req.file.filename}`;
-  res.json({ url });
+  res.json({ url: req.file.path }); // Cloudinary URL
 });
 
 module.exports = router;
