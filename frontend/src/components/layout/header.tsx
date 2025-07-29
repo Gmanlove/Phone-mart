@@ -241,7 +241,8 @@ export default function Header() {
                     size="sm" 
                     className="rounded-full bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 font-medium transition-all duration-200 hover:shadow-lg"
                   >
-                    Search
+
+        Search
                   </Button>
                 </div>
               </div>
