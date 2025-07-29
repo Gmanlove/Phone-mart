@@ -179,7 +179,10 @@ const CartSummary = ({ items }: any) => {
         </div>
       </div>
 
-      <button className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-4 px-6 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 mb-3">
+      <button
+        className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-4 px-6 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 mb-3"
+        onClick={() => window.location.href = '/checkout'}
+      >
         Proceed to Checkout
       </button>
       
@@ -216,7 +219,7 @@ export default function CartPage() {
                 Start Shopping
               </button>
               
-              <div className="flex items-center gap-4 text-sm text-gray-500">
+              <div className="flex items-center gap-2 my-4">
                 <div className="flex-1 h-px bg-gray-200"></div>
                 <span>or</span>
                 <div className="flex-1 h-px bg-gray-200"></div>
