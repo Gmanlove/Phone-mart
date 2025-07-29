@@ -1,92 +1,7 @@
 "use client"
 
-import { useState } from "react"
-import { Package, Truck, CheckCircle, Clock, Search, Filter, Eye, Download, Star, MessageCircle, RefreshCw, MapPin, Calendar, CreditCard } from "lucide-react"
 
-const orders = [
-  {
-    id: "PH-001234",
-    date: "2024-01-20",
-    status: "delivered",
-    total: 1750000,
-    items: [
-      {
-        name: "iPhone 15 Pro Max",
-        image: "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=100&h=100&fit=crop",
-        quantity: 1,
-        price: 1750000,
-        specs: "256GB, Deep Purple"
-      }
-    ],
-    shippingAddress: "15 Bodija Market Road, Ibadan, Oyo State",
-    paymentMethod: "Bank Transfer",
-    trackingNumber: "DHL123456789",
-    estimatedDelivery: "2024-01-22",
-    actualDelivery: "2024-01-21"
-  },
-  {
-    id: "PH-001235",
-    date: "2024-01-18",
-    status: "shipped",
-    total: 2350000,
-    items: [
-      {
-        name: "Galaxy S24 Ultra",
-        image: "https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?w=100&h=100&fit=crop",
-        quantity: 1,
-        price: 1850000,
-        specs: "512GB, Titanium Black"
-      },
-      {
-        name: "Galaxy Buds2 Pro",
-        image: "https://images.unsplash.com/photo-1590658165737-15a047b7de72?w=100&h=100&fit=crop",
-        quantity: 1,
-        price: 200000,
-        specs: "Wireless, ANC"
-      }
-    ],
-    shippingAddress: "42 Ring Road, Challenge, Ibadan, Oyo State",
-    paymentMethod: "Card Payment",
-    trackingNumber: "FDX987654321",
-    estimatedDelivery: "2024-01-23"
-  },
-  {
-    id: "PH-001236",
-    date: "2024-01-15",
-    status: "processing",
-    total: 1500000,
-    items: [
-      {
-        name: "Pixel 8 Pro",
-        image: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=100&h=100&fit=crop",
-        quantity: 1,
-        price: 1500000,
-        specs: "128GB, Obsidian"
-      }
-    ],
-    shippingAddress: "8 University Road, Sango, Ibadan, Oyo State",
-    paymentMethod: "Bank Transfer",
-    estimatedDelivery: "2024-01-25"
-  },
-  {
-    id: "PH-001237",
-    date: "2024-01-10",
-    status: "cancelled",
-    total: 350000,
-    items: [
-      {
-        name: "AirPods Pro (2nd Gen)",
-        image: "https://images.unsplash.com/photo-1588423771073-b8903fbb85b5?w=100&h=100&fit=crop",
-        quantity: 1,
-        price: 350000,
-        specs: "Wireless, Noise Cancelling"
-      }
-    ],
-    shippingAddress: "25 Mokola Hill, Ibadan, Oyo State",
-    paymentMethod: "Card Payment",
-    cancelReason: "Customer requested cancellation"
-  }
-]
+import { useOrders } from "@/contexts/order-context"
 
 const OrderCard = ({ order }: { order: any }) => {
   const [isExpanded, setIsExpanded] = useState(false)
@@ -298,7 +213,8 @@ const OrderCard = ({ order }: { order: any }) => {
   )
 }
 
-export default function OrdersPage() {
+
+  const { orders } = useOrders()
   const [searchTerm, setSearchTerm] = useState("")
   const [statusFilter, setStatusFilter] = useState("all")
   const [dateFilter, setDateFilter] = useState("all")
@@ -320,7 +236,7 @@ export default function OrdersPage() {
 
   const filteredOrders = orders.filter(order => {
     const matchesSearch = order.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         order.items.some((item: any) => item.name.toLowerCase().includes(searchTerm.toLowerCase()))
+      order.items.some((item: any) => item.name.toLowerCase().includes(searchTerm.toLowerCase()))
     const matchesStatus = statusFilter === "all" || order.status === statusFilter
     return matchesSearch && matchesStatus
   })
