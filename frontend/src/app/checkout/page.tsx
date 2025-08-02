@@ -42,7 +42,7 @@ export default function CheckoutPage() {
   const [billingInfo, setBillingInfo] = useState<BillingInfo>({
     firstName: "",
     lastName: "",
-    email: user?.email || "",
+    email: "",
     phone: ""
   })
   
@@ -54,7 +54,27 @@ export default function CheckoutPage() {
     deliveryNote: ""
   })
 
-  // Authentication check
+  const [isProcessing, setIsProcessing] = useState(false)
+  const [paymentMethod, setPaymentMethod] = useState("card")
+
+  // Update email when user is available - This useEffect must be called before conditional returns
+  useEffect(() => {
+    if (user?.email && billingInfo.email !== user.email) {
+      setBillingInfo(prev => ({ ...prev, email: user.email }))
+    }
+  }, [user?.email, billingInfo.email])
+
+  // Load Paystack script
+  useEffect(() => {
+    if (typeof window !== 'undefined' && !window.PaystackPop) {
+      const script = document.createElement('script')
+      script.src = 'https://js.paystack.co/v1/inline.js'
+      script.async = true
+      document.body.appendChild(script)
+    }
+  }, [])
+
+  // Now handle conditional rendering after all hooks are called
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center">
@@ -116,58 +136,107 @@ export default function CheckoutPage() {
     )
   }
 
-  // Update email when user is available
-  useEffect(() => {
-    if (user?.email && billingInfo.email !== user.email) {
-      setBillingInfo(prev => ({ ...prev, email: user.email }))
-    }
-  }, [user?.email, billingInfo.email])
+  if (items.length === 0) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-8 px-4 sm:py-16">
+        <div className="container mx-auto max-w-md">
+          <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-8 sm:p-12 text-center">
+            <div className="mb-8">
+              <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                <Package className="h-12 w-12 text-gray-400" />
+              </div>
+              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-4">
+                Your cart is empty
+              </h1>
+              <p className="text-gray-600 text-base sm:text-lg leading-relaxed">
+                Add some items to your cart before proceeding to checkout.
+              </p>
+            </div>
+            
+            <div className="space-y-4">
+              <Link href="/products">
+                <Button className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-4 px-6 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
+                  Continue Shopping
+                </Button>
+              </Link>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
 
-  const [paying, setPaying] = useState(false)
-  const [success, setSuccess] = useState(false)
-  const [error, setError] = useState("")
-
-  // Calculate totals
-  const subtotal = items.reduce((sum, item) => sum + (item.price * item.quantity), 0)
-  const shipping = subtotal > 100000 ? 0 : 5000 // Free shipping over ₦100,000
-  const tax = subtotal * 0.075 // 7.5% VAT
-  const finalTotal = subtotal + shipping + tax
-
-  const nigerianStates = [
-    "Abia", "Adamawa", "Akwa Ibom", "Anambra", "Bauchi", "Bayelsa", "Benue", "Borno", "Cross River", 
-    "Delta", "Ebonyi", "Edo", "Ekiti", "Enugu", "FCT", "Gombe", "Imo", "Jigawa", "Kaduna", "Kano", 
-    "Katsina", "Kebbi", "Kogi", "Kwara", "Lagos", "Nasarawa", "Niger", "Ogun", "Ondo", "Osun", 
-    "Oyo", "Plateau", "Rivers", "Sokoto", "Taraba", "Yobe", "Zamfara"
-  ]
-
-  // Redirect if cart is empty
-  useEffect(() => {
-    if (items.length === 0 && !success) {
-      window.location.href = '/cart'
-    }
-  }, [items.length, success])
-
-  const handleBillingChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleBillingChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setBillingInfo({ ...billingInfo, [e.target.name]: e.target.value })
   }
 
-  const handleDeliveryChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+  const handleDeliveryChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     setDeliveryInfo({ ...deliveryInfo, [e.target.name]: e.target.value })
   }
 
-  const validateBillingInfo = () => {
-    return billingInfo.firstName && billingInfo.lastName && billingInfo.email && billingInfo.phone
+  const handlePayment = () => {
+    if (!window.PaystackPop) {
+      alert("Payment system is loading. Please try again in a moment.")
+      return
+    }
+
+    setIsProcessing(true)
+
+    const handler = window.PaystackPop.setup({
+      key: PAYSTACK_PUBLIC_KEY,
+      email: billingInfo.email,
+      amount: total * 100, // Paystack expects amount in kobo
+      currency: 'NGN',
+      ref: `ORDER_${Date.now()}`,
+      metadata: {
+        customer_name: `${billingInfo.firstName} ${billingInfo.lastName}`,
+        phone: billingInfo.phone,
+      },
+      callback: (response: any) => {
+        console.log("Payment successful:", response)
+        
+        // Create order
+        const order = {
+          id: response.reference,
+          items,
+          total,
+          billingInfo,
+          deliveryInfo,
+          paymentMethod,
+          status: "confirmed",
+          date: new Date().toISOString(),
+        }
+        
+        placeOrder(order)
+        clearCart()
+        setCurrentStep(4) // Success step
+        setIsProcessing(false)
+      },
+      onClose: () => {
+        setIsProcessing(false)
+        console.log("Payment cancelled")
+      },
+    })
+
+    handler.openIframe()
   }
 
-  const validateDeliveryInfo = () => {
-    return deliveryInfo.address && deliveryInfo.city && deliveryInfo.state
+  const validateStep = (step: number) => {
+    switch (step) {
+      case 1:
+        return billingInfo.firstName && billingInfo.lastName && billingInfo.email && billingInfo.phone
+      case 2:
+        return deliveryInfo.address && deliveryInfo.city && deliveryInfo.state
+      case 3:
+        return paymentMethod
+      default:
+        return false
+    }
   }
 
   const nextStep = () => {
-    if (currentStep === 1 && validateBillingInfo()) {
-      setCurrentStep(2)
-    } else if (currentStep === 2 && validateDeliveryInfo()) {
-      setCurrentStep(3)
+    if (currentStep < 4 && validateStep(currentStep)) {
+      setCurrentStep(currentStep + 1)
     }
   }
 
@@ -177,183 +246,61 @@ export default function CheckoutPage() {
     }
   }
 
-  // Paystack payment handler
-  const handlePayment = (e: React.FormEvent) => {
-    e.preventDefault()
-    setPaying(true)
-    setError("")
-    
-    // Final validation
-    if (!validateBillingInfo() || !validateDeliveryInfo()) {
-      setError("Please complete all required fields")
-      setPaying(false)
-      return
-    }
-
-    // Check if Paystack is already loaded
-    if (window.PaystackPop) {
-      payWithPaystack()
-      return
-    }
-
-    // Dynamically load Paystack script
-    const script = document.createElement("script")
-    script.src = "https://js.paystack.co/v1/inline.js"
-    script.async = true
-    
-    script.onload = () => {
-      if (window.PaystackPop) {
-        payWithPaystack()
-      } else {
-        setError("Failed to load payment processor. Please try again.")
-        setPaying(false)
-      }
-    }
-    
-    script.onerror = () => {
-      setError("Failed to load payment processor. Please check your connection.")
-      setPaying(false)
-    }
-    
-    document.body.appendChild(script)
-  }
-
-  // Paystack payment logic
-  const payWithPaystack = () => {
-    if (!window.PaystackPop) {
-      setError("Paystack library not loaded.")
-      setPaying(false)
-      return
-    }
-
-    const handler = window.PaystackPop.setup({
-      key: PAYSTACK_PUBLIC_KEY,
-      email: billingInfo.email,
-      amount: Math.round(finalTotal * 100), // Paystack expects amount in kobo
-      currency: "NGN",
-      ref: "PHMART-" + Date.now() + "-" + Math.random().toString(36).substr(2, 9),
-      metadata: {
-        custom_fields: [
-          {
-            display_name: "Customer Name",
-            variable_name: "customer_name",
-            value: `${billingInfo.firstName} ${billingInfo.lastName}`
-          },
-          {
-            display_name: "Phone Number",
-            variable_name: "phone_number",
-            value: billingInfo.phone
-          },
-          {
-            display_name: "Delivery Address",
-            variable_name: "delivery_address",
-            value: `${deliveryInfo.address}, ${deliveryInfo.city}, ${deliveryInfo.state}`
-          }
-        ]
-      },
-      callback: function(response: any) {
-        // Payment successful
-        const orderData = {
-          ...response,
-          billingInfo,
-          deliveryInfo,
-          items,
-          subtotal,
-          shipping,
-          tax,
-          total: finalTotal
-        }
-        
-        placeOrder(items, finalTotal)
-        clearCart()
-        setSuccess(true)
-        setPaying(false)
-        
-        // You can send order data to your backend here
-        console.log("Order completed:", orderData)
-      },
-      onClose: function() {
-        setPaying(false)
-      }
-    })
-    
-    handler.openIframe()
-  }
-
-  if (success) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-green-50 to-green-100 py-8 px-4">
-        <div className="max-w-2xl mx-auto">
-          <Card className="shadow-2xl border-0">
-            <CardContent className="p-8 text-center">
-              <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                <CheckCircle className="h-12 w-12 text-green-600" />
-              </div>
-              <h1 className="text-3xl font-bold text-gray-900 mb-4">Payment Successful!</h1>
-              <p className="text-gray-600 mb-6">
-                Thank you for your order. We'll send you a confirmation email shortly.
-              </p>
-              <div className="bg-gray-50 rounded-xl p-4 mb-6">
-                <p className="text-sm text-gray-600">Order Total: <span className="font-bold text-gray-900">₦{finalTotal.toLocaleString()}</span></p>
-              </div>
-              <Button 
-                onClick={() => window.location.href = '/orders'}
-                className="bg-blue-600 hover:bg-blue-700"
-              >
-                View My Orders
-              </Button>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-    )
-  }
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-4 sm:py-8">
-      <div className="container mx-auto px-4 max-w-6xl">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-8 px-4 sm:py-16">
+      <div className="container mx-auto max-w-6xl">
+        
         {/* Header */}
-        <div className="text-center mb-8">
+        <div className="text-center mb-8 lg:mb-12">
+          <div className="flex items-center justify-center mb-6">
+            <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white p-3 rounded-2xl shadow-lg">
+              <Shield className="h-8 w-8" />
+            </div>
+          </div>
           <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-2">Checkout</h1>
-          <p className="text-gray-600">Complete your order in just a few steps</p>
+          <p className="text-gray-600 text-lg">Complete your order securely</p>
         </div>
 
         {/* Progress Steps */}
-        <div className="flex justify-center mb-8">
-          <div className="flex items-center space-x-4">
-            {[1, 2, 3].map((step) => (
-              <div key={step} className="flex items-center">
-                <div className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold ${
-                  currentStep >= step 
-                    ? 'bg-blue-600 text-white' 
-                    : 'bg-gray-200 text-gray-600'
-                }`}>
-                  {step}
+        <div className="mb-8 lg:mb-12">
+          <div className="flex items-center justify-center space-x-4 sm:space-x-8">
+            {[
+              { step: 1, icon: User, label: "Billing" },
+              { step: 2, icon: MapPin, label: "Delivery" },
+              { step: 3, icon: CreditCard, label: "Payment" },
+              { step: 4, icon: CheckCircle, label: "Complete" }
+            ].map(({ step, icon: Icon, label }) => (
+              <div key={step} className="flex flex-col items-center">
+                <div className={`
+                  rounded-full p-3 sm:p-4 border-2 transition-all duration-200
+                  ${currentStep >= step 
+                    ? 'bg-blue-600 border-blue-600 text-white' 
+                    : 'bg-white border-gray-300 text-gray-400'
+                  }
+                `}>
+                  <Icon className="h-5 w-5 sm:h-6 sm:w-6" />
                 </div>
-                {step < 3 && (
-                  <div className={`w-12 h-1 mx-2 ${
-                    currentStep > step ? 'bg-blue-600' : 'bg-gray-200'
-                  }`} />
-                )}
+                <span className={`
+                  mt-2 text-xs sm:text-sm font-medium
+                  ${currentStep >= step ? 'text-blue-600' : 'text-gray-400'}
+                `}>
+                  {label}
+                </span>
               </div>
             ))}
           </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          
           {/* Main Content */}
           <div className="lg:col-span-2">
-            <Card className="shadow-lg border-0">
+            <Card className="shadow-xl border-0 rounded-2xl overflow-hidden">
               <CardContent className="p-6 sm:p-8">
-                {error && (
-                  <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
-                    <p className="text-red-700 text-sm font-medium">{error}</p>
-                  </div>
-                )}
-
+                
                 {/* Step 1: Billing Information */}
                 {currentStep === 1 && (
-                  <div>
+                  <div className="space-y-6">
                     <div className="flex items-center gap-3 mb-6">
                       <User className="h-6 w-6 text-blue-600" />
                       <h2 className="text-2xl font-bold text-gray-900">Billing Information</h2>
@@ -369,7 +316,7 @@ export default function CheckoutPage() {
                           name="firstName"
                           value={billingInfo.firstName}
                           onChange={handleBillingChange}
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                          className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                           placeholder="Enter your first name"
                           required
                         />
@@ -384,211 +331,292 @@ export default function CheckoutPage() {
                           name="lastName"
                           value={billingInfo.lastName}
                           onChange={handleBillingChange}
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                          className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                           placeholder="Enter your last name"
-                          required
-                        />
-                      </div>
-                      
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                          Email Address *
-                        </label>
-                        <input
-                          type="email"
-                          name="email"
-                          value={billingInfo.email}
-                          onChange={handleBillingChange}
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                          placeholder="your.email@example.com"
-                          required
-                        />
-                      </div>
-                      
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                          Phone Number *
-                        </label>
-                        <input
-                          type="tel"
-                          name="phone"
-                          value={billingInfo.phone}
-                          onChange={handleBillingChange}
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                          placeholder="+234 800 000 0000"
                           required
                         />
                       </div>
                     </div>
                     
-                    <div className="flex justify-end mt-8">
-                      <Button
-                        onClick={nextStep}
-                        disabled={!validateBillingInfo()}
-                        className="px-8 py-3 bg-blue-600 hover:bg-blue-700"
-                      >
-                        Continue to Delivery
-                      </Button>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Email Address *
+                      </label>
+                      <div className="relative">
+                        <input
+                          type="email"
+                          name="email"
+                          value={billingInfo.email}
+                          onChange={handleBillingChange}
+                          className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                          placeholder="Enter your email address"
+                          required
+                        />
+                        <Mail className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                      </div>
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Phone Number *
+                      </label>
+                      <div className="relative">
+                        <input
+                          type="tel"
+                          name="phone"
+                          value={billingInfo.phone}
+                          onChange={handleBillingChange}
+                          className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                          placeholder="Enter your phone number"
+                          required
+                        />
+                        <Phone className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                      </div>
                     </div>
                   </div>
                 )}
 
                 {/* Step 2: Delivery Information */}
                 {currentStep === 2 && (
-                  <div>
+                  <div className="space-y-6">
                     <div className="flex items-center gap-3 mb-6">
                       <MapPin className="h-6 w-6 text-blue-600" />
                       <h2 className="text-2xl font-bold text-gray-900">Delivery Information</h2>
                     </div>
                     
-                    <div className="space-y-4">
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                          Street Address *
-                        </label>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Address *
+                      </label>
+                      <div className="relative">
                         <input
                           type="text"
                           name="address"
                           value={deliveryInfo.address}
                           onChange={handleDeliveryChange}
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                          className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                           placeholder="Enter your full address"
+                          required
+                        />
+                        <Home className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                      </div>
+                    </div>
+                    
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          City *
+                        </label>
+                        <input
+                          type="text"
+                          name="city"
+                          value={deliveryInfo.city}
+                          onChange={handleDeliveryChange}
+                          className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                          placeholder="Enter your city"
                           required
                         />
                       </div>
                       
-                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
-                            City *
-                          </label>
-                          <input
-                            type="text"
-                            name="city"
-                            value={deliveryInfo.city}
-                            onChange={handleDeliveryChange}
-                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                            placeholder="City"
-                            required
-                          />
-                        </div>
-                        
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
-                            State *
-                          </label>
-                          <select
-                            name="state"
-                            value={deliveryInfo.state}
-                            onChange={handleDeliveryChange}
-                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                            required
-                          >
-                            {nigerianStates.map(state => (
-                              <option key={state} value={state}>{state}</option>
-                            ))}
-                          </select>
-                        </div>
-                        
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
-                            ZIP Code
-                          </label>
-                          <input
-                            type="text"
-                            name="zipCode"
-                            value={deliveryInfo.zipCode}
-                            onChange={handleDeliveryChange}
-                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                            placeholder="ZIP"
-                          />
-                        </div>
-                      </div>
-                      
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">
-                          Delivery Note (Optional)
+                          State *
                         </label>
-                        <textarea
-                          name="deliveryNote"
-                          value={deliveryInfo.deliveryNote}
+                        <select
+                          name="state"
+                          value={deliveryInfo.state}
                           onChange={handleDeliveryChange}
-                          rows={3}
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none"
-                          placeholder="Special delivery instructions..."
-                        />
+                          className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                          required
+                        >
+                          <option value="Lagos">Lagos</option>
+                          <option value="Abuja">Abuja</option>
+                          <option value="Kano">Kano</option>
+                          <option value="Ibadan">Ibadan</option>
+                          <option value="Port Harcourt">Port Harcourt</option>
+                          <option value="Akwa Ibom">Akwa Ibom</option>
+                          <option value="Other">Other</option>
+                        </select>
                       </div>
                     </div>
                     
-                    <div className="flex justify-between mt-8">
-                      <Button
-                        onClick={prevStep}
-                        variant="outline"
-                        className="px-8 py-3"
-                      >
-                        Back to Billing
-                      </Button>
-                      <Button
-                        onClick={nextStep}
-                        disabled={!validateDeliveryInfo()}
-                        className="px-8 py-3 bg-blue-600 hover:bg-blue-700"
-                      >
-                        Review Order
-                      </Button>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        ZIP Code
+                      </label>
+                      <input
+                        type="text"
+                        name="zipCode"
+                        value={deliveryInfo.zipCode}
+                        onChange={handleDeliveryChange}
+                        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                        placeholder="Enter ZIP code (optional)"
+                      />
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Delivery Note
+                      </label>
+                      <textarea
+                        name="deliveryNote"
+                        value={deliveryInfo.deliveryNote}
+                        onChange={handleDeliveryChange}
+                        rows={4}
+                        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 resize-none"
+                        placeholder="Special delivery instructions (optional)"
+                      />
                     </div>
                   </div>
                 )}
 
-                {/* Step 3: Review & Payment */}
+                {/* Step 3: Payment Method */}
                 {currentStep === 3 && (
-                  <div>
+                  <div className="space-y-6">
                     <div className="flex items-center gap-3 mb-6">
                       <CreditCard className="h-6 w-6 text-blue-600" />
-                      <h2 className="text-2xl font-bold text-gray-900">Review & Payment</h2>
+                      <h2 className="text-2xl font-bold text-gray-900">Payment Method</h2>
                     </div>
                     
-                    {/* Review Information */}
-                    <div className="space-y-6 mb-8">
-                      <div className="bg-gray-50 rounded-lg p-4">
-                        <h3 className="font-semibold text-gray-900 mb-2">Billing Information</h3>
-                        <p className="text-sm text-gray-600">
-                          {billingInfo.firstName} {billingInfo.lastName}<br/>
-                          {billingInfo.email}<br/>
-                          {billingInfo.phone}
+                    <div className="space-y-4">
+                      <div 
+                        className={`p-4 border-2 rounded-xl cursor-pointer transition-all duration-200 ${
+                          paymentMethod === 'card' 
+                            ? 'border-blue-500 bg-blue-50' 
+                            : 'border-gray-300 hover:border-gray-400'
+                        }`}
+                        onClick={() => setPaymentMethod('card')}
+                      >
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            <CreditCard className="h-6 w-6 text-blue-600" />
+                            <div>
+                              <h3 className="font-semibold text-gray-900">Credit/Debit Card</h3>
+                              <p className="text-sm text-gray-600">Pay securely with your card</p>
+                            </div>
+                          </div>
+                          <div className={`w-5 h-5 rounded-full border-2 ${
+                            paymentMethod === 'card' 
+                              ? 'border-blue-500 bg-blue-500' 
+                              : 'border-gray-300'
+                          }`}>
+                            {paymentMethod === 'card' && (
+                              <div className="w-full h-full bg-white rounded-full scale-50"></div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div 
+                        className={`p-4 border-2 rounded-xl cursor-pointer transition-all duration-200 ${
+                          paymentMethod === 'transfer' 
+                            ? 'border-blue-500 bg-blue-50' 
+                            : 'border-gray-300 hover:border-gray-400'
+                        }`}
+                        onClick={() => setPaymentMethod('transfer')}
+                      >
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            <CreditCard className="h-6 w-6 text-green-600" />
+                            <div>
+                              <h3 className="font-semibold text-gray-900">Bank Transfer</h3>
+                              <p className="text-sm text-gray-600">Direct bank transfer</p>
+                            </div>
+                          </div>
+                          <div className={`w-5 h-5 rounded-full border-2 ${
+                            paymentMethod === 'transfer' 
+                              ? 'border-blue-500 bg-blue-500' 
+                              : 'border-gray-300'
+                          }`}>
+                            {paymentMethod === 'transfer' && (
+                              <div className="w-full h-full bg-white rounded-full scale-50"></div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Step 4: Order Complete */}
+                {currentStep === 4 && (
+                  <div className="text-center space-y-6">
+                    <div className="flex items-center justify-center mb-6">
+                      <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center">
+                        <CheckCircle className="h-12 w-12 text-green-600" />
+                      </div>
+                    </div>
+                    
+                    <div>
+                      <h2 className="text-3xl font-bold text-gray-900 mb-4">Order Complete!</h2>
+                      <p className="text-lg text-gray-600 mb-6">
+                        Thank you for your purchase. Your order has been successfully placed.
+                      </p>
+                      
+                      <div className="bg-green-50 border border-green-200 rounded-xl p-6 mb-6">
+                        <p className="text-green-800 font-medium">
+                          Order confirmation has been sent to {billingInfo.email}
+                        </p>
+                        <p className="text-green-600 text-sm mt-1">
+                          You'll receive tracking information once your order ships.
                         </p>
                       </div>
                       
-                      <div className="bg-gray-50 rounded-lg p-4">
-                        <h3 className="font-semibold text-gray-900 mb-2">Delivery Address</h3>
-                        <p className="text-sm text-gray-600">
-                          {deliveryInfo.address}<br/>
-                          {deliveryInfo.city}, {deliveryInfo.state} {deliveryInfo.zipCode}
-                          {deliveryInfo.deliveryNote && (
-                            <>
-                              <br/>
-                              <span className="italic">Note: {deliveryInfo.deliveryNote}</span>
-                            </>
-                          )}
-                        </p>
+                      <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                        <Link href="/orders">
+                          <Button className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3">
+                            View Orders
+                          </Button>
+                        </Link>
+                        <Link href="/products">
+                          <Button variant="outline" className="px-8 py-3">
+                            Continue Shopping
+                          </Button>
+                        </Link>
                       </div>
                     </div>
+                  </div>
+                )}
+
+                {/* Navigation Buttons */}
+                {currentStep < 4 && (
+                  <div className="flex justify-between pt-8 border-t border-gray-200 mt-8">
+                    <Button
+                      variant="outline"
+                      onClick={prevStep}
+                      disabled={currentStep === 1}
+                      className="px-8 py-3"
+                    >
+                      Previous
+                    </Button>
                     
-                    <div className="flex justify-between">
-                      <Button
-                        onClick={prevStep}
-                        variant="outline"
-                        className="px-8 py-3"
-                      >
-                        Back to Delivery
-                      </Button>
+                    {currentStep === 3 ? (
                       <Button
                         onClick={handlePayment}
-                        disabled={paying}
-                        className="px-8 py-3 bg-green-600 hover:bg-green-700"
+                        disabled={!validateStep(currentStep) || isProcessing}
+                        className="bg-green-600 hover:bg-green-700 text-white px-8 py-3"
                       >
-                        {paying ? "Processing..." : `Pay ₦${finalTotal.toLocaleString()}`}
+                        {isProcessing ? (
+                          <>
+                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                            Processing...
+                          </>
+                        ) : (
+                          <>
+                            Complete Order
+                            <Shield className="ml-2 h-4 w-4" />
+                          </>
+                        )}
                       </Button>
-                    </div>
+                    ) : (
+                      <Button
+                        onClick={nextStep}
+                        disabled={!validateStep(currentStep)}
+                        className="px-8 py-3"
+                      >
+                        Next
+                      </Button>
+                    )}
                   </div>
                 )}
               </CardContent>
@@ -597,67 +625,59 @@ export default function CheckoutPage() {
 
           {/* Order Summary Sidebar */}
           <div className="lg:col-span-1">
-            <Card className="shadow-lg border-0 sticky top-6">
+            <Card className="shadow-xl border-0 rounded-2xl overflow-hidden sticky top-4">
               <CardContent className="p-6">
                 <div className="flex items-center gap-3 mb-6">
                   <Package className="h-6 w-6 text-blue-600" />
                   <h3 className="text-xl font-bold text-gray-900">Order Summary</h3>
                 </div>
                 
-                {/* Items */}
-                <div className="space-y-4 mb-6 max-h-60 overflow-y-auto">
+                <div className="space-y-4 mb-6">
                   {items.map((item) => (
                     <div key={item.id} className="flex items-center gap-3">
-                      <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
-                        <span className="text-xs font-medium text-gray-600">
-                          {item.quantity}x
-                        </span>
+                      <div className="w-12 h-12 bg-gray-100 rounded-lg flex-shrink-0">
+                        {item.image && (
+                          <img 
+                            src={item.image} 
+                            alt={item.name}
+                            className="w-full h-full object-cover rounded-lg"
+                          />
+                        )}
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-medium text-gray-900 truncate">
                           {item.name}
                         </p>
                         <p className="text-sm text-gray-600">
-                          ₦{item.price.toLocaleString()} each
+                          Qty: {item.quantity} × ₦{item.price.toLocaleString()}
                         </p>
                       </div>
-                      <p className="text-sm font-semibold text-gray-900">
-                        ₦{(item.price * item.quantity).toLocaleString()}
-                      </p>
                     </div>
                   ))}
                 </div>
                 
-                {/* Totals */}
                 <div className="border-t border-gray-200 pt-4 space-y-2">
-                  <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">Subtotal</span>
-                    <span className="text-gray-900">₦{subtotal.toLocaleString()}</span>
+                  <div className="flex justify-between text-sm text-gray-600">
+                    <span>Subtotal</span>
+                    <span>₦{total.toLocaleString()}</span>
                   </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">Shipping</span>
-                    <span className="text-gray-900">
-                      {shipping === 0 ? 'Free' : `₦${shipping.toLocaleString()}`}
-                    </span>
+                  <div className="flex justify-between text-sm text-gray-600">
+                    <span>Delivery</span>
+                    <span className="text-green-600 font-medium">Free</span>
                   </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">VAT (7.5%)</span>
-                    <span className="text-gray-900">₦{tax.toLocaleString()}</span>
-                  </div>
-                  <div className="flex justify-between text-lg font-bold border-t border-gray-200 pt-2">
-                    <span className="text-gray-900">Total</span>
-                    <span className="text-gray-900">₦{finalTotal.toLocaleString()}</span>
+                  <div className="flex justify-between text-lg font-bold text-gray-900 pt-2 border-t border-gray-200">
+                    <span>Total</span>
+                    <span>₦{total.toLocaleString()}</span>
                   </div>
                 </div>
                 
-                {/* Security Info */}
-                <div className="mt-6 p-4 bg-green-50 rounded-lg">
-                  <div className="flex items-center gap-2 text-sm text-green-700">
+                <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-xl">
+                  <div className="flex items-center gap-2 text-sm text-blue-700">
                     <Shield className="h-4 w-4" />
-                    <span className="font-medium">Secure Payment</span>
+                    <span className="font-medium">Secure SSL Encrypted Payment</span>
                   </div>
-                  <p className="text-xs text-green-600 mt-1">
-                    Your payment information is encrypted and secure
+                  <p className="text-xs text-blue-600 mt-1">
+                    Your payment information is protected
                   </p>
                 </div>
               </CardContent>
