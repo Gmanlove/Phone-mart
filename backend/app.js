@@ -29,7 +29,55 @@ app.get('/', (req, res) => {
 app.get('/api/products', async (req, res) => {
   try {
     const products = await Product.find()
+    console.log('Products found:', products.length)
+    products.forEach(product => {
+      console.log(`Product ID: ${product._id}, Name: ${product.name}`)
+    })
     res.json(products)
+  } catch (err) {
+    console.error('Error fetching products:', err)
+    res.status(500).json({ error: 'Failed to fetch products' })
+  }
+})
+
+// Get single product by ID
+app.get('/api/products/:id', async (req, res) => {
+  try {
+    const { id } = req.params
+    console.log(`Attempting to fetch product with ID: ${id}`)
+    
+    // Validate MongoDB ObjectId format
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      console.log(`Invalid ObjectId format: ${id}`)
+      return res.status(400).json({ error: 'Invalid product ID format' })
+    }
+    
+    const product = await Product.findById(id)
+    console.log(`Product found:`, product ? `${product.name}` : 'null')
+    
+    if (!product) {
+      console.log(`Product with ID ${id} not found in database`)
+      return res.status(404).json({ error: 'Product not found' })
+    }
+    
+    res.json(product)
+  } catch (err) {
+    console.error('Error fetching product:', err)
+    res.status(500).json({ error: 'Failed to fetch product' })
+  }
+})
+
+// Debug route to list all product IDs
+app.get('/api/debug/products', async (req, res) => {
+  try {
+    const products = await Product.find({}, '_id name')
+    res.json({
+      count: products.length,
+      products: products.map(p => ({
+        id: p._id.toString(),
+        name: p.name
+      }))
+    })
   } catch (err) {
     res.status(500).json({ error: 'Failed to fetch products' })
   }

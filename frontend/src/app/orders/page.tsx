@@ -1,12 +1,9 @@
 "use client"
 
-<<<<<<< HEAD
-=======
 import { useState } from "react"
 import { Package, Truck, CheckCircle, Clock, Search, Filter, Eye, Download, Star, MessageCircle, RefreshCw, MapPin, Calendar, CreditCard } from "lucide-react"
 import { CldImage } from "next-cloudinary";
 import { extractCloudinaryPublicId } from "@/lib/utils";
->>>>>>> 02f93b0cb1dfd9fea933d00a5c5335a5bdba8927
 
 import { useOrders } from "@/contexts/order-context"
 
@@ -359,23 +356,7 @@ const OrderCard = ({ order }: { order: any }) => {
             filteredOrders.map((order) => (
               <OrderCard key={order.id} order={order} />
             ))
-          ) : (
-            <div className="bg-white rounded-2xl p-8 sm:p-12 text-center border border-gray-100 shadow-sm">
-              <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                <Package className="w-12 h-12 text-gray-400" />
-              </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-2">No orders found</h3>
-              <p className="text-gray-600 mb-6">
-                {searchTerm || statusFilter !== "all" 
-                  ? "Try adjusting your search or filter criteria"
-                  : "You haven't placed any orders yet. Start shopping to see your orders here!"
-                }
-              </p>
-              <button className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200">
-                Browse Products
-              </button>
-            </div>
-          )}
+          ) : null}
         </div>
       </div>
     </div>

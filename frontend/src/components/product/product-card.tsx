@@ -2,94 +2,16 @@
 
 import { useState } from "react"
 import { Star, Heart, ShoppingCart, Eye, Zap, Shield, Truck } from "lucide-react"
-
-<<<<<<< HEAD
-// Mock components for demonstration
-const Button = ({ variant = "default", size = "default", className = "", children, disabled = false, ...props }) => {
-  const baseClasses = "inline-flex items-center justify-center font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
-  const variants = {
-    default: "bg-blue-600 text-white hover:bg-blue-700 focus-visible:ring-blue-500 hover:shadow-lg",
-    ghost: "hover:bg-gray-100 hover:text-gray-900",
-    outline: "border border-gray-300 bg-white hover:bg-gray-50 text-gray-700 hover:text-gray-900",
-    secondary: "bg-gray-100 text-gray-900 hover:bg-gray-200"
-  }
-  const sizes = {
-    default: "h-10 px-4 py-2 text-sm rounded-lg",
-    sm: "h-8 px-3 text-xs rounded-md",
-    lg: "h-12 px-8 text-base rounded-lg",
-    icon: "h-9 w-9 rounded-lg"
-  }
-  
-  return (
-    <button 
-      className={`${baseClasses} ${variants[variant]} ${sizes[size]} ${disabled ? 'cursor-not-allowed' : ''} ${className}`} 
-      disabled={disabled}
-      {...props}
-    >
-      {children}
-    </button>
-  )
-}
-=======
 import Link from "next/link"
-import { Star, Heart, ShoppingCart, Eye } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
 import { useCart } from "@/contexts/cart-context"
 import { useToast } from "@/hooks/use-toast"
-import { CldImage } from "next-cloudinary";
-import { extractCloudinaryPublicId } from "@/lib/utils";
->>>>>>> 02f93b0cb1dfd9fea933d00a5c5335a5bdba8927
+import { CldImage } from "next-cloudinary"
+import { extractCloudinaryPublicId } from "@/lib/utils"
 
-const Badge = ({ variant = "default", className = "", children, ...props }) => {
-  const variants = {
-    default: "bg-blue-100 text-blue-800",
-    secondary: "bg-gray-100 text-gray-800",
-    success: "bg-green-100 text-green-800",
-    destructive: "bg-red-100 text-red-800",
-    warning: "bg-yellow-100 text-yellow-800"
-  }
-  
-  return (
-    <span 
-      className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold ${variants[variant]} ${className}`} 
-      {...props}
-    >
-      {children}
-    </span>
-  )
-}
-
-const Card = ({ className = "", children, ...props }) => (
-  <div className={`rounded-xl border border-gray-200 bg-white shadow-sm ${className}`} {...props}>
-    {children}
-  </div>
-)
-
-const CardContent = ({ className = "", children, ...props }) => (
-  <div className={className} {...props}>
-    {children}
-  </div>
-)
-
-// Mock Link component
-const Link = ({ href, className = "", children, ...props }) => (
-  <a href={href} className={`block ${className}`} {...props}>
-    {children}
-  </a>
-)
-
-// Mock hooks
-const useCart = () => ({
-  addItem: (item) => console.log('Added to cart:', item)
-})
-
-const useToast = () => ({
-  toast: ({ title, description }) => console.log(`Toast: ${title} - ${description}`)
-})
-
-// Product interface
+// Product interface - Updated to include images array
 export interface Product {
   specs: any
   _id: string
@@ -98,7 +20,8 @@ export interface Product {
   brand: string
   price: number
   originalPrice?: number
-  image: string
+  image: string // Primary image for display
+  images?: string[] // Full array of product images
   rating: number
   reviews: number
   features: string[]
@@ -124,14 +47,22 @@ const sampleProduct: Product = {
   price: 899999,
   originalPrice: 1099999,
   image: "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=400&h=400&fit=crop",
+  images: ["https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=400&h=400&fit=crop"],
   rating: 4.8,
   reviews: 1247,
-  features: ["6.7-inch Super Retina XDR display", "A17 Pro chip with 6-core GPU", "Pro camera system", "Up to 29 hours video playback"],
+  features: ["A17 Pro Chip", "256GB Storage", "Pro Camera System", "Action Button"],
   inStock: true,
   isNew: true,
   isFeatured: true,
   fastDelivery: true,
-  warranty: "1 Year Apple Warranty"
+  warranty: "1 Year"
+}
+
+const formatPrice = (price: number) => {
+  return new Intl.NumberFormat('en-NG', {
+    style: 'currency',
+    currency: 'NGN'
+  }).format(price)
 }
 
 export default function ProductCard({ product = sampleProduct, layout = 'grid' }: ProductCardProps) {
@@ -140,7 +71,7 @@ export default function ProductCard({ product = sampleProduct, layout = 'grid' }
   const [isWishlisted, setIsWishlisted] = useState(false)
   const [imageLoaded, setImageLoaded] = useState(false)
 
-  const handleAddToCart = (e) => {
+  const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault()
     e.stopPropagation()
 
@@ -159,7 +90,7 @@ export default function ProductCard({ product = sampleProduct, layout = 'grid' }
     })
   }
 
-  const handleWishlist = (e) => {
+  const handleWishlist = (e: React.MouseEvent) => {
     e.preventDefault()
     e.stopPropagation()
     setIsWishlisted(!isWishlisted)
@@ -169,65 +100,67 @@ export default function ProductCard({ product = sampleProduct, layout = 'grid' }
     })
   }
 
-  const handleQuickView = (e) => {
+  const handleQuickView = (e: React.MouseEvent) => {
     e.preventDefault()
     e.stopPropagation()
+    // Implement quick view modal
     toast({
-      title: "Quick View",
-      description: "Opening product details...",
+      title: "Quick view",
+      description: "Quick view feature coming soon!",
     })
   }
 
-  const discountPercentage = product.originalPrice
-    ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
-    : 0
-
-  const formatPrice = (price) => {
-    return new Intl.NumberFormat('en-NG', {
-      style: 'currency',
-      currency: 'NGN',
-      minimumFractionDigits: 0,
-    }).format(price)
+  // Helper function to determine if image is valid
+  const isValidImageUrl = (url: string): boolean => {
+    return url && (url.startsWith("http") || url.startsWith("https"))
   }
 
-  const renderStars = (rating) => {
-    return Array.from({ length: 5 }).map((_, i) => {
-      const filled = i < Math.floor(rating)
-      const half = !filled && i < rating
-      
-      return (
-        <Star
-          key={i}
-          className={`h-3.5 w-3.5 sm:h-4 sm:w-4 transition-colors ${
-            filled 
-              ? "text-yellow-400 fill-yellow-400" 
-              : half 
-              ? "text-yellow-400 fill-yellow-400/50"
-              : "text-gray-300"
-          }`}
-        />
-      )
-    })
-  }
+  // Use product image if valid, otherwise fall back to placeholder
+  const displayImage = isValidImageUrl(product.image) ? product.image : null
 
   if (layout === 'list') {
     return (
-      <Card className="group hover:shadow-2xl transition-all duration-300 hover:border-blue-200 overflow-hidden">
+      <Card className="group hover:shadow-xl transition-all duration-300 hover:border-blue-200 overflow-hidden bg-white">
         <Link href={`/products/${product.id}`}>
           <CardContent className="p-0">
             <div className="flex flex-col sm:flex-row">
-              {/* Image Section */}
+              {/* Product Image */}
               <div className="relative w-full sm:w-48 md:w-56 lg:w-64 flex-shrink-0">
                 <div className="relative overflow-hidden bg-gradient-to-br from-gray-50 to-gray-100 aspect-square sm:aspect-auto sm:h-full">
-                  <img
-                    src={product.image}
-                    alt={product.name}
-                    className={`w-full h-full object-cover transition-all duration-500 group-hover:scale-110 ${
-                      imageLoaded ? 'opacity-100' : 'opacity-0'
-                    }`}
-                    onLoad={() => setImageLoaded(true)}
-                  />
-                  {!imageLoaded && (
+                  {displayImage ? (
+                    isValidImageUrl(displayImage) && displayImage.includes("cloudinary") ? (
+                      <CldImage
+                        width={300}
+                        height={300}
+                        src={extractCloudinaryPublicId(displayImage) || "sample"}
+                        alt={product.name}
+                        className={`w-full h-full object-contain p-4 transition-all duration-500 group-hover:scale-110 ${
+                          imageLoaded ? 'opacity-100' : 'opacity-0'
+                        }`}
+                        onLoad={() => setImageLoaded(true)}
+                      />
+                    ) : (
+                      <img
+                        src={displayImage}
+                        alt={product.name}
+                        className={`w-full h-full object-cover transition-all duration-500 group-hover:scale-110 ${
+                          imageLoaded ? 'opacity-100' : 'opacity-0'
+                        }`}
+                        onLoad={() => setImageLoaded(true)}
+                      />
+                    )
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center bg-gray-100">
+                      <div className="text-center p-4">
+                        <div className="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-2">
+                          <span className="text-gray-400 text-xs">No Image</span>
+                        </div>
+                        <p className="text-gray-400 text-sm">Image not available</p>
+                      </div>
+                    </div>
+                  )}
+                  
+                  {!imageLoaded && displayImage && (
                     <div className="absolute inset-0 flex items-center justify-center">
                       <div className="w-8 h-8 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
                     </div>
@@ -236,18 +169,12 @@ export default function ProductCard({ product = sampleProduct, layout = 'grid' }
                   {/* Badges */}
                   <div className="absolute top-3 left-3 flex flex-col gap-1.5">
                     {product.isNew && (
-                      <Badge className="bg-green-500 text-white shadow-lg">
-                        <Zap className="w-3 h-3 mr-1" />
+                      <Badge className="bg-gradient-to-r from-green-500 to-emerald-600 text-white border-0 text-xs px-2 py-1">
                         New
                       </Badge>
                     )}
-                    {discountPercentage > 0 && (
-                      <Badge className="bg-red-500 text-white shadow-lg font-bold">
-                        -{discountPercentage}%
-                      </Badge>
-                    )}
                     {product.isFeatured && (
-                      <Badge className="bg-purple-500 text-white shadow-lg">
+                      <Badge className="bg-gradient-to-r from-purple-500 to-pink-600 text-white border-0 text-xs px-2 py-1">
                         Featured
                       </Badge>
                     )}
@@ -257,8 +184,10 @@ export default function ProductCard({ product = sampleProduct, layout = 'grid' }
                   <Button
                     variant="ghost"
                     size="icon"
-                    className={`absolute top-3 right-3 bg-white/90 backdrop-blur-sm border border-gray-200 opacity-0 group-hover:opacity-100 transition-all duration-300 hover:scale-110 ${
-                      isWishlisted ? 'text-red-500' : 'text-gray-600 hover:text-red-500'
+                    className={`absolute top-3 right-3 h-8 w-8 rounded-full transition-all duration-200 ${
+                      isWishlisted 
+                        ? 'bg-red-50 text-red-500 hover:bg-red-100' 
+                        : 'bg-white/80 text-gray-600 hover:bg-white hover:text-red-500'
                     }`}
                     onClick={handleWishlist}
                   >
@@ -282,26 +211,35 @@ export default function ProductCard({ product = sampleProduct, layout = 'grid' }
                   {/* Brand and Title */}
                   <div className="mb-3">
                     <p className="text-sm font-medium text-blue-600 mb-1">{product.brand}</p>
-                    <h3 className="text-lg sm:text-xl font-semibold text-gray-900 line-clamp-2 group-hover:text-blue-600 transition-colors leading-tight">
+                    <h3 className="text-lg lg:text-xl font-semibold text-gray-900 leading-tight mb-2 group-hover:text-blue-600 transition-colors">
                       {product.name}
                     </h3>
                   </div>
 
                   {/* Rating */}
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="flex items-center gap-1">
-                      {renderStars(product.rating)}
+                  <div className="flex items-center gap-2 mb-3">
+                    <div className="flex items-center">
+                      {[...Array(5)].map((_, i) => (
+                        <Star
+                          key={i}
+                          className={`h-4 w-4 ${
+                            i < Math.floor(product.rating)
+                              ? 'text-yellow-400 fill-current'
+                              : 'text-gray-300'
+                          }`}
+                        />
+                      ))}
                     </div>
-                    <span className="text-sm text-gray-600 font-medium">
-                      {product.rating} ({product.reviews.toLocaleString()} reviews)
+                    <span className="text-sm text-gray-600">
+                      {product.rating} ({product.reviews} reviews)
                     </span>
                   </div>
 
-                  {/* Features */}
+                  {/* Features List */}
                   <div className="mb-4">
-                    <ul className="text-sm text-gray-600 space-y-2">
-                      {product.features.slice(0, 3).map((feature, index) => (
-                        <li key={index} className="flex items-start">
+                    <ul className="space-y-1">
+                      {product.features.slice(0, 4).map((feature, index) => (
+                        <li key={index} className="flex items-start text-sm text-gray-600">
                           <span className="w-1.5 h-1.5 bg-blue-500 rounded-full mr-3 mt-2 flex-shrink-0"></span>
                           <span className="leading-relaxed">{feature}</span>
                         </li>
@@ -377,22 +315,31 @@ export default function ProductCard({ product = sampleProduct, layout = 'grid' }
         <CardContent className="p-0">
           {/* Product Image */}
           <div className="relative overflow-hidden bg-gray-50">
-            {product.image && product.image.startsWith("http") ? (
-              <CldImage
-                width={300}
-                height={300}
-                src={extractCloudinaryPublicId(product.image) || "sample"}
-                alt={product.name}
-                className="w-full h-56 object-contain p-4"
-              />
+            {displayImage ? (
+              isValidImageUrl(displayImage) && displayImage.includes("cloudinary") ? (
+                <CldImage
+                  width={300}
+                  height={300}
+                  src={extractCloudinaryPublicId(displayImage) || "sample"}
+                  alt={product.name}
+                  className="w-full h-56 object-contain p-4"
+                />
+              ) : (
+                <img
+                  src={displayImage}
+                  alt={product.name}
+                  className="w-full h-56 object-contain p-4"
+                />
+              )
             ) : (
-              <CldImage
-                width={300}
-                height={300}
-                src={"sample"}
-                alt={product.name}
-                className="w-full h-56 object-contain p-4"
-              />
+              <div className="w-full h-56 flex items-center justify-center bg-gray-100">
+                <div className="text-center p-4">
+                  <div className="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-2">
+                    <span className="text-gray-400 text-xs">No Image</span>
+                  </div>
+                  <p className="text-gray-400 text-sm">Image not available</p>
+                </div>
+              </div>
             )}
 
             {/* Quick actions overlay */}
@@ -422,28 +369,37 @@ export default function ProductCard({ product = sampleProduct, layout = 'grid' }
             {/* Brand and Title */}
             <div className="mb-3">
               <p className="text-sm font-medium text-blue-600 mb-1">{product.brand}</p>
-              <h3 className="text-base sm:text-lg font-semibold text-gray-900 line-clamp-2 group-hover:text-blue-600 transition-colors leading-tight">
+              <h3 className="text-lg font-semibold text-gray-900 leading-tight group-hover:text-blue-600 transition-colors">
                 {product.name}
               </h3>
             </div>
 
             {/* Rating */}
-            <div className="flex items-center gap-2 mb-4">
-              <div className="flex items-center gap-0.5">
-                {renderStars(product.rating)}
+            <div className="flex items-center gap-2 mb-3">
+              <div className="flex items-center">
+                {[...Array(5)].map((_, i) => (
+                  <Star
+                    key={i}
+                    className={`h-4 w-4 ${
+                      i < Math.floor(product.rating)
+                        ? 'text-yellow-400 fill-current'
+                        : 'text-gray-300'
+                    }`}
+                  />
+                ))}
               </div>
-              <span className="text-sm text-gray-600 font-medium">
+              <span className="text-sm text-gray-600">
                 {product.rating} ({product.reviews})
               </span>
             </div>
 
             {/* Features */}
             <div className="mb-4">
-              <ul className="text-xs sm:text-sm text-gray-600 space-y-1.5">
-                {product.features.slice(0, 2).map((feature, index) => (
+              <ul className="space-y-1">
+                {product.features.slice(0, 3).map((feature, index) => (
                   <li key={index} className="flex items-start">
                     <span className="w-1 h-1 bg-blue-500 rounded-full mr-2 mt-2 flex-shrink-0"></span>
-                    <span className="leading-relaxed">{feature}</span>
+                    <span className="text-sm text-gray-600 leading-relaxed">{feature}</span>
                   </li>
                 ))}
               </ul>

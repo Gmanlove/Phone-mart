@@ -3,131 +3,8 @@
 import { useState } from "react"
 import { ShoppingBag, ArrowLeft, Trash2, Plus, Minus, Heart, ShoppingCart, Lock, Truck, Shield } from "lucide-react"
 import { CldImage } from "next-cloudinary"
-
-// Mock cart context and components for demonstration
-const useCart = () => {
-  const [items, setItems] = useState([
-    {
-      id: 1,
-      name: "iPhone 15 Pro Max",
-      brand: "Apple",
-      price: 1950000,
-      quantity: 1,
-      image: "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=300&h=300&fit=crop",
-      specs: "256GB, Deep Purple"
-    },
-    {
-      id: 2,
-      name: "Galaxy S24 Ultra",
-      brand: "Samsung",
-      price: 2100000,
-      quantity: 2,
-      image: "https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?w=300&h=300&fit=crop",
-      specs: "512GB, Titanium Black"
-    }
-  ])
-
-  const updateQuantity = (id: number, quantity: number) => {
-    setItems(items.map(item => 
-      item.id === id ? { ...item, quantity: Math.max(0, quantity) } : item
-    ).filter(item => item.quantity > 0))
-  }
-
-  const removeItem = (id: number) => {
-    setItems(items.filter(item => item.id !== id))
-  }
-
-  return { items, updateQuantity, removeItem }
-}
-
-const CartItem = ({ item, onUpdateQuantity, onRemove }: any) => {
-  return (
-    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 sm:p-6 hover:shadow-md transition-all duration-200">
-      <div className="flex flex-col sm:flex-row gap-4 sm:gap-6">
-        {/* Product Image */}
-        <div className="flex-shrink-0 w-full sm:w-24 md:w-32">
-          <div className="aspect-square rounded-xl overflow-hidden bg-gray-100">
-            <CldImage
-              width={96}
-              height={96}
-              src={item.image}
-              alt={item.name}
-              className="w-full h-full object-cover"
-            />
-          </div>
-        </div>
-
-        {/* Product Details */}
-        <div className="flex-1 min-w-0">
-          <div className="flex flex-col sm:flex-row sm:justify-between gap-4">
-            {/* Product Info */}
-            <div className="flex-1">
-              <div className="flex items-start justify-between mb-2">
-                <div>
-                  <h3 className="font-semibold text-gray-900 text-lg leading-tight">{item.name}</h3>
-                  <p className="text-gray-600 text-sm mt-1">{item.brand}</p>
-                  <p className="text-gray-500 text-sm mt-1">{item.specs}</p>
-                </div>
-                <button 
-                  onClick={() => onRemove(item.id)}
-                  className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors duration-200 ml-2"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </button>
-              </div>
-
-              {/* Mobile Price */}
-              <div className="sm:hidden mb-4">
-                <p className="text-2xl font-bold text-gray-900">
-                  ₦{(item.price * item.quantity).toLocaleString()}
-                </p>
-                <p className="text-sm text-gray-500">
-                  ₦{item.price.toLocaleString()} each
-                </p>
-              </div>
-
-              {/* Quantity Controls */}
-              <div className="flex items-center gap-4">
-                <div className="flex items-center bg-gray-50 rounded-xl border border-gray-200">
-                  <button
-                    onClick={() => onUpdateQuantity(item.id, item.quantity - 1)}
-                    className="p-2 hover:bg-gray-100 rounded-l-xl transition-colors duration-200"
-                  >
-                    <Minus className="w-4 h-4 text-gray-600" />
-                  </button>
-                  <span className="px-4 py-2 font-medium text-gray-900 min-w-[3rem] text-center">
-                    {item.quantity}
-                  </span>
-                  <button
-                    onClick={() => onUpdateQuantity(item.id, item.quantity + 1)}
-                    className="p-2 hover:bg-gray-100 rounded-r-xl transition-colors duration-200"
-                  >
-                    <Plus className="w-4 h-4 text-gray-600" />
-                  </button>
-                </div>
-
-                <button className="flex items-center gap-2 text-gray-600 hover:text-red-500 transition-colors duration-200">
-                  <Heart className="w-4 h-4" />
-                  <span className="text-sm font-medium hidden sm:inline">Save for later</span>
-                </button>
-              </div>
-            </div>
-
-            {/* Desktop Price */}
-            <div className="hidden sm:block text-right">
-              <p className="text-2xl font-bold text-gray-900 mb-1">
-                ₦{(item.price * item.quantity).toLocaleString()}
-              </p>
-              <p className="text-sm text-gray-500">
-                ₦{item.price.toLocaleString()} each
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  )
-}
+import { useCart } from "@/contexts/cart-context"  // Import the real cart context
+import CartItem from "@/components/cart/cart-item"  // Use the existing cart item component
 
 const CartSummary = ({ items }: any) => {
   const subtotal = items.reduce((sum: number, item: any) => sum + (item.price * item.quantity), 0)
@@ -194,7 +71,7 @@ const CartSummary = ({ items }: any) => {
 }
 
 export default function CartPage() {
-  const { items, updateQuantity, removeItem } = useCart()
+  const { items, clearCart } = useCart()  // Use the real cart context
 
   if (items.length === 0) {
     return (
@@ -281,12 +158,7 @@ export default function CartPage() {
           <div className="lg:col-span-2">
             <div className="space-y-4 sm:space-y-6">
               {items.map((item) => (
-                <CartItem 
-                  key={item.id} 
-                  item={item} 
-                  onUpdateQuantity={updateQuantity}
-                  onRemove={removeItem}
-                />
+                <CartItem key={item.id} item={item} />
               ))}
             </div>
             
@@ -294,7 +166,10 @@ export default function CartPage() {
             <div className="mt-6 sm:mt-8 p-4 sm:p-6 bg-white rounded-2xl shadow-sm border border-gray-100">
               <div className="flex flex-col sm:flex-row gap-4 sm:justify-between sm:items-center">
                 <div className="flex items-center gap-4">
-                  <button className="text-blue-600 hover:text-blue-700 font-medium transition-colors duration-200">
+                  <button 
+                    onClick={clearCart}
+                    className="text-blue-600 hover:text-blue-700 font-medium transition-colors duration-200"
+                  >
                     Clear Cart
                   </button>
                   <div className="w-px h-4 bg-gray-300"></div>

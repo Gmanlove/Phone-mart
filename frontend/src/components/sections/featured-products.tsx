@@ -161,7 +161,6 @@ export default function FeaturedProducts() {
 								alt={product.name}
 								className="w-full h-56 object-contain p-4"
 							/>
-							{/* ...existing code... */}
 						</div>
 					))}
 				</div>

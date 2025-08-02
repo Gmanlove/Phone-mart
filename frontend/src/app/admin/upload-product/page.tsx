@@ -1,7 +1,6 @@
 "use client"
 import { useState } from "react"
 import { Upload, Package, DollarSign, FileText, Tag, Smartphone, Loader2, CheckCircle, AlertCircle } from "lucide-react"
-import { CldImage } from "next-cloudinary"
 
 const categories = [
   "iPhone",

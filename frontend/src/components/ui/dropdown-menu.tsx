@@ -1,3 +1,4 @@
+"use client"
 
 import * as React from "react"
 import { cn } from "@/lib/utils"
@@ -9,49 +10,61 @@ export function DropdownMenu({ className, ...props }: React.HTMLAttributes<HTMLD
   const [open, setOpen] = React.useState(false);
   return (
     <DropdownMenuContext.Provider value={{ open, setOpen }}>
-      <div className={cn("relative", className)} {...props} />
+      <div className={cn("relative inline-block text-left", className)} {...props} />
     </DropdownMenuContext.Provider>
   );
 }
 
-export function DropdownMenuTrigger({ className, asChild, ...props }: React.ButtonHTMLAttributes<HTMLButtonElement> & { asChild?: boolean }) {
+const useDropdownMenu = () => {
   const context = React.useContext(DropdownMenuContext);
+  if (context === undefined) {
+    throw new Error('useDropdownMenu must be used within a DropdownMenu');
+  }
+  return context;
+};
+
+export function DropdownMenuTrigger({ className, asChild = false, ...props }: React.HTMLAttributes<HTMLButtonElement> & { asChild?: boolean }) {
+  const { open, setOpen } = useDropdownMenu();
   const Comp = asChild ? Slot : "button";
-  if (!context) return null;
+  
   return (
     <Comp
-      className={cn("", className)}
+      className={cn(
+        "inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50",
+        className
+      )}
+      onClick={() => setOpen(!open)}
       {...props}
-      onClick={e => {
-        context.setOpen(!context.open);
-        if (props.onClick) props.onClick(e);
-      }}
     />
   );
 }
 
-type DropdownMenuContentProps = React.HTMLAttributes<HTMLDivElement> & {
-  align?: 'start' | 'center' | 'end';
-};
-
-export function DropdownMenuContent({ className, align = 'end', ...props }: DropdownMenuContentProps) {
-  const context = React.useContext(DropdownMenuContext);
-  if (!context || !context.open) return null;
+export function DropdownMenuContent({ className, align = "start", ...props }: React.HTMLAttributes<HTMLDivElement> & { align?: "start" | "end" }) {
+  const { open } = useDropdownMenu();
   
-  const alignmentClasses = {
-    start: 'left-0',
-    center: 'left-1/2 transform -translate-x-1/2',
-    end: 'right-0'
-  };
+  if (!open) return null;
   
-  return <div className={cn("absolute mt-2 w-48 rounded-md bg-white shadow-lg z-50", alignmentClasses[align], className)} {...props} />;
+  return (
+    <div
+      className={cn(
+        "absolute z-50 min-w-[8rem] overflow-hidden rounded-md border bg-popover p-1 text-popover-foreground shadow-md data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
+        align === "end" ? "right-0" : "left-0",
+        className
+      )}
+      {...props}
+    />
+  );
 }
 
-export function DropdownMenuItem({ className, asChild, ...props }: React.HTMLAttributes<HTMLDivElement> & { asChild?: boolean }) {
-  const Comp = asChild ? Slot : "div";
-  return <Comp className={cn("px-4 py-2 cursor-pointer hover:bg-gray-100", className)} {...props} />;
-}
-
-export function DropdownMenuSeparator({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
-  return <div className={cn("my-1 h-px bg-gray-200 w-full", className)} {...props} />;
+export function DropdownMenuItem({ className, inset, ...props }: React.HTMLAttributes<HTMLDivElement> & { inset?: boolean }) {
+  return (
+    <div
+      className={cn(
+        "relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+        inset && "pl-8",
+        className
+      )}
+      {...props}
+    />
+  );
 }

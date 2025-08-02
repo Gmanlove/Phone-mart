@@ -2,25 +2,28 @@
 
 import { useState, useCallback, useEffect } from "react"
 import { Search, ShoppingCart, User, Menu, X, Phone, ChevronDown, MapPin, Clock, Heart, Truck } from "lucide-react"
+import { useCart } from "@/contexts/cart-context"
 
 // Mock components for demonstration
 const Button = ({ variant = "default", size = "default", className = "", children, ...props }) => {
   const baseClasses = "inline-flex items-center justify-center font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
   const variants = {
     default: "bg-blue-600 text-white hover:bg-blue-700 focus-visible:ring-blue-500",
-    ghost: "hover:bg-gray-100 hover:text-gray-900",
-    outline: "border border-gray-200 bg-white hover:bg-gray-50"
+    ghost: "hover:bg-gray-100 hover:text-gray-900 focus-visible:ring-gray-500",
+    outline: "border border-gray-300 bg-white hover:bg-gray-50 focus-visible:ring-gray-500",
+    secondary: "bg-gray-100 text-gray-900 hover:bg-gray-200 focus-visible:ring-gray-500",
+    destructive: "bg-red-600 text-white hover:bg-red-700 focus-visible:ring-red-500",
   }
   const sizes = {
-    default: "h-10 px-4 py-2 text-sm",
-    sm: "h-8 px-3 text-xs",
-    lg: "h-12 px-8 text-base",
-    icon: "h-10 w-10"
+    default: "h-10 px-4 py-2",
+    sm: "h-9 rounded-md px-3",
+    lg: "h-11 rounded-md px-8",
+    icon: "h-10 w-10",
   }
   
   return (
-    <button 
-      className={`${baseClasses} ${variants[variant]} ${sizes[size]} ${className}`} 
+    <button
+      className={`${baseClasses} ${variants[variant]} ${sizes[size]} ${className}`}
       {...props}
     >
       {children}
@@ -29,35 +32,32 @@ const Button = ({ variant = "default", size = "default", className = "", childre
 }
 
 const Input = ({ className = "", ...props }) => (
-  <input 
-    className={`flex h-10 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:cursor-not-allowed disabled:opacity-50 ${className}`} 
-    {...props} 
+  <input
+    className={`flex h-10 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm ring-offset-white file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-gray-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 ${className}`}
+    {...props}
   />
 )
 
-const Badge = ({ className = "", children, ...props }) => (
-  <span 
-    className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-semibold ${className}`} 
-    {...props}
-  >
-    {children}
-  </span>
-)
+const Badge = ({ variant = "default", className = "", children }) => {
+  const variants = {
+    default: "bg-blue-600 text-white",
+    secondary: "bg-gray-100 text-gray-900",
+    destructive: "bg-red-600 text-white",
+    outline: "border border-gray-300 text-gray-900",
+  }
+  
+  return (
+    <div className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 ${variants[variant]} ${className}`}>
+      {children}
+    </div>
+  )
+}
 
-// Mock Link component
 const Link = ({ href, className = "", children, ...props }) => (
   <a href={href} className={className} {...props}>
     {children}
   </a>
 )
-
-// Mock context
-const useCart = () => ({
-  items: [
-    { id: 1, quantity: 2 },
-    { id: 2, quantity: 1 }
-  ]
-})
 
 // Navigation data
 const MAIN_NAVIGATION = [
@@ -81,7 +81,7 @@ export default function Header() {
   const [searchQuery, setSearchQuery] = useState("")
   const [isScrolled, setIsScrolled] = useState(false)
   const [isSearchOpen, setIsSearchOpen] = useState(false)
-  const { items } = useCart()
+  const { items } = useCart() // Use the real cart context
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   
   const itemCount = items?.reduce((sum, item) => sum + item.quantity, 0) ?? 0
@@ -91,8 +91,20 @@ export default function Header() {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 10)
     }
-    window.addEventListener("scroll", handleScroll)
-    return () => window.removeEventListener("scroll", handleScroll)
+    window.addEventListener('scroll', handleScroll)
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
+
+  // Close mobile menu when window resizes
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 768) {
+        setIsMenuOpen(false)
+        setIsSearchOpen(false)
+      }
+    }
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
   }, [])
 
   // Close mobile menu and search on escape or outside click

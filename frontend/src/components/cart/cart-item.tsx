@@ -1,12 +1,7 @@
 "use client"
 
-<<<<<<< HEAD
 import Image from "next/image"
-import { Minus, Plus, Trash2, Heart, ShoppingCart } from "lucide-react"
-=======
-import { CldImage } from "next-cloudinary"
 import { Minus, Plus, Trash2 } from "lucide-react"
->>>>>>> 02f93b0cb1dfd9fea933d00a5c5335a5bdba8927
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { useCart } from "@/contexts/cart-context"
@@ -26,10 +21,24 @@ interface CartItemProps {
   }
 }
 
+// Helper function to check if URL is valid
+const isValidImageUrl = (url: string): boolean => {
+  try {
+    new URL(url)
+    return true
+  } catch {
+    return false
+  }
+}
+
+// Base64 placeholder image (1x1 gray pixel)
+const placeholderImage = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZjNmNGY2Ii8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxOCIgZmlsbD0iIzlmYTZiNyIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPk5vIEltYWdlPC90ZXh0Pjwvc3ZnPg=="
+
 export default function CartItem({ item }: CartItemProps) {
   const { updateQuantity, removeItem } = useCart()
   const [isRemoving, setIsRemoving] = useState(false)
   const [isUpdating, setIsUpdating] = useState(false)
+  const [imageError, setImageError] = useState(false)
 
   const handleQuantityChange = async (newQuantity: number) => {
     if (newQuantity <= 0) {
@@ -56,6 +65,13 @@ export default function CartItem({ item }: CartItemProps) {
   const totalPrice = item.price * item.quantity
   const savings = item.originalPrice ? (item.originalPrice - item.price) * item.quantity : 0
 
+  // Use placeholder image if the item image is not valid or there's an error
+  const displayImage = (!isValidImageUrl(item.image) || imageError) ? placeholderImage : item.image
+
+  const handleImageError = () => {
+    setImageError(true)
+  }
+
   return (
     <Card className={`group transition-all duration-300 hover:shadow-lg border-0 shadow-sm bg-white ${
       isRemoving ? 'opacity-50 scale-95 translate-x-4' : 'opacity-100 scale-100 translate-x-0'
@@ -69,11 +85,12 @@ export default function CartItem({ item }: CartItemProps) {
               <div className="relative flex-shrink-0">
                 <div className="relative w-20 h-20 rounded-xl overflow-hidden bg-gray-100 ring-1 ring-gray-200/50">
                   <Image
-                    src={item.image || "/placeholder.svg"}
+                    src={displayImage}
                     alt={item.name}
                     fill
                     className="object-cover transition-transform duration-300 group-hover:scale-105"
                     sizes="80px"
+                    onError={handleImageError}
                   />
                   {item.inStock === false && (
                     <div className="absolute inset-0 bg-gray-900/70 flex items-center justify-center">
@@ -176,11 +193,12 @@ export default function CartItem({ item }: CartItemProps) {
             <div className="relative flex-shrink-0">
               <div className="relative w-24 h-24 lg:w-28 lg:h-28 rounded-2xl overflow-hidden bg-gray-100 ring-1 ring-gray-200/50 shadow-sm">
                 <Image
-                  src={item.image || "/placeholder.svg"}
+                  src={displayImage}
                   alt={item.name}
                   fill
                   className="object-cover transition-transform duration-300 group-hover:scale-110"
                   sizes="(max-width: 1024px) 96px, 112px"
+                  onError={handleImageError}
                 />
                 {item.inStock === false && (
                   <div className="absolute inset-0 bg-gray-900/70 flex items-center justify-center">
@@ -272,13 +290,6 @@ export default function CartItem({ item }: CartItemProps) {
                 disabled={isRemoving}
               >
                 <Trash2 className="h-5 w-5" />
-              </Button>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-10 w-10 text-gray-400 hover:text-pink-500 hover:bg-pink-50 transition-all duration-200 rounded-full hover:scale-110"
-              >
-                <Heart className="h-5 w-5" />
               </Button>
             </div>
 
