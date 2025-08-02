@@ -6,11 +6,11 @@ import { Card, CardContent } from "@/components/ui/card"
 import { useCart } from "@/contexts/cart-context"
 import { useOrders } from "@/contexts/order-context"
 import { useAuth } from "@/contexts/auth-context"
-import { MapPin, CreditCard, Package, Shield, CheckCircle, User, Phone, Mail, Home, Truck, Lock, LogIn } from "lucide-react"
+import { MapPin, CreditCard, Package, Shield, CheckCircle, User, Phone, Mail, Home, Truck, Lock, LogIn, AlertTriangle } from "lucide-react"
 import Link from "next/link"
 
-// Paystack public key - Replace with your actual key
-const PAYSTACK_PUBLIC_KEY = "pk_test_your_actual_paystack_public_key_here"
+// Replace with your actual Paystack public key
+const PAYSTACK_PUBLIC_KEY = process.env.NEXT_PUBLIC_PAYSTACK_KEY || "pk_test_your_actual_paystack_public_key_here"
 
 declare global {
   interface Window {
@@ -56,8 +56,9 @@ export default function CheckoutPage() {
 
   const [isProcessing, setIsProcessing] = useState(false)
   const [paymentMethod, setPaymentMethod] = useState("card")
+  const [paymentError, setPaymentError] = useState("")
 
-  // Update email when user is available - This useEffect must be called before conditional returns
+  // Update email when user is available
   useEffect(() => {
     if (user?.email && billingInfo.email !== user.email) {
       setBillingInfo(prev => ({ ...prev, email: user.email }))
@@ -70,6 +71,13 @@ export default function CheckoutPage() {
       const script = document.createElement('script')
       script.src = 'https://js.paystack.co/v1/inline.js'
       script.async = true
+      script.onload = () => {
+        console.log('Paystack script loaded successfully')
+      }
+      script.onerror = () => {
+        console.error('Failed to load Paystack script')
+        setPaymentError('Failed to load payment system. Please refresh and try again.')
+      }
       document.body.appendChild(script)
     }
   }, [])
@@ -174,51 +182,96 @@ export default function CheckoutPage() {
     setDeliveryInfo({ ...deliveryInfo, [e.target.name]: e.target.value })
   }
 
-  const handlePayment = () => {
+  const handleMockPayment = () => {
+    setIsProcessing(true)
+    setPaymentError("")
+    
+    // Simulate payment processing
+    setTimeout(() => {
+      const order = {
+        id: `MOCK_ORDER_${Date.now()}`,
+        items,
+        total,
+        billingInfo,
+        deliveryInfo,
+        paymentMethod: "mock",
+        status: "confirmed",
+        date: new Date().toISOString(),
+      }
+      
+      placeOrder(order)
+      clearCart()
+      setCurrentStep(4)
+      setIsProcessing(false)
+    }, 2000)
+  }
+
+  const handlePaystackPayment = () => {
     if (!window.PaystackPop) {
-      alert("Payment system is loading. Please try again in a moment.")
+      setPaymentError("Payment system is not loaded. Please refresh the page and try again.")
+      return
+    }
+
+    if (PAYSTACK_PUBLIC_KEY.includes("your_actual_paystack_public_key_here")) {
+      setPaymentError("Payment system is not configured. Using mock payment instead.")
+      handleMockPayment()
       return
     }
 
     setIsProcessing(true)
+    setPaymentError("")
 
-    const handler = window.PaystackPop.setup({
-      key: PAYSTACK_PUBLIC_KEY,
-      email: billingInfo.email,
-      amount: total * 100, // Paystack expects amount in kobo
-      currency: 'NGN',
-      ref: `ORDER_${Date.now()}`,
-      metadata: {
-        customer_name: `${billingInfo.firstName} ${billingInfo.lastName}`,
-        phone: billingInfo.phone,
-      },
-      callback: (response: any) => {
-        console.log("Payment successful:", response)
-        
-        // Create order
-        const order = {
-          id: response.reference,
-          items,
-          total,
-          billingInfo,
-          deliveryInfo,
-          paymentMethod,
-          status: "confirmed",
-          date: new Date().toISOString(),
-        }
-        
-        placeOrder(order)
-        clearCart()
-        setCurrentStep(4) // Success step
-        setIsProcessing(false)
-      },
-      onClose: () => {
-        setIsProcessing(false)
-        console.log("Payment cancelled")
-      },
-    })
+    try {
+      const handler = window.PaystackPop.setup({
+        key: PAYSTACK_PUBLIC_KEY,
+        email: billingInfo.email,
+        amount: total * 100, // Paystack expects amount in kobo
+        currency: 'NGN',
+        ref: `ORDER_${Date.now()}`,
+        metadata: {
+          customer_name: `${billingInfo.firstName} ${billingInfo.lastName}`,
+          phone: billingInfo.phone,
+        },
+        callback: (response: any) => {
+          console.log("Payment successful:", response)
+          
+          const order = {
+            id: response.reference,
+            items,
+            total,
+            billingInfo,
+            deliveryInfo,
+            paymentMethod,
+            status: "confirmed",
+            date: new Date().toISOString(),
+          }
+          
+          placeOrder(order)
+          clearCart()
+          setCurrentStep(4)
+          setIsProcessing(false)
+        },
+        onClose: () => {
+          setIsProcessing(false)
+          setPaymentError("Payment was cancelled. Please try again.")
+        },
+      })
 
-    handler.openIframe()
+      handler.openIframe()
+    } catch (error) {
+      console.error("Paystack error:", error)
+      setIsProcessing(false)
+      setPaymentError("Payment system error. Using mock payment instead.")
+      handleMockPayment()
+    }
+  }
+
+  const handlePayment = () => {
+    if (paymentMethod === "mock" || PAYSTACK_PUBLIC_KEY.includes("your_actual_paystack_public_key_here")) {
+      handleMockPayment()
+    } else {
+      handlePaystackPayment()
+    }
   }
 
   const validateStep = (step: number) => {
@@ -237,12 +290,14 @@ export default function CheckoutPage() {
   const nextStep = () => {
     if (currentStep < 4 && validateStep(currentStep)) {
       setCurrentStep(currentStep + 1)
+      setPaymentError("") // Clear any previous payment errors
     }
   }
 
   const prevStep = () => {
     if (currentStep > 1) {
       setCurrentStep(currentStep - 1)
+      setPaymentError("") // Clear any previous payment errors
     }
   }
 
@@ -478,7 +533,47 @@ export default function CheckoutPage() {
                       <h2 className="text-2xl font-bold text-gray-900">Payment Method</h2>
                     </div>
                     
+                    {/* Payment Error Display */}
+                    {paymentError && (
+                      <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-xl">
+                        <div className="flex items-center gap-2 text-yellow-800">
+                          <AlertTriangle className="h-5 w-5" />
+                          <span className="font-medium">Payment Notice</span>
+                        </div>
+                        <p className="text-yellow-700 text-sm mt-1">{paymentError}</p>
+                      </div>
+                    )}
+                    
                     <div className="space-y-4">
+                      {/* Mock Payment Option (for development) */}
+                      <div 
+                        className={`p-4 border-2 rounded-xl cursor-pointer transition-all duration-200 ${
+                          paymentMethod === 'mock' 
+                            ? 'border-green-500 bg-green-50' 
+                            : 'border-gray-300 hover:border-gray-400'
+                        }`}
+                        onClick={() => setPaymentMethod('mock')}
+                      >
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            <CreditCard className="h-6 w-6 text-green-600" />
+                            <div>
+                              <h3 className="font-semibold text-gray-900">Demo Payment</h3>
+                              <p className="text-sm text-gray-600">For testing purposes (Development)</p>
+                            </div>
+                          </div>
+                          <div className={`w-5 h-5 rounded-full border-2 ${
+                            paymentMethod === 'mock' 
+                              ? 'border-green-500 bg-green-500' 
+                              : 'border-gray-300'
+                          }`}>
+                            {paymentMethod === 'mock' && (
+                              <div className="w-full h-full bg-white rounded-full scale-50"></div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+
                       <div 
                         className={`p-4 border-2 rounded-xl cursor-pointer transition-all duration-200 ${
                           paymentMethod === 'card' 
@@ -492,7 +587,7 @@ export default function CheckoutPage() {
                             <CreditCard className="h-6 w-6 text-blue-600" />
                             <div>
                               <h3 className="font-semibold text-gray-900">Credit/Debit Card</h3>
-                              <p className="text-sm text-gray-600">Pay securely with your card</p>
+                              <p className="text-sm text-gray-600">Pay securely with Paystack</p>
                             </div>
                           </div>
                           <div className={`w-5 h-5 rounded-full border-2 ${
