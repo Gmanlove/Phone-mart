@@ -6,6 +6,7 @@ import Header from "@/components/layout/header"
 import Footer from "@/components/layout/footer"
 import { CartProvider } from "@/contexts/cart-context"
 import { OrderProvider } from "@/contexts/order-context"
+import { AuthProvider } from "@/contexts/auth-context"
 import { Toaster } from "@/components/ui/toaster"
 
 const inter = Inter({ 
@@ -25,14 +26,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className={`${inter.variable} ${poppins.variable}`}> 
       <body className="min-h-screen flex flex-col bg-white">
-        <OrderProvider>
-          <CartProvider>
-            <Header />
-            <main>{children}</main>
-            <Footer />
-            <Toaster />
-          </CartProvider>
-        </OrderProvider>
+        <AuthProvider>
+          <OrderProvider>
+            <CartProvider>
+              <Header />
+              <main>{children}</main>
+              <Footer />
+              <Toaster />
+            </CartProvider>
+          </OrderProvider>
+        </AuthProvider>
       </body>
     </html>
   )

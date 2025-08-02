@@ -5,7 +5,9 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { useCart } from "@/contexts/cart-context"
 import { useOrders } from "@/contexts/order-context"
-import { MapPin, CreditCard, Package, Shield, CheckCircle, User, Phone, Mail, Home, Truck } from "lucide-react"
+import { useAuth } from "@/contexts/auth-context"
+import { MapPin, CreditCard, Package, Shield, CheckCircle, User, Phone, Mail, Home, Truck, Lock, LogIn } from "lucide-react"
+import Link from "next/link"
 
 // Paystack public key - Replace with your actual key
 const PAYSTACK_PUBLIC_KEY = "pk_test_your_actual_paystack_public_key_here"
@@ -34,12 +36,13 @@ interface DeliveryInfo {
 export default function CheckoutPage() {
   const { items, total, clearCart } = useCart()
   const { placeOrder } = useOrders()
+  const { isAuthenticated, isLoading, user } = useAuth()
   
   const [currentStep, setCurrentStep] = useState(1)
   const [billingInfo, setBillingInfo] = useState<BillingInfo>({
     firstName: "",
     lastName: "",
-    email: "",
+    email: user?.email || "",
     phone: ""
   })
   
@@ -50,7 +53,76 @@ export default function CheckoutPage() {
     zipCode: "",
     deliveryNote: ""
   })
-  
+
+  // Authentication check
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading...</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-8 px-4 sm:py-16">
+        <div className="container mx-auto max-w-md">
+          <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-8 sm:p-12 text-center">
+            <div className="mb-8">
+              <div className="w-24 h-24 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                <Lock className="h-12 w-12 text-red-500" />
+              </div>
+              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-4">
+                Sign In Required
+              </h1>
+              <p className="text-gray-600 text-base sm:text-lg leading-relaxed">
+                You need to be signed in to access the checkout. Please sign in to your account or create a new one to continue.
+              </p>
+            </div>
+            
+            <div className="space-y-4">
+              <Link href="/login">
+                <Button className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-4 px-6 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 flex items-center justify-center gap-2">
+                  <LogIn className="h-4 w-4" />
+                  Sign In
+                </Button>
+              </Link>
+              
+              <div className="flex items-center gap-2 my-4">
+                <div className="flex-1 h-px bg-gray-200"></div>
+                <span className="text-sm text-gray-500 px-3">or</span>
+                <div className="flex-1 h-px bg-gray-200"></div>
+              </div>
+              
+              <Link href="/register">
+                <Button variant="outline" className="w-full border-2 border-gray-200 hover:border-gray-300 text-gray-700 font-medium py-3 px-6 rounded-xl transition-all duration-200 hover:bg-gray-50">
+                  Create Account
+                </Button>
+              </Link>
+            </div>
+
+            <div className="mt-8 pt-6 border-t border-gray-200">
+              <div className="flex items-center justify-center gap-2 text-sm text-gray-600">
+                <Shield className="w-4 h-4 text-green-500" />
+                <span>Your data is secure and encrypted</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // Update email when user is available
+  useEffect(() => {
+    if (user?.email && billingInfo.email !== user.email) {
+      setBillingInfo(prev => ({ ...prev, email: user.email }))
+    }
+  }, [user?.email, billingInfo.email])
+
   const [paying, setPaying] = useState(false)
   const [success, setSuccess] = useState(false)
   const [error, setError] = useState("")

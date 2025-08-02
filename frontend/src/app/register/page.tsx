@@ -1,16 +1,14 @@
 "use client"
 
-import type React from "react"
-
-import { useState } from "react"
-import Link from "next/link"
+import { useState, useEffect } from "react"
+import { useRouter } from "next/navigation"
+import { Eye, EyeOff, Mail, Phone, Shield, User, Check, AlertCircle, CheckCircle, Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Separator } from "@/components/ui/separator"
-import { Eye, EyeOff, Phone, Mail, Check, Shield, Star, Users, Zap } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
+import { useAuth } from "@/contexts/auth-context"
+import Link from "next/link"
 
 export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false)
@@ -20,6 +18,15 @@ export default function RegisterPage() {
   const [message, setMessage] = useState("")
   const [passwordStrength, setPasswordStrength] = useState(0)
   const { toast } = useToast()
+  const { isAuthenticated, login } = useAuth()
+  const router = useRouter()
+
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (isAuthenticated) {
+      router.push('/products')
+    }
+  }, [isAuthenticated, router])
 
   // Password strength checker
   const checkPasswordStrength = (password: string) => {
@@ -78,15 +85,20 @@ export default function RegisterPage() {
         setMessage("Signup successful!")
         toast({
           title: "Account created successfully!",
-          description: "Welcome to PhoneHub. You can now start shopping.",
+          description: "Welcome to PhoneMart. Signing you in now...",
         })
-        localStorage.setItem("isLoggedIn", "true")
-        window.location.href = "/products"
+        
+        // Automatically log the user in after successful registration
+        const loginSuccess = await login(form.email, form.password)
+        if (loginSuccess) {
+          router.push("/products")
+        }
       } else {
         setMessage(data.error || "Signup failed")
         toast({
           title: "Signup failed",
           description: data.error || "Signup failed",
+          variant: "destructive"
         })
       }
     } catch (error) {
@@ -108,22 +120,22 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
-      {/* Header */}
-      <div className="bg-white/80 backdrop-blur-sm border-b border-white/20 sticky top-0 z-10">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <Link href="/" className="flex items-center space-x-2">
-              <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white p-2 rounded-xl shadow-lg">
-                <Phone className="h-6 w-6" />
-              </div>
-              <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-                PhoneHub
-              </span>
-            </Link>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 py-8 px-4 sm:py-12">
+      {/* Top Navigation */}
+      <div className="container mx-auto max-w-7xl">
+        <div className="flex items-center justify-between mb-8 lg:mb-12">
+          <div className="flex items-center space-x-3">
+            <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white p-2 sm:p-3 rounded-xl sm:rounded-2xl shadow-lg">
+              <Phone className="h-6 w-6 sm:h-8 sm:w-8" />
+            </div>
+            <span className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+              PhoneMart
+            </span>
+          </div>
+          <div className="text-sm sm:text-base text-gray-600">
             <Link 
-              href="/login" 
-              className="text-gray-600 hover:text-gray-900 font-medium transition-colors duration-200"
+              href="/login"
+              className="text-blue-600 hover:text-blue-700 font-semibold transition-colors duration-200"
             >
               Already have an account?
             </Link>
@@ -142,86 +154,41 @@ export default function RegisterPage() {
                 Join the Future of
                 <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent"> Phone Shopping</span>
               </h1>
-              <p className="text-lg sm:text-xl text-gray-600 mb-6 leading-relaxed">
-                Create your account and discover premium smartphones with exclusive member benefits.
+              <p className="text-lg sm:text-xl text-gray-600 leading-relaxed mb-6">
+                Get exclusive access to the latest smartphones, unbeatable deals, and lightning-fast delivery. Join thousands of satisfied customers today!
               </p>
             </div>
 
-            {/* Social Proof */}
-            <div className="bg-white/60 backdrop-blur-sm rounded-2xl p-6 sm:p-8 border border-white/20 shadow-xl">
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 text-center">
-                <div>
-                  <div className="text-2xl sm:text-3xl font-bold text-blue-600 mb-1">50K+</div>
-                  <div className="text-sm sm:text-base text-gray-600">Happy Customers</div>
-                </div>
-                <div>
-                  <div className="text-2xl sm:text-3xl font-bold text-green-600 mb-1">4.9★</div>
-                  <div className="text-sm sm:text-base text-gray-600">Customer Rating</div>
-                </div>
-                <div>
-                  <div className="text-2xl sm:text-3xl font-bold text-purple-600 mb-1">99.9%</div>
-                  <div className="text-sm sm:text-base text-gray-600">Uptime</div>
-                </div>
-              </div>
-            </div>
-
             {/* Benefits */}
-            <div className="bg-white/60 backdrop-blur-sm rounded-2xl p-6 sm:p-8 border border-white/20 shadow-xl">
-              <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-                <Star className="h-6 w-6 text-yellow-500" />
-                Premium Member Benefits
-              </h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {[
-                  { icon: Shield, title: "Exclusive Discounts", desc: "Up to 25% off on premium phones" },
-                  { icon: Zap, title: "Early Access", desc: "First to know about new releases" },
-                  { icon: Users, title: "Priority Support", desc: "24/7 dedicated customer service" },
-                  { icon: Check, title: "Free Shipping", desc: "Complimentary delivery on all orders" }
-                ].map((benefit, index) => (
-                  <div key={index} className="flex items-start gap-3 p-4 rounded-xl hover:bg-white/40 transition-colors duration-200">
-                    <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-lg flex items-center justify-center flex-shrink-0">
-                      <benefit.icon className="h-5 w-5 text-white" />
-                    </div>
-                    <div>
-                      <h4 className="font-semibold text-gray-900 mb-1">{benefit.title}</h4>
-                      <p className="text-sm text-gray-600">{benefit.desc}</p>
-                    </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 lg:gap-6">
+              {[
+                { icon: <Shield className="h-6 w-6" />, title: "Secure Payments", desc: "Bank-level encryption" },
+                { icon: <CheckCircle className="h-6 w-6" />, title: "Quality Guarantee", desc: "30-day return policy" },
+                { icon: <User className="h-6 w-6" />, title: "Premium Support", desc: "24/7 customer service" },
+                { icon: <Phone className="h-6 w-6" />, title: "Latest Models", desc: "Always in stock" }
+              ].map((benefit, idx) => (
+                <div key={idx} className="flex items-start gap-3 p-4 bg-white/60 backdrop-blur-sm rounded-xl border border-gray-200">
+                  <div className="flex-shrink-0 w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center text-blue-600">
+                    {benefit.icon}
                   </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Testimonial */}
-            <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl p-6 sm:p-8 text-white shadow-xl">
-              <div className="flex items-start gap-4">
-                <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center flex-shrink-0">
-                  <Users className="h-6 w-6" />
-                </div>
-                <div>
-                  <p className="text-lg mb-4 italic">
-                    "PhoneHub has completely transformed my phone shopping experience. The quality and service are unmatched!"
-                  </p>
-                  <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 bg-white/30 rounded-full"></div>
-                    <div>
-                      <div className="font-semibold">Sarah Johnson</div>
-                      <div className="text-sm text-blue-100">Verified Customer</div>
-                    </div>
+                  <div>
+                    <h3 className="font-semibold text-gray-900 text-sm sm:text-base">{benefit.title}</h3>
+                    <p className="text-gray-600 text-xs sm:text-sm">{benefit.desc}</p>
                   </div>
                 </div>
-              </div>
+              ))}
             </div>
           </div>
 
           {/* Right Side - Registration Form */}
           <div className="order-1 lg:order-2">
-            <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-2xl overflow-hidden border border-white/20">
-              <div className="p-6 sm:p-8 lg:p-10">
-                <div className="text-center mb-8">
-                  <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">Create Account</h2>
-                  <p className="text-gray-600">Join thousands of satisfied customers</p>
-                </div>
+            <div className="bg-white rounded-3xl shadow-2xl border border-gray-100 overflow-hidden">
+              <div className="bg-gradient-to-r from-blue-600 to-indigo-600 px-6 sm:px-8 py-6 text-white">
+                <h2 className="text-2xl sm:text-3xl font-bold mb-2">Create Account</h2>
+                <p className="text-blue-100">Get started with your free account</p>
+              </div>
 
+              <div className="px-6 sm:px-8 py-8">
                 <form onSubmit={handleSubmit} className="space-y-6">
                   {/* Email Field */}
                   <div>
@@ -235,7 +202,7 @@ export default function RegisterPage() {
                         type="email"
                         autoComplete="email"
                         required
-                        placeholder="john@example.com"
+                        placeholder="Enter your email address"
                         className="pl-10 h-12 border-gray-300 focus:border-blue-500 focus:ring-blue-500 rounded-xl"
                         value={form.email}
                         onChange={handleChange}
@@ -256,7 +223,7 @@ export default function RegisterPage() {
                         type="tel"
                         autoComplete="tel"
                         required
-                        placeholder="07043163283"
+                        placeholder="Enter your phone number"
                         className="pl-10 h-12 border-gray-300 focus:border-blue-500 focus:ring-blue-500 rounded-xl"
                         value={form.phone}
                         onChange={handleChange}
@@ -366,110 +333,94 @@ export default function RegisterPage() {
                     </div>
                     {form.confirmPassword && form.password !== form.confirmPassword && (
                       <p className="text-red-600 text-xs mt-1 flex items-center gap-1">
-                        <svg className="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                        </svg>
+                        <AlertCircle className="h-3 w-3" />
                         Passwords do not match
                       </p>
                     )}
                   </div>
 
-                  {/* Terms Checkbox */}
-                  <div className="flex items-start space-x-3">
-                    <input
-                      id="terms"
-                      name="terms"
-                      type="checkbox"
-                      required
-                      className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded mt-1"
-                    />
-                    <Label htmlFor="terms" className="text-sm text-gray-700 leading-5">
-                      I agree to the{" "}
-                      <Link href="/terms" className="text-blue-600 hover:text-blue-500 font-medium underline">
-                        Terms of Service
-                      </Link>{" "}
-                      and{" "}
-                      <Link href="/privacy" className="text-blue-600 hover:text-blue-500 font-medium underline">
-                        Privacy Policy
-                      </Link>
-                    </Label>
-                  </div>
-
                   {/* Submit Button */}
-                  <Button 
-                    type="submit" 
-                    className="w-full h-12 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200" 
-                    disabled={isLoading}
+                  <Button
+                    type="submit"
+                    disabled={isLoading || passwordStrength < 3 || form.password !== form.confirmPassword}
+                    className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 disabled:from-gray-400 disabled:to-gray-500 text-white font-semibold py-4 px-6 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 disabled:transform-none disabled:cursor-not-allowed flex items-center justify-center gap-3 text-base h-14"
                   >
                     {isLoading ? (
-                      <div className="flex items-center gap-2">
-                        <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                        Creating account...
-                      </div>
+                      <>
+                        <Loader2 className="w-5 h-5 animate-spin" />
+                        Creating Account...
+                      </>
                     ) : (
-                      "Create Account"
+                      <>
+                        Create Account
+                        <User className="w-5 h-5" />
+                      </>
                     )}
                   </Button>
-                </form>
 
-                {message && (
-                  <p className={`mt-4 text-center text-sm font-medium ${
-                    message.includes('successful') ? 'text-green-600' : 'text-red-600'
-                  }`}>
-                    {message}
+                  {/* Message */}
+                  {message && (
+                    <p className={`mt-4 text-center text-sm font-medium ${
+                      message.includes('successful') ? 'text-green-600' : 'text-red-600'
+                    }`}>
+                      {message}
+                    </p>
+                  )}
+
+                  {/* Social Login */}
+                  <div className="mt-8">
+                    <div className="relative">
+                      <div className="absolute inset-0 flex items-center">
+                        <div className="w-full border-t border-gray-300" />
+                      </div>
+                      <div className="relative flex justify-center text-sm">
+                        <span className="px-2 bg-white text-gray-500">Or continue with</span>
+                      </div>
+                    </div>
+
+                    <div className="mt-6 grid grid-cols-2 gap-3">
+                      <Button variant="outline" className="h-12 bg-white hover:bg-gray-50 border-gray-300 rounded-xl">
+                        <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
+                          <path
+                            fill="currentColor"
+                            d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                          />
+                          <path
+                            fill="currentColor"
+                            d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                          />
+                          <path
+                            fill="currentColor"
+                            d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
+                          />
+                          <path
+                            fill="currentColor"
+                            d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+                          />
+                        </svg>
+                        Google
+                      </Button>
+                      <Button variant="outline" className="h-12 bg-white hover:bg-gray-50 border-gray-300 rounded-xl">
+                        <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
+                          <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
+                        </svg>
+                        Apple
+                      </Button>
+                    </div>
+                  </div>
+
+                  {/* Terms */}
+                  <p className="text-xs text-center text-gray-600 mt-6">
+                    By creating an account, you agree to our{" "}
+                    <a href="#" className="text-blue-600 hover:text-blue-700 underline">
+                      Terms of Service
+                    </a>{" "}
+                    and{" "}
+                    <a href="#" className="text-blue-600 hover:text-blue-700 underline">
+                      Privacy Policy
+                    </a>
                   </p>
-                )}
-
-                {/* Social Login */}
-                <div className="mt-8">
-                  <div className="relative">
-                    <div className="absolute inset-0 flex items-center">
-                      <div className="w-full border-t border-gray-300" />
-                    </div>
-                    <div className="relative flex justify-center text-sm">
-                      <span className="px-2 bg-white text-gray-500">Or continue with</span>
-                    </div>
-                  </div>
-
-                  <div className="mt-6 grid grid-cols-2 gap-3">
-                    <Button variant="outline" className="h-12 bg-white hover:bg-gray-50 border-gray-300 rounded-xl">
-                      <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
-                        <path
-                          fill="currentColor"
-                          d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-                        />
-                        <path
-                          fill="currentColor"
-                          d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-                        />
-                        <path
-                          fill="currentColor"
-                          d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
-                        />
-                        <path
-                          fill="currentColor"
-                          d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
-                        />
-                      </svg>
-                      Google
-                    </Button>
-
-                    <Button variant="outline" className="h-12 bg-white hover:bg-gray-50 border-gray-300 rounded-xl">
-                      <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
-                      </svg>
-                      Apple
-                    </Button>
-                  </div>
-                </div>
-
-                {/* Sign In Link */}
-                <p className="mt-8 text-center text-sm text-gray-600">
-                  Already have an account?{" "}
-                  <Link href="/login" className="text-blue-600 hover:text-blue-500 font-semibold underline">
-                    Sign in here
-                  </Link>
-                </p>
+                </form>
               </div>
             </div>
           </div>

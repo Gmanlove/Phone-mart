@@ -1,51 +1,27 @@
 "use client"
 
-import { useState } from "react"
-import { ShoppingBag, ArrowLeft, Trash2, Plus, Minus, Heart, ShoppingCart, Lock, Truck, Shield } from "lucide-react"
-import { CldImage } from "next-cloudinary"
-import { useCart } from "@/contexts/cart-context"  // Import the real cart context
-import CartItem from "@/components/cart/cart-item"  // Use the existing cart item component
+import { ShoppingBag, ArrowLeft, Minus, Plus, X, Shield, Lock, LogIn } from "lucide-react"
+import Link from "next/link"
+import { useCart } from "@/contexts/cart-context"
+import { useAuth } from "@/contexts/auth-context"
+import CartItem from "@/components/cart/cart-item"
+import { Button } from "@/components/ui/button"
 
-const CartSummary = ({ items }: any) => {
-  const subtotal = items.reduce((sum: number, item: any) => sum + (item.price * item.quantity), 0)
-  const shipping = subtotal > 150000 ? 0 : 15000
-  const tax = subtotal * 0.075
-  const total = subtotal + shipping + tax
+// Quick Checkout Component
+function QuickCheckout() {
+  const { isAuthenticated } = useAuth()
+
+  const handleCheckout = () => {
+    if (isAuthenticated) {
+      window.location.href = '/checkout'
+    } else {
+      window.location.href = '/login?returnTo=/checkout'
+    }
+  }
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sticky top-6">
-      <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-        <ShoppingCart className="w-5 h-5" />
-        Order Summary
-      </h3>
-
+    <div className="bg-white p-6 rounded-2xl shadow-xl border border-gray-100 sticky top-4">
       <div className="space-y-4 mb-6">
-        <div className="flex justify-between text-gray-600">
-          <span>Subtotal ({items.reduce((sum: number, item: any) => sum + item.quantity, 0)} items)</span>
-          <span>₦{subtotal.toLocaleString()}</span>
-        </div>
-        <div className="flex justify-between text-gray-600">
-          <span>Shipping</span>
-          <span>{shipping === 0 ? 'Free' : `₦${shipping.toLocaleString()}`}</span>
-        </div>
-        <div className="flex justify-between text-gray-600">
-          <span>VAT (7.5%)</span>
-          <span>₦{tax.toLocaleString()}</span>
-        </div>
-        <div className="border-t border-gray-200 pt-4">
-          <div className="flex justify-between text-lg font-bold text-gray-900">
-            <span>Total</span>
-            <span>₦{total.toLocaleString()}</span>
-          </div>
-        </div>
-      </div>
-
-      {/* Benefits */}
-      <div className="space-y-3 mb-6 p-4 bg-green-50 rounded-xl border border-green-100">
-        <div className="flex items-center gap-3 text-sm text-green-700">
-          <Truck className="w-4 h-4 flex-shrink-0" />
-          <span>Free shipping on orders over $100</span>
-        </div>
         <div className="flex items-center gap-3 text-sm text-green-700">
           <Shield className="w-4 h-4 flex-shrink-0" />
           <span>30-day return guarantee</span>
@@ -57,21 +33,33 @@ const CartSummary = ({ items }: any) => {
       </div>
 
       <button
-        className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-4 px-6 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 mb-3"
-        onClick={() => window.location.href = '/checkout'}
+        className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-4 px-6 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 mb-3 flex items-center justify-center gap-2"
+        onClick={handleCheckout}
       >
-        Proceed to Checkout
+        {!isAuthenticated && <LogIn className="h-4 w-4" />}
+        {isAuthenticated ? 'Proceed to Checkout' : 'Sign In to Checkout'}
       </button>
       
       <button className="w-full border-2 border-gray-200 hover:border-gray-300 text-gray-700 font-medium py-3 px-6 rounded-xl transition-all duration-200 hover:bg-gray-50">
         Continue Shopping
       </button>
+
+      {!isAuthenticated && (
+        <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+          <p className="text-sm text-blue-700 text-center">
+            <Link href="/register" className="font-medium underline hover:no-underline">
+              Create an account
+            </Link> to enjoy faster checkout
+          </p>
+        </div>
+      )}
     </div>
   )
 }
 
 export default function CartPage() {
-  const { items, clearCart } = useCart()  // Use the real cart context
+  const { items, clearCart } = useCart()
+  const { isAuthenticated } = useAuth()
 
   if (items.length === 0) {
     return (
@@ -91,20 +79,33 @@ export default function CartPage() {
             </div>
             
             <div className="space-y-4">
-              <button className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-4 px-6 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 flex items-center justify-center gap-2">
-                <ArrowLeft className="h-4 w-4" />
-                Start Shopping
-              </button>
+              <Link href="/products">
+                <Button className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-4 px-6 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 flex items-center justify-center gap-2">
+                  <ArrowLeft className="h-4 w-4" />
+                  Start Shopping
+                </Button>
+              </Link>
               
               <div className="flex items-center gap-2 my-4">
                 <div className="flex-1 h-px bg-gray-200"></div>
-                <span>or</span>
+                <span className="text-sm text-gray-500 px-3">or</span>
                 <div className="flex-1 h-px bg-gray-200"></div>
               </div>
               
-              <button className="w-full border-2 border-gray-200 hover:border-gray-300 text-gray-700 font-medium py-3 px-6 rounded-xl transition-all duration-200 hover:bg-gray-50">
-                View Deals & Offers
-              </button>
+              {!isAuthenticated && (
+                <div className="space-y-3">
+                  <Link href="/login">
+                    <Button variant="outline" className="w-full border-2 border-gray-200 hover:border-gray-300 text-gray-700 font-medium py-3 px-6 rounded-xl transition-all duration-200 hover:bg-gray-50">
+                      Sign In
+                    </Button>
+                  </Link>
+                  <Link href="/register">
+                    <Button variant="outline" className="w-full border-2 border-gray-200 hover:border-gray-300 text-gray-700 font-medium py-3 px-6 rounded-xl transition-all duration-200 hover:bg-gray-50">
+                      Create Account
+                    </Button>
+                  </Link>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -186,7 +187,7 @@ export default function CartPage() {
 
           {/* Cart Summary */}
           <div className="lg:col-span-1">
-            <CartSummary items={items} />
+            <QuickCheckout />
           </div>
         </div>
       </div>

@@ -1,8 +1,10 @@
 "use client"
 
 import { useState, useCallback, useEffect } from "react"
-import { Search, ShoppingCart, User, Menu, X, Phone, ChevronDown, MapPin, Clock, Heart, Truck } from "lucide-react"
+import { Search, ShoppingCart, User, Menu, X, Phone, ChevronDown, MapPin, Clock, Heart, Truck, LogOut } from "lucide-react"
 import { useCart } from "@/contexts/cart-context"
+import { useAuth } from "@/contexts/auth-context"
+import Link from "next/link"
 
 // Mock components for demonstration
 const Button = ({ variant = "default", size = "default", className = "", children, ...props }) => {
@@ -53,49 +55,25 @@ const Badge = ({ variant = "default", className = "", children }) => {
   )
 }
 
-const Link = ({ href, className = "", children, ...props }) => (
-  <a href={href} className={className} {...props}>
-    {children}
-  </a>
-)
-
-// Navigation data
-const MAIN_NAVIGATION = [
-  { href: "/products", label: "All Phones" },
-  { href: "/products?brand=apple", label: "iPhone" },
-  { href: "/products?brand=samsung", label: "Samsung" },
-  { href: "/products?brand=google", label: "Google Pixel" },
-  { href: "/accessories", label: "Accessories" },
-  { href: "/deals", label: "Hot Deals", isSpecial: true },
-]
-
-const USER_MENU_ITEMS = [
-  { href: "/login", label: "Sign In" },
-  { href: "/register", label: "Create Account" },
-  { href: "/profile", label: "My Account" },
-  { href: "/orders", label: "My Orders" },
-]
-
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const [searchQuery, setSearchQuery] = useState("")
   const [isScrolled, setIsScrolled] = useState(false)
   const [isSearchOpen, setIsSearchOpen] = useState(false)
-  const { items } = useCart() // Use the real cart context
-  const [isLoggedIn, setIsLoggedIn] = useState(false)
+  const [searchQuery, setSearchQuery] = useState("")
   
-  const itemCount = items?.reduce((sum, item) => sum + item.quantity, 0) ?? 0
+  const { itemCount } = useCart()
+  const { isAuthenticated, user, logout } = useAuth()
 
   // Handle scroll effect
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 10)
+      setIsScrolled(window.scrollY > 20)
     }
     window.addEventListener('scroll', handleScroll)
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
-  // Close mobile menu when window resizes
+  // Handle responsive behavior
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth >= 768) {
@@ -160,6 +138,12 @@ export default function Header() {
     setIsMenuOpen(false)
   }, [])
 
+  const handleLogout = () => {
+    logout()
+    // Optional: redirect to home page
+    window.location.href = '/'
+  }
+
   return (
     <>
       <header 
@@ -200,9 +184,6 @@ export default function Header() {
                 <Link href="/track-order" className="hover:text-blue-300 transition-colors duration-200">
                   Track Order
                 </Link>
-                <Link href="/support" className="hover:text-blue-300 transition-colors duration-200">
-                  24/7 Support
-                </Link>
               </div>
             </div>
           </div>
@@ -210,39 +191,34 @@ export default function Header() {
 
         {/* Main header */}
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16 lg:h-20">
+          <div className="flex items-center justify-between h-16 lg:h-18">
             
-            {/* Logo - Enhanced responsive design */}
-            <Link 
-              href="/" 
-              className="flex flex-shrink-0 items-center space-x-2 lg:space-x-3 group"
-            >
-              <div className="relative">
-                <div className="rounded-xl lg:rounded-2xl bg-gradient-to-br from-blue-600 via-blue-700 to-blue-800 p-2 lg:p-3 text-white shadow-lg transition-all duration-300 group-hover:shadow-xl group-hover:scale-105">
-                  <Phone className="h-5 w-5 lg:h-6 lg:w-6" />
+            {/* Logo and Brand */}
+            <div className="flex items-center">
+              <Link href="/" className="flex items-center space-x-3 group">
+                <div className="relative">
+                  <div className="rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 p-2 lg:p-2.5 shadow-lg group-hover:shadow-xl transition-all duration-200">
+                    <Phone className="h-6 w-6 lg:h-7 lg:w-7 text-white" />
+                  </div>
                 </div>
-                <div className="absolute -top-0.5 -right-0.5 lg:-top-1 lg:-right-1 h-3 w-3 lg:h-4 lg:w-4 bg-red-500 rounded-full animate-pulse shadow-sm"></div>
-              </div>
-              <div className="hidden sm:block">
-                <div className="text-xl lg:text-2xl font-bold bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
-                  PhoneMart
+                <div className="hidden sm:block">
+                  <span className="text-xl lg:text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+                    PhoneMart
+                  </span>
+                  <div className="text-xs text-gray-500 font-medium -mt-1">
+                    Premium Electronics
+                  </div>
                 </div>
-                <div className="text-xs lg:text-sm text-gray-500 font-medium -mt-1">
-                  Premium Mobile Store
-                </div>
-              </div>
-            </Link>
+              </Link>
+            </div>
 
-            {/* Desktop Search bar - Hidden on mobile/tablet */}
+            {/* Desktop Search Bar */}
             <div className="hidden xl:flex flex-1 max-w-2xl mx-8">
-              <div onSubmit={handleSearchSubmit} className="relative w-full">
-                <div className="absolute inset-y-0 left-0 flex items-center pl-4">
-                  <Search className="h-5 w-5 text-gray-400" />
-                </div>
+              <div className="relative w-full">
                 <Input
                   type="search"
-                  placeholder="Search iPhone, Samsung, Google Pixel, accessories..."
-                  className="w-full rounded-full border-2 border-gray-200 bg-gray-50/80 py-3 pl-12 pr-24 text-base transition-all duration-300 focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-500/10 hover:bg-white hover:border-gray-300"
+                  placeholder="Search for phones, accessories, and more..."
+                  className="w-full pl-4 pr-24 py-3 text-base rounded-full border-2 border-gray-200 focus:border-blue-500 focus:ring-blue-500/20 bg-gray-50 focus:bg-white transition-all duration-200"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleSearchSubmit(e)}
@@ -253,8 +229,7 @@ export default function Header() {
                     size="sm" 
                     className="rounded-full bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 font-medium transition-all duration-200 hover:shadow-lg"
                   >
-
-        Search
+                    Search
                   </Button>
                 </div>
               </div>
@@ -295,18 +270,20 @@ export default function Header() {
                     <div className="rounded-full bg-gradient-to-r from-blue-500 to-blue-600 p-1.5">
                       <User className="h-4 w-4 text-white" />
                     </div>
-                    <span className="hidden xl:block text-sm font-medium text-gray-700">Account</span>
+                    <span className="hidden xl:block text-sm font-medium text-gray-700">
+                      {isAuthenticated ? 'Account' : 'Sign In'}
+                    </span>
                     <ChevronDown className="h-4 w-4 text-gray-500 transition-transform group-hover:rotate-180 duration-200" />
                   </Button>
                   
                   {/* Dropdown menu */}
                   <div className="absolute right-0 top-full mt-2 w-56 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 transform translate-y-2 group-hover:translate-y-0">
                     <div className="bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden">
-                      {isLoggedIn ? (
+                      {isAuthenticated ? (
                         <div className="py-2">
                           <div className="px-4 py-3 border-b border-gray-100 bg-gray-50">
                             <p className="text-sm font-semibold text-gray-900">Welcome back!</p>
-                            <p className="text-xs text-gray-500">user@example.com</p>
+                            <p className="text-xs text-gray-500">{user?.email}</p>
                           </div>
                           <Link href="/profile" className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors">
                             <User className="mr-3 h-4 w-4" />
@@ -317,7 +294,11 @@ export default function Header() {
                             My Orders
                           </Link>
                           <div className="border-t border-gray-100">
-                            <button className="flex items-center w-full px-4 py-3 text-sm text-red-600 hover:bg-red-50 transition-colors">
+                            <button 
+                              onClick={handleLogout}
+                              className="flex items-center w-full px-4 py-3 text-sm text-red-600 hover:bg-red-50 transition-colors"
+                            >
+                              <LogOut className="mr-3 h-4 w-4" />
                               Sign Out
                             </button>
                           </div>
@@ -348,197 +329,163 @@ export default function Header() {
                     <ShoppingCart className="h-4 w-4 text-white" />
                   </div>
                   {itemCount > 0 && (
-                    <Badge 
-                      className="absolute -right-1 -top-1 h-5 w-5 flex items-center justify-center border-2 border-white bg-red-500 text-white text-xs font-bold rounded-full animate-bounce"
-                    >
-                      {itemCount > 99 ? "99+" : itemCount}
+                    <Badge className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center text-xs font-bold bg-red-500 text-white rounded-full border-2 border-white">
+                      {itemCount > 9 ? '9+' : itemCount}
                     </Badge>
                   )}
                 </Button>
               </Link>
 
-              {/* Mobile menu toggle */}
+              {/* Mobile menu button */}
               <Button 
                 variant="ghost" 
                 size="icon"
-                className="lg:hidden rounded-full p-2 hover:bg-gray-100 transition-all duration-200" 
+                className="lg:hidden rounded-full p-2 hover:bg-gray-100 transition-all duration-200"
                 onClick={toggleMobileMenu}
                 data-mobile-menu
               >
-                <div className="relative">
-                  {isMenuOpen ? (
-                    <X className="h-5 w-5 text-gray-600 transition-transform duration-300 rotate-90" />
-                  ) : (
-                    <Menu className="h-5 w-5 text-gray-600 transition-transform duration-300" />
-                  )}
-                </div>
+                {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
               </Button>
             </div>
           </div>
-
-          {/* Desktop Navigation */}
-          <nav className="hidden lg:block border-t border-gray-100 py-4">
-            <div className="flex items-center justify-center space-x-8">
-              {MAIN_NAVIGATION.map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className={`relative font-medium transition-all duration-300 hover:scale-105 group ${
-                    item.isSpecial 
-                      ? "text-red-600 hover:text-red-700 font-semibold" 
-                      : "text-gray-700 hover:text-blue-600"
-                  }`}
-                >
-                  {item.label}
-                  {item.isSpecial && (
-                    <span className="absolute -top-2 -right-3 flex h-2 w-2">
-                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                      <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
-                    </span>
-                  )}
-                  <span className="absolute bottom-0 left-0 h-0.5 w-0 bg-blue-600 transition-all duration-300 group-hover:w-full"></span>
-                </Link>
-              ))}
-            </div>
-          </nav>
         </div>
 
-        {/* Mobile Search Bar */}
+        {/* Mobile Search */}
         {isSearchOpen && (
-          <div className="xl:hidden border-t border-gray-200 bg-white/95 backdrop-blur-sm" data-mobile-search>
+          <div 
+            className="xl:hidden border-t border-gray-200 bg-white/95 backdrop-blur-md"
+            data-mobile-search
+          >
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-4">
-              <div className="relative">
-                <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
+              <form onSubmit={handleSearchSubmit} className="relative">
                 <Input
                   type="search"
-                  placeholder="Search products..."
-                  className="w-full rounded-full border-2 border-gray-200 bg-gray-50 py-3 pl-12 pr-4 text-base focus:border-blue-500 focus:bg-white transition-all duration-300"
+                  placeholder="Search for phones, accessories..."
+                  className="w-full pl-4 pr-20 py-3 text-base rounded-full border-2 border-gray-200 focus:border-blue-500 focus:ring-blue-500/20"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && handleSearchSubmit(e)}
                   autoFocus
                 />
+                <Button 
+                  type="submit"
+                  size="sm" 
+                  className="absolute right-2 top-1/2 transform -translate-y-1/2 rounded-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-1.5 text-sm font-medium"
+                >
+                  Search
+                </Button>
+              </form>
+            </div>
+          </div>
+        )}
+
+        {/* Mobile Navigation Menu */}
+        {isMenuOpen && (
+          <div 
+            className="lg:hidden fixed inset-x-0 top-full bg-white border-t border-gray-200 shadow-xl z-40"
+            data-mobile-menu
+          >
+            <div className="px-4 py-6 space-y-4">
+              
+              {/* Authentication Section */}
+              <div className="border-b border-gray-200 pb-4 mb-4">
+                {isAuthenticated ? (
+                  <div className="space-y-3">
+                    <div className="flex items-center space-x-3">
+                      <div className="rounded-full bg-gradient-to-r from-blue-500 to-blue-600 p-2">
+                        <User className="h-5 w-5 text-white" />
+                      </div>
+                      <div>
+                        <p className="font-semibold text-gray-900">Welcome back!</p>
+                        <p className="text-sm text-gray-500">{user?.email}</p>
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-3">
+                      <Link href="/profile" onClick={closeMobileMenu}>
+                        <Button variant="outline" className="w-full justify-start">
+                          <User className="mr-2 h-4 w-4" />
+                          Profile
+                        </Button>
+                      </Link>
+                      <Link href="/orders" onClick={closeMobileMenu}>
+                        <Button variant="outline" className="w-full justify-start">
+                          <ShoppingCart className="mr-2 h-4 w-4" />
+                          Orders
+                        </Button>
+                      </Link>
+                    </div>
+                    <Button 
+                      variant="destructive" 
+                      className="w-full justify-start"
+                      onClick={() => {
+                        handleLogout()
+                        closeMobileMenu()
+                      }}
+                    >
+                      <LogOut className="mr-2 h-4 w-4" />
+                      Sign Out
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    <Link href="/login" onClick={closeMobileMenu}>
+                      <Button className="w-full">Sign In</Button>
+                    </Link>
+                    <Link href="/register" onClick={closeMobileMenu}>
+                      <Button variant="outline" className="w-full">Create Account</Button>
+                    </Link>
+                  </div>
+                )}
+              </div>
+
+              {/* Navigation Links */}
+              <div className="space-y-3">
+                <Link href="/products" onClick={closeMobileMenu}>
+                  <Button variant="ghost" className="w-full justify-start text-base font-medium">
+                    All Products
+                  </Button>
+                </Link>
+                <Link href="/deals" onClick={closeMobileMenu}>
+                  <Button variant="ghost" className="w-full justify-start text-base font-medium">
+                    Deals & Offers
+                  </Button>
+                </Link>
+                <Link href="/accessories" onClick={closeMobileMenu}>
+                  <Button variant="ghost" className="w-full justify-start text-base font-medium">
+                    Accessories
+                  </Button>
+                </Link>
+                <Link href="/support" onClick={closeMobileMenu}>
+                  <Button variant="ghost" className="w-full justify-start text-base font-medium">
+                    Support
+                  </Button>
+                </Link>
+                <Link href="/track-order" onClick={closeMobileMenu}>
+                  <Button variant="ghost" className="w-full justify-start text-base font-medium">
+                    Track Order
+                  </Button>
+                </Link>
+              </div>
+
+              {/* Contact Info */}
+              <div className="border-t border-gray-200 pt-4 space-y-2">
+                <div className="flex items-center space-x-3 text-sm text-gray-600">
+                  <Phone className="h-4 w-4" />
+                  <a href="tel:08146452793" className="hover:text-blue-600 transition-colors">
+                    0814 645 2793
+                  </a>
+                </div>
+                <div className="flex items-center space-x-3 text-sm text-gray-600">
+                  <MapPin className="h-4 w-4" />
+                  <span>Uyo, Akwa Ibom</span>
+                </div>
               </div>
             </div>
           </div>
         )}
       </header>
 
-      {/* Mobile menu overlay and panel */}
-      {isMenuOpen && (
-        <>
-          <div 
-            className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm transition-opacity duration-300 lg:hidden" 
-            onClick={closeMobileMenu}
-          />
-          
-          <div 
-            className="fixed top-0 right-0 z-50 h-full w-full max-w-sm overflow-y-auto bg-white shadow-2xl transition-transform duration-300 lg:hidden" 
-            data-mobile-menu
-          >
-            <div className="p-6">
-              {/* Mobile header */}
-              <div className="flex items-center justify-between mb-8">
-                <div className="flex items-center space-x-3">
-                  <div className="rounded-xl bg-gradient-to-br from-blue-600 to-blue-800 p-2 text-white">
-                    <Phone className="h-5 w-5" />
-                  </div>
-                  <div>
-                    <div className="text-lg font-bold text-gray-900">PhoneMart</div>
-                    <div className="text-xs text-gray-500">Premium Mobile Store</div>
-                  </div>
-                </div>
-                <Button 
-                  variant="ghost" 
-                  size="icon"
-                  onClick={closeMobileMenu}
-                  className="rounded-full"
-                >
-                  <X className="h-5 w-5" />
-                </Button>
-              </div>
-
-              {/* Mobile navigation */}
-              <nav className="space-y-1">
-                {MAIN_NAVIGATION.map((item) => (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    className={`flex items-center justify-between rounded-xl px-4 py-4 font-medium transition-all duration-200 ${
-                      item.isSpecial 
-                        ? "bg-red-50 text-red-600 hover:bg-red-100" 
-                        : "text-gray-700 hover:bg-blue-50 hover:text-blue-600"
-                    }`}
-                    onClick={closeMobileMenu}
-                  >
-                    <span>{item.label}</span>
-                    {item.isSpecial && (
-                      <Badge className="bg-red-500 text-white text-xs px-2 py-1 rounded-full">
-                        HOT
-                      </Badge>
-                    )}
-                  </Link>
-                ))}
-                
-                <div className="my-6 border-t border-gray-200" />
-                
-                {/* User menu items */}
-                <div className="space-y-1">
-                  <h3 className="px-4 text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">
-                    Account
-                  </h3>
-                  {USER_MENU_ITEMS.map((item) => (
-                    <Link
-                      key={item.href}
-                      href={item.href}
-                      className="flex items-center rounded-xl px-4 py-4 font-medium text-gray-700 transition-all duration-200 hover:bg-blue-50 hover:text-blue-600"
-                      onClick={closeMobileMenu}
-                    >
-                      {item.label}
-                    </Link>
-                  ))}
-                </div>
-
-                {/* Contact info */}
-                <div className="mt-8 border-t border-gray-200 pt-6">
-                  <div className="rounded-xl bg-gradient-to-r from-blue-50 to-slate-50 p-4">
-                    <h3 className="font-semibold text-gray-900 mb-4">Get in Touch</h3>
-                    <div className="space-y-3">
-                      <a 
-                        href="tel:08146452793" 
-                        className="flex items-center text-gray-600 hover:text-blue-600 transition-colors"
-                      >
-                        <Phone className="mr-3 h-4 w-4" />
-                        <span className="font-medium">0814 645 2793</span>
-                      </a>
-                      <div className="flex items-center text-gray-600">
-                        <Clock className="mr-3 h-4 w-4" />
-                        <span className="text-sm">Mon-Sat 9AM-8PM</span>
-                      </div>
-                      <div className="flex items-center text-gray-600">
-                        <MapPin className="mr-3 h-4 w-4" />
-                        <span className="text-sm">Uyo, Akwa Ibom</span>
-                      </div>
-                    </div>
-                    <div className="mt-4 pt-4 border-t border-gray-200">
-                      <div className="text-sm text-green-600 mb-2 flex items-center">
-                        <Truck className="mr-2 h-4 w-4" />
-                        Free shipping on orders over ₦100,000
-                      </div>
-                      <div className="text-sm font-medium text-blue-600">
-                        ⭐ Rated #1 Phone Store in Nigeria
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </nav>
-            </div>
-          </div>
-        </>
-      )}
-
-      {/* Spacer for fixed header */}
-      <div className={`${isScrolled ? 'h-16 lg:h-24' : 'h-16 lg:h-28'} transition-all duration-300`}></div>
+      {/* Spacer to prevent content from hiding behind fixed header */}
+      <div className="h-16 lg:h-[4.5rem]" />
     </>
   )
 }
