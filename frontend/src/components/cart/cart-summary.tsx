@@ -171,7 +171,6 @@ export default function CartSummary() {
                 </div>
                 <Button
                   variant="ghost"
-                  size="sm"
                   onClick={removePromo}
                   className="text-green-600 hover:text-green-700 hover:bg-green-100"
                 >

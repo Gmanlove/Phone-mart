@@ -98,8 +98,7 @@ export default function RegisterPage() {
         setMessage(data.error || "Signup failed")
         toast({
           title: "Signup failed",
-          description: data.error || "Signup failed",
-          variant: "destructive"
+          description: data.error || "Signup failed"
         })
       }
     } catch (error) {

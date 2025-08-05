@@ -76,7 +76,19 @@ export default function SearchPage() {
     }
   ];
 
-  const ResultCard = ({ result, isListView = false }) => (
+  const ResultCard = ({ result, isListView = false }: { 
+    result: { 
+      title: string; 
+      description: string; 
+      image: string; 
+      price?: string; 
+      rating?: string | number; 
+      reviews?: number; 
+      location?: string; 
+      time?: string; 
+    }; 
+    isListView?: boolean 
+  }) => (
     <div className={`bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-100 hover:border-gray-200 group ${isListView ? 'flex flex-col sm:flex-row gap-4 p-4' : 'p-6'}`}>
       <div className={`${result.image} rounded-lg ${isListView ? 'w-full sm:w-48 h-32 flex-shrink-0' : 'w-full h-48 mb-4'} flex items-center justify-center`}>
         <div className="w-16 h-16 bg-white/20 rounded-lg backdrop-blur-sm"></div>
@@ -100,7 +112,7 @@ export default function SearchPage() {
           <div className="flex items-center gap-1">
             <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
             <span className="font-medium text-gray-700">{result.rating}</span>
-            <span>({result.reviews.toLocaleString()})</span>
+            <span>({result.reviews?.toLocaleString()})</span>
           </div>
           <div className="flex items-center gap-1">
             <MapPin className="w-3 h-3" />

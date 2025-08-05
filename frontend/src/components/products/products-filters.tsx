@@ -1,41 +1,82 @@
 "use client"
 
-import { useState } from "react"
+import React, { useState } from "react"
 import { X, Filter, ChevronDown, ChevronUp, Smartphone, Star, Zap, Shield, Battery, Camera } from "lucide-react"
 
+// TypeScript interfaces
+interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
+  className?: string
+  children: React.ReactNode
+}
+
+interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  variant?: "default" | "ghost" | "outline"
+  size?: "default" | "sm" | "lg"
+  className?: string
+  children: React.ReactNode
+}
+
+interface BadgeProps extends React.HTMLAttributes<HTMLDivElement> {
+  variant?: "default" | "secondary" | "destructive"
+  className?: string
+  children: React.ReactNode
+}
+
+interface CheckboxProps extends React.InputHTMLAttributes<HTMLInputElement> {
+  id: string
+  checked: boolean
+  onCheckedChange: (checked: boolean) => void
+  className?: string
+}
+
+interface LabelProps extends React.LabelHTMLAttributes<HTMLLabelElement> {
+  htmlFor: string
+  className?: string
+  children: React.ReactNode
+}
+
+interface RangeSliderProps {
+  value: number[]
+  onValueChange: (value: number[]) => void
+  min?: number
+  max?: number
+  step?: number
+  className?: string
+}
+
 // Mock components for demonstration
-const Card = ({ className = "", children, ...props }) => (
+const Card = ({ className = "", children, ...props }: CardProps) => (
   <div className={`rounded-xl border border-gray-200 bg-white shadow-sm ${className}`} {...props}>
     {children}
   </div>
 )
 
-const CardContent = ({ className = "", children, ...props }) => (
+const CardContent = ({ className = "", children, ...props }: CardProps) => (
   <div className={`p-4 ${className}`} {...props}>
     {children}
   </div>
 )
 
-const CardHeader = ({ className = "", children, ...props }) => (
+const CardHeader = ({ className = "", children, ...props }: CardProps) => (
   <div className={`p-4 pb-2 ${className}`} {...props}>
     {children}
   </div>
 )
 
-const CardTitle = ({ className = "", children, ...props }) => (
+const CardTitle = ({ className = "", children, ...props }: CardProps) => (
   <h3 className={`font-semibold leading-none tracking-tight ${className}`} {...props}>
     {children}
   </h3>
 )
 
-const Button = ({ variant = "default", size = "default", className = "", children, ...props }) => {
+const Button = ({ variant = "default", size = "default", className = "", children, ...props }: ButtonProps) => {
   const baseClasses = "inline-flex items-center justify-center font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
-  const variants = {
+  const variants: Record<string, string> = {
     default: "bg-blue-600 text-white hover:bg-blue-700 focus-visible:ring-blue-500",
     ghost: "hover:bg-gray-100 hover:text-gray-900",
     outline: "border border-gray-300 bg-white hover:bg-gray-50"
   }
-  const sizes = {
+  const sizes: Record<string, string> = {
     default: "h-10 px-4 py-2 text-sm rounded-lg",
     sm: "h-8 px-3 text-xs rounded-md",
     lg: "h-12 px-8 text-base rounded-lg"
@@ -51,8 +92,8 @@ const Button = ({ variant = "default", size = "default", className = "", childre
   )
 }
 
-const Badge = ({ variant = "default", className = "", children, ...props }) => {
-  const variants = {
+const Badge = ({ variant = "default", className = "", children, ...props }: BadgeProps) => {
+  const variants: Record<string, string> = {
     default: "bg-blue-100 text-blue-800 border border-blue-200",
     secondary: "bg-gray-100 text-gray-800 border border-gray-200 hover:bg-gray-50",
     destructive: "bg-red-100 text-red-800 border border-red-200"
@@ -68,7 +109,7 @@ const Badge = ({ variant = "default", className = "", children, ...props }) => {
   )
 }
 
-const Checkbox = ({ id, checked, onCheckedChange, className = "", ...props }) => (
+const Checkbox = ({ id, checked, onCheckedChange, className = "", ...props }: CheckboxProps) => (
   <input
     type="checkbox"
     id={id}
@@ -79,7 +120,7 @@ const Checkbox = ({ id, checked, onCheckedChange, className = "", ...props }) =>
   />
 )
 
-const Label = ({ htmlFor, className = "", children, ...props }) => (
+const Label = ({ htmlFor, className = "", children, ...props }: LabelProps) => (
   <label 
     htmlFor={htmlFor} 
     className={`text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 ${className}`} 
@@ -90,8 +131,8 @@ const Label = ({ htmlFor, className = "", children, ...props }) => (
 )
 
 // Custom Range Slider Component
-const RangeSlider = ({ value, onValueChange, min = 0, max = 100, step = 1, className = "" }) => {
-  const handleChange = (index, newValue) => {
+const RangeSlider = ({ value, onValueChange, min = 0, max = 100, step = 1, className = "" }: RangeSliderProps) => {
+  const handleChange = (index: number, newValue: string) => {
     const newRange = [...value]
     newRange[index] = parseInt(newValue)
     onValueChange(newRange)
@@ -155,11 +196,11 @@ const RangeSlider = ({ value, onValueChange, min = 0, max = 100, step = 1, class
 }
 
 export default function ProductsFilters() {
-  const [priceRange, setPriceRange] = useState([0, 2000000])
-  const [selectedBrands, setSelectedBrands] = useState([])
-  const [selectedFeatures, setSelectedFeatures] = useState([])
-  const [selectedStorage, setSelectedStorage] = useState([])
-  const [selectedRating, setSelectedRating] = useState("")
+  const [priceRange, setPriceRange] = useState<number[]>([0, 2000000])
+  const [selectedBrands, setSelectedBrands] = useState<string[]>([])
+  const [selectedFeatures, setSelectedFeatures] = useState<string[]>([])
+  const [selectedStorage, setSelectedStorage] = useState<string[]>([])
+  const [selectedRating, setSelectedRating] = useState<string>("")
   const [expandedSections, setExpandedSections] = useState({
     price: true,
     brands: true,
@@ -210,7 +251,7 @@ export default function ProductsFilters() {
     { id: "used", name: "Used - Like New", count: 18 }
   ]
 
-  const handleBrandChange = (brandId, checked) => {
+  const handleBrandChange = (brandId: string, checked: boolean) => {
     if (checked) {
       setSelectedBrands([...selectedBrands, brandId])
     } else {
@@ -218,7 +259,7 @@ export default function ProductsFilters() {
     }
   }
 
-  const handleFeatureChange = (featureId, checked) => {
+  const handleFeatureChange = (featureId: string, checked: boolean) => {
     if (checked) {
       setSelectedFeatures([...selectedFeatures, featureId])
     } else {
@@ -226,7 +267,7 @@ export default function ProductsFilters() {
     }
   }
 
-  const handleStorageChange = (storageId, checked) => {
+  const handleStorageChange = (storageId: string, checked: boolean) => {
     if (checked) {
       setSelectedStorage([...selectedStorage, storageId])
     } else {
@@ -234,10 +275,10 @@ export default function ProductsFilters() {
     }
   }
 
-  const toggleSection = (section) => {
+  const toggleSection = (section: string) => {
     setExpandedSections(prev => ({
       ...prev,
-      [section]: !prev[section]
+      [section]: !prev[section as keyof typeof prev]
     }))
   }
 
@@ -249,7 +290,7 @@ export default function ProductsFilters() {
     setSelectedRating("")
   }
 
-  const formatPrice = (price) => {
+  const formatPrice = (price: number) => {
     return new Intl.NumberFormat('en-NG', {
       style: 'currency',
       currency: 'NGN',
@@ -265,7 +306,7 @@ export default function ProductsFilters() {
     (selectedRating ? 1 : 0) +
     (priceRange[0] > 0 || priceRange[1] < 2000000 ? 1 : 0)
 
-  const renderStars = (rating) => {
+  const renderStars = (rating: string) => {
     const stars = []
     const numStars = parseInt(rating.replace('+', ''))
     for (let i = 1; i <= 5; i++) {
@@ -635,7 +676,11 @@ export default function ProductsFilters() {
               {conditionOptions.map((condition) => (
                 <div key={condition.id} className="flex items-center justify-between p-2 hover:bg-gray-50 rounded-lg transition-colors">
                   <div className="flex items-center space-x-3">
-                    <Checkbox id={condition.id} />
+                    <Checkbox 
+                      id={condition.id}
+                      checked={false}
+                      onCheckedChange={() => {}}
+                    />
                     <Label htmlFor={condition.id} className="text-sm font-normal cursor-pointer">
                       {condition.name}
                     </Label>

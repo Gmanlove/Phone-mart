@@ -171,7 +171,7 @@ export default function Header() {
                     type="text"
                     placeholder="Search smartphones, accessories, brands..."
                     value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)}
                     className="w-full pl-12 pr-14 py-3 rounded-full border-2 border-gray-200 dark:border-gray-600 focus:border-blue-500 dark:focus:border-blue-400 transition-all duration-300 bg-gray-50 dark:bg-gray-800 hover:bg-white dark:hover:bg-gray-700 group-hover:shadow-md"
                   />
                   <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400 group-hover:text-blue-500 transition-colors duration-200" />
@@ -197,7 +197,7 @@ export default function Header() {
                   >
                     <User className="h-5 w-5" />
                     <span className="text-sm font-medium">
-                      {user.name ? user.name.split(' ')[0] : 'Account'}
+                      {user.email ? user.email.split('@')[0] : 'Account'}
                     </span>
                     <ChevronDown className="h-4 w-4" />
                   </Button>
@@ -206,7 +206,7 @@ export default function Header() {
                     <div className="absolute right-0 mt-2 w-56 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 py-2 z-50">
                       <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-700">
                         <p className="text-sm font-medium text-gray-900 dark:text-white">
-                          {user.name || 'User'}
+                          {user.email || 'User'}
                         </p>
                         <p className="text-sm text-gray-500 dark:text-gray-400 truncate">
                           {user.email}
@@ -294,7 +294,7 @@ export default function Header() {
                   type="text"
                   placeholder="Search smartphones, accessories..."
                   value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)}
                   className="w-full pl-12 pr-14 py-3 rounded-full border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 hover:bg-white dark:hover:bg-gray-700 transition-all duration-200"
                 />
                 <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
@@ -359,7 +359,7 @@ export default function Header() {
                   <>
                     <div className="py-2">
                       <p className="text-sm font-medium text-gray-900 dark:text-white">
-                        {user.name || 'User'}
+                        {user.email || 'User'}
                       </p>
                       <p className="text-sm text-gray-500 dark:text-gray-400">
                         {user.email}
