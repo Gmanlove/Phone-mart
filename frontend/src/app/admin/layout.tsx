@@ -28,17 +28,30 @@ export default function AdminLayout({
 }) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const [loading, setLoading] = useState(true)
   const router = useRouter()
   const pathname = usePathname()
 
+  // Check if current page is login page
+  const isLoginPage = pathname === "/admin/login"
+
   useEffect(() => {
+    // If it's the login page, don't check authentication
+    if (isLoginPage) {
+      setLoading(false)
+      setIsAuthenticated(false)
+      return
+    }
+
+    // For other admin pages, check authentication
     const isAdmin = sessionStorage.getItem("isAdmin")
-    if (!isAdmin && pathname !== "/admin/login") {
+    if (!isAdmin) {
       router.push("/admin/login")
     } else {
       setIsAuthenticated(true)
     }
-  }, [pathname, router])
+    setLoading(false)
+  }, [pathname, router, isLoginPage])
 
   const handleLogout = () => {
     sessionStorage.removeItem("isAdmin")
@@ -54,10 +67,23 @@ export default function AdminLayout({
     { name: "Earnings", href: "/admin/earnings", icon: DollarSign },
   ]
 
+  // If it's the login page, render children without layout
+  if (isLoginPage) {
+    return <>{children}</>
+  }
+
+  // If loading, show loading screen
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-white"></div>
+      </div>
+    )
+  }
+
+  // If not authenticated and not login page, don't render anything (redirect will happen)
   if (!isAuthenticated) {
-    return <div className="min-h-screen bg-gray-900 flex items-center justify-center">
-      <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-white"></div>
-    </div>
+    return null
   }
 
   return (
