@@ -46,7 +46,12 @@ interface AnalyticsData {
 }
 
 interface EarningsData {
-  _id: string | null
+  _id: {
+    day?: number;
+    month?: number;
+    week?: number;
+    year?: number;
+  } | null
   total: number
   count: number
 }
@@ -327,9 +332,9 @@ export default function AdminAnalytics() {
                       title={`${formatCurrency(item.total)} (${item.count} orders)`}
                     />
                     <div className="text-xs text-gray-600 dark:text-gray-400 mt-2 text-center">
-                      {groupBy === 'day' && `${item._id.day}/${item._id.month}`}
-                      {groupBy === 'week' && `W${item._id.week}`}
-                      {groupBy === 'month' && `${item._id.month}/${item._id.year}`}
+                      {groupBy === 'day' && item._id && `${item._id.day}/${item._id.month}`}
+                      {groupBy === 'week' && item._id && `W${item._id.week}`}
+                      {groupBy === 'month' && item._id && `${item._id.month}/${item._id.year}`}
                     </div>
                   </div>
                 )

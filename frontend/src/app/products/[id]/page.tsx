@@ -49,7 +49,7 @@ async function fetchProduct(id: string): Promise<Product | null> {
 export default function ProductDetailPage({ 
   params 
 }: { 
-  params: { id: string }
+  params: Promise<{ id: string }>
 }) {
   const [product, setProduct] = useState<Product | null>(null)
   const [loading, setLoading] = useState(true)
@@ -59,7 +59,8 @@ export default function ProductDetailPage({
     const loadProduct = async () => {
       try {
         setLoading(true)
-        const fetchedProduct = await fetchProduct(params.id)
+        const resolvedParams = await params
+        const fetchedProduct = await fetchProduct(resolvedParams.id)
         if (!fetchedProduct) {
           setError(true)
         } else {
@@ -76,7 +77,7 @@ export default function ProductDetailPage({
     }
 
     loadProduct()
-  }, [params.id])
+  }, [params])
 
   if (loading) {
     return (
@@ -253,7 +254,7 @@ export default function ProductDetailPage({
               {product.category && (
                 <div className="space-y-2">
                   <h3 className="text-lg font-semibold text-gray-900">Category</h3>
-                  <Badge variant="outline" className="text-sm">
+                  <Badge variant="secondary" className="text-sm">
                     {product.category}
                   </Badge>
                 </div>

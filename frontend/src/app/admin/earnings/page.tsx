@@ -24,7 +24,12 @@ import {
 } from "lucide-react"
 
 interface EarningsData {
-  _id: string | null
+  _id: {
+    day?: number;
+    month?: number;
+    week?: number;
+    year?: number;
+  } | null
   total: number
   count: number
 }
@@ -163,7 +168,7 @@ export default function AdminEarningsPage() {
     const csvContent = [
       ['Date', 'Revenue', 'Orders', 'Average Order Value'],
       ...earningsData.map(item => [
-        `${item._id.day || ''}/${item._id.month}/${item._id.year}`,
+        item._id ? `${item._id.day || ''}/${item._id.month}/${item._id.year}` : 'N/A',
         item.total,
         item.count,
         item.count > 0 ? (item.total / item.count).toFixed(2) : '0'
@@ -372,9 +377,9 @@ export default function AdminEarningsPage() {
                       </div>
                     </div>
                     <div className="text-xs text-gray-600 dark:text-gray-400 mt-3 text-center">
-                      {groupBy === 'day' && `${item._id.day}/${item._id.month}`}
-                      {groupBy === 'week' && `W${item._id.week}`}
-                      {groupBy === 'month' && `${item._id.month}/${item._id.year}`}
+                      {groupBy === 'day' && item._id && `${item._id.day}/${item._id.month}`}
+                      {groupBy === 'week' && item._id && `W${item._id.week}`}
+                      {groupBy === 'month' && item._id && `${item._id.month}/${item._id.year}`}
                     </div>
                   </div>
                 )
@@ -502,7 +507,7 @@ export default function AdminEarningsPage() {
               </thead>
               <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
                 {earningsData.slice(-10).map((item, index) => {
-                  const dateStr = `${item._id.day || ''}/${item._id.month}/${item._id.year}`
+                  const dateStr = item._id ? `${item._id.day || ''}/${item._id.month}/${item._id.year}` : 'N/A'
                   const avgOrder = item.count > 0 ? item.total / item.count : 0
                   const prevItem = earningsData[earningsData.indexOf(item) - 1]
                   const growth = prevItem && prevItem.total > 0 ? 

@@ -201,7 +201,7 @@ export default function CheckoutPage() {
         date: new Date().toISOString(),
       }
       
-      placeOrder(order)
+      placeOrder(items, total)
       clearCart()
       setCurrentStep(4)
       setIsProcessing(false)
@@ -248,7 +248,7 @@ export default function CheckoutPage() {
             date: new Date().toISOString(),
           }
           
-          placeOrder(order)
+          placeOrder(items, total)
           clearCart()
           setCurrentStep(4)
           setIsProcessing(false)
