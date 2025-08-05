@@ -65,7 +65,7 @@ export default function ProductDetailPage({
         } else {
           setProduct(fetchedProduct)
           // Set document title for SEO as a workaround
-          document.title = `${fetchedProduct.name} - PhoneMart`
+          document.title = `${fetchedProduct.name} - Smart Communications`
         }
       } catch (err) {
         console.error('Error loading product:', err)

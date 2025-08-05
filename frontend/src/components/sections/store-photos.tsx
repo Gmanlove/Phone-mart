@@ -6,25 +6,25 @@ import { ChevronLeft, ChevronRight, MapPin, Clock, Users, Award } from "lucide-r
 const storeImages = [
   {
     id: 1,
-    src: "/api/placeholder/600/400",
+    src: "/img5.jpeg",
     alt: "Smart Communications Main Store Interior",
-    caption: "Our flagship store in Victoria Island, Lagos"
+    caption: "Our flagship store in Uyo, Akwa Ibom",
   },
   {
     id: 2,
-    src: "/api/placeholder/600/400", 
+    src: "/img2.jpeg", 
     alt: "Expert Staff Assisting Customer",
     caption: "Expert staff providing personalized service"
   },
   {
     id: 3,
-    src: "/api/placeholder/600/400",
+    src: "/img3.jpeg",
     alt: "Product Display Area",
     caption: "Wide selection of premium devices"
   },
   {
     id: 4,
-    src: "/api/placeholder/600/400",
+    src: "/img4.jpeg",
     alt: "Service Counter",
     caption: "Professional repair and support services"
   }
@@ -103,7 +103,7 @@ export default function StorePhotos() {
         <div className="space-y-8">
           <div>
             <h3 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">
-              Smart Communications Lagos
+              Smart Communications Ltd
             </h3>
             <p className="text-gray-600 dark:text-gray-300 text-lg leading-relaxed">
               Visit our flagship store to experience our premium devices firsthand. Our expert team is ready to help you find the perfect mobile solution for your needs.
@@ -118,7 +118,7 @@ export default function StorePhotos() {
               <div>
                 <h4 className="font-semibold text-gray-900 dark:text-white">Location</h4>
                 <p className="text-gray-600 dark:text-gray-300 text-sm">
-                  Victoria Island, Lagos<br />
+                  87 IKot Ekpene Road, Uyo<br />
                   Nigeria
                 </p>
               </div>

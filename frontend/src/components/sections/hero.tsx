@@ -92,7 +92,7 @@ export default function Hero() {
               <div className="absolute inset-0 bg-gradient-to-br from-blue-400/20 to-blue-600/20 dark:from-blue-600/20 dark:to-blue-800/20 rounded-3xl blur-2xl transform rotate-6"></div>
               <div className="relative bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-3xl p-8 shadow-2xl">
                 <img
-                  src="/api/placeholder/500/400"
+                  src="/img1.jpeg"
                   alt="Smart Communications Store"
                   className="w-full h-auto rounded-2xl shadow-lg"
                 />

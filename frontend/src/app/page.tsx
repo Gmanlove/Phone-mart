@@ -1,7 +1,6 @@
 import { Suspense } from "react"
 import Hero from "@/components/sections/hero"
 import FeaturedProducts from "@/components/sections/featured-products"
-import Categories from "@/components/sections/categories"
 import Newsletter from "@/components/sections/newsletter"
 import StorePhotos from "@/components/sections/store-photos"
 
@@ -14,14 +13,9 @@ export default function HomePage() {
           <Hero />
         </section>
 
-        {/* Store Photos Section - New */}
+        {/* Store Photos Section */}
         <section className="py-16 md:py-20 lg:py-24 bg-gradient-to-br from-blue-50/50 via-white to-blue-50/30 dark:from-gray-800 dark:via-gray-900 dark:to-gray-800">
           <StorePhotos />
-        </section>
-
-        {/* Categories Section */}
-        <section className="py-16 md:py-20 lg:py-24 bg-white dark:bg-gray-900">
-          <Categories />
         </section>
 
         {/* Featured Products Section with Carousel */}
@@ -147,11 +141,11 @@ function ProductsSkeleton() {
     <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {Array.from({ length: 8 }).map((_, i) => (
-          <div key={i} className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg">
-            <div className="animate-pulse h-48 bg-gray-200 dark:bg-gray-700 rounded-xl mb-4"></div>
-            <div className="animate-pulse h-4 bg-gray-200 dark:bg-gray-700 rounded mb-2"></div>
-            <div className="animate-pulse h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mb-4"></div>
-            <div className="animate-pulse h-8 bg-gray-200 dark:bg-gray-700 rounded"></div>
+          <div key={i} className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-soft">
+            <div className="animate-shimmer h-48 bg-gray-200 dark:bg-gray-700 rounded-xl mb-4"></div>
+            <div className="animate-shimmer h-4 bg-gray-200 dark:bg-gray-700 rounded mb-2"></div>
+            <div className="animate-shimmer h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mb-4"></div>
+            <div className="animate-shimmer h-8 bg-gray-200 dark:bg-gray-700 rounded"></div>
           </div>
         ))}
       </div>

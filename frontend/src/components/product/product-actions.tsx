@@ -82,7 +82,7 @@ export default function ProductActions({ product }: ProductActionsProps) {
       try {
         await navigator.share({
           title: product.name,
-          text: `Check out ${product.name} on PhoneMart`,
+          text: `Check out ${product.name} on Smart Communications`,
           url: window.location.href,
         })
       } catch (error) {

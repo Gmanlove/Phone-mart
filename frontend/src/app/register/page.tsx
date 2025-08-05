@@ -85,7 +85,7 @@ export default function RegisterPage() {
         setMessage("Signup successful!")
         toast({
           title: "Account created successfully!",
-          description: "Welcome to PhoneMart. Signing you in now...",
+          description: "Welcome to Smart Communications. Signing you in now...",
         })
         
         // Automatically log the user in after successful registration
@@ -129,7 +129,7 @@ export default function RegisterPage() {
               <Phone className="h-6 w-6 sm:h-8 sm:w-8" />
             </div>
             <span className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-              PhoneMart
+              Smart Communications
             </span>
           </div>
           <div className="text-sm sm:text-base text-gray-600">
