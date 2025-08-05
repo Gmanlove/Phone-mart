@@ -1,61 +1,93 @@
+"use client"
+
 import { Suspense } from "react"
+import { useState } from "react"
 import ProductsGrid from "@/components/products/products-grid"
 import ProductsFilters from "@/components/products/products-filters"
 import { Skeleton } from "@/components/ui/skeleton"
-
-export const metadata = {
-  title: "All Phones - PhoneHub",
-  description: "Browse our complete collection of smartphones from top brands like Apple, Samsung, Google, and more.",
-}
+import { Search, Filter, ChevronDown, X } from "lucide-react"
+import Image from "next/image"
 
 export default function ProductsPage() {
+  const [showFilters, setShowFilters] = useState(false)
+  const [searchQuery, setSearchQuery] = useState("")
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault()
+    // Handle search functionality
+    console.log("Searching for:", searchQuery)
+  }
+
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Hero Section */}
-      <div className="bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 text-white">
+    <div className="min-h-screen bg-white dark:bg-gray-900">
+      {/* Hero Section - Updated with Smart Communications branding */}
+      <div className="bg-gradient-to-br from-blue-600 via-blue-700 to-blue-800 dark:from-blue-800 dark:via-blue-900 dark:to-gray-900 text-white">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="py-12 sm:py-16 lg:py-20">
             <div className="max-w-4xl">
-              <h1 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold mb-4 sm:mb-6 leading-tight">
-                All Phones
-              </h1>
-              <p className="text-lg sm:text-xl lg:text-2xl text-blue-100 mb-6 sm:mb-8 leading-relaxed max-w-3xl">
-                Discover our complete collection of smartphones from the world&apos;s leading brands
-              </p>
-              
-              {/* Search Bar */}
-              <div className="max-w-2xl">
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                    <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                    </svg>
-                  </div>
-                  <input
-                    type="text"
-                    placeholder="Search phones by brand, model, or features..."
-                    className="w-full pl-11 pr-4 py-3 sm:py-4 bg-white/95 backdrop-blur-sm border border-white/20 rounded-xl text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-transparent transition-all duration-200"
-                  />
+              {/* Logo and Brand */}
+              <div className="flex items-center mb-6">
+                <Image
+                  src="/smart.png"
+                  alt="Smart Communications"
+                  width={48}
+                  height={48}
+                  className="w-10 h-10 lg:w-12 lg:h-12 mr-4 object-contain"
+                />
+                <div>
+                  <h1 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold leading-tight">
+                    Premium Smartphones
+                  </h1>
+                  <p className="text-blue-200 text-sm lg:text-base mt-1">
+                    Smart Communications Collection
+                  </p>
                 </div>
               </div>
 
-              {/* Quick Stats */}
+              <p className="text-lg sm:text-xl lg:text-2xl text-blue-100 mb-6 sm:mb-8 leading-relaxed max-w-3xl">
+                Discover our curated collection of premium smartphones with authentic products, expert service, and competitive prices.
+              </p>
+              
+              {/* Search Bar - Updated Design */}
+              <div className="max-w-2xl">
+                <form onSubmit={handleSearch} className="relative group">
+                  <div className="relative">
+                    <input
+                      type="text"
+                      placeholder="Search smartphones by brand, model, or features..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="w-full pl-12 pr-14 py-3 sm:py-4 bg-white/95 backdrop-blur-sm border-2 border-white/20 rounded-full text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-white/40 transition-all duration-200 hover:bg-white"
+                    />
+                    <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                    <button
+                      type="submit"
+                      className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-blue-600 hover:bg-blue-700 text-white p-2 rounded-full transition-all duration-200 hover:scale-105"
+                      aria-label="Search products"
+                    >
+                      <Search className="h-4 w-4" />
+                    </button>
+                  </div>
+                </form>
+              </div>
+
+              {/* Quick Stats - Updated */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6 mt-8 sm:mt-12">
-                <div className="text-center">
+                <div className="text-center bg-white/10 rounded-xl p-4 backdrop-blur-sm">
                   <div className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white">500+</div>
-                  <div className="text-sm sm:text-base text-blue-200 mt-1">Models</div>
+                  <div className="text-sm sm:text-base text-blue-200 mt-1">Premium Devices</div>
                 </div>
-                <div className="text-center">
+                <div className="text-center bg-white/10 rounded-xl p-4 backdrop-blur-sm">
                   <div className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white">20+</div>
-                  <div className="text-sm sm:text-base text-blue-200 mt-1">Brands</div>
+                  <div className="text-sm sm:text-base text-blue-200 mt-1">Top Brands</div>
                 </div>
-                <div className="text-center">
+                <div className="text-center bg-white/10 rounded-xl p-4 backdrop-blur-sm">
                   <div className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white">24/7</div>
-                  <div className="text-sm sm:text-base text-blue-200 mt-1">Support</div>
+                  <div className="text-sm sm:text-base text-blue-200 mt-1">Expert Support</div>
                 </div>
-                <div className="text-center">
+                <div className="text-center bg-white/10 rounded-xl p-4 backdrop-blur-sm">
                   <div className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white">★ 4.9</div>
-                  <div className="text-sm sm:text-base text-blue-200 mt-1">Rating</div>
+                  <div className="text-sm sm:text-base text-blue-200 mt-1">Customer Rating</div>
                 </div>
               </div>
             </div>
@@ -65,32 +97,51 @@ export default function ProductsPage() {
 
       {/* Main Content */}
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 -mt-8 relative z-10">
-        <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden border border-gray-200 dark:border-gray-700">
           
           {/* Mobile Filter Button */}
-          <div className="lg:hidden bg-gray-50 border-b p-4">
-            <button className="w-full flex items-center justify-center gap-2 bg-white border border-gray-300 rounded-lg py-3 px-4 text-gray-700 font-medium hover:bg-gray-50 transition-colors duration-200">
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.414A1 1 0 013 6.707V4z" />
-              </svg>
+          <div className="lg:hidden bg-blue-50 dark:bg-gray-700 border-b border-blue-200 dark:border-gray-600 p-4">
+            <button 
+              onClick={() => setShowFilters(!showFilters)}
+              className="w-full flex items-center justify-center gap-2 bg-white dark:bg-gray-800 border border-blue-300 dark:border-gray-600 rounded-xl py-3 px-4 text-gray-700 dark:text-gray-300 font-medium hover:bg-blue-50 dark:hover:bg-gray-700 transition-colors duration-200"
+            >
+              <Filter className="w-5 h-5 text-blue-600 dark:text-blue-400" />
               Filters & Sort
+              <ChevronDown className={`w-4 h-4 transition-transform ${showFilters ? 'rotate-180' : ''}`} />
             </button>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-5 xl:grid-cols-4 gap-0">
             
             {/* Desktop Filters Sidebar */}
-            <div className="hidden lg:block lg:col-span-1 border-r border-gray-200 bg-gray-50">
+            <div className="hidden lg:block lg:col-span-1 border-r border-gray-200 dark:border-gray-700 bg-blue-50 dark:bg-gray-700">
               <div className="sticky top-4 p-6">
                 <div className="flex items-center gap-2 mb-6">
-                  <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.414A1 1 0 013 6.707V4z" />
-                  </svg>
-                  <h2 className="text-lg font-semibold text-gray-900">Filters</h2>
+                  <Filter className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                  <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Filters</h2>
                 </div>
                 <ProductsFilters />
               </div>
             </div>
+
+            {/* Mobile Filters Dropdown */}
+            {showFilters && (
+              <div className="lg:hidden col-span-1 border-b border-gray-200 dark:border-gray-700 bg-blue-50 dark:bg-gray-700 p-6">
+                <div className="flex items-center justify-between mb-6">
+                  <div className="flex items-center gap-2">
+                    <Filter className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                    <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Filters</h2>
+                  </div>
+                  <button
+                    onClick={() => setShowFilters(false)}
+                    className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
+                <ProductsFilters />
+              </div>
+            )}
 
             {/* Products Grid Section */}
             <div className="lg:col-span-4 xl:col-span-3">
@@ -99,22 +150,22 @@ export default function ProductsPage() {
                 {/* Results Header */}
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6 sm:mb-8">
                   <div>
-                    <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-1">
-                      All Smartphones
+                    <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-1">
+                      Premium Smartphones
                     </h2>
-                    <p className="text-sm sm:text-base text-gray-600">
-                      Showing 1-24 of 500+ results
+                    <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400">
+                      Showing authentic devices from top brands
                     </p>
                   </div>
                   
                   {/* Sort Dropdown */}
                   <div className="flex items-center gap-2">
-                    <label htmlFor="sort" className="text-sm font-medium text-gray-700 whitespace-nowrap">
+                    <label htmlFor="sort" className="text-sm font-medium text-gray-700 dark:text-gray-300 whitespace-nowrap">
                       Sort by:
                     </label>
                     <select 
                       id="sort"
-                      className="border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent min-w-0 flex-shrink-0"
+                      className="border border-gray-300 dark:border-gray-600 rounded-xl px-3 py-2 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent min-w-0 flex-shrink-0"
                     >
                       <option value="featured">Featured</option>
                       <option value="price-low">Price: Low to High</option>
@@ -129,24 +180,20 @@ export default function ProductsPage() {
                 {/* Active Filters */}
                 <div className="mb-6">
                   <div className="flex flex-wrap items-center gap-2">
-                    <span className="text-sm font-medium text-gray-700">Active filters:</span>
-                    <span className="inline-flex items-center gap-1 px-3 py-1 bg-blue-100 text-blue-800 text-sm rounded-full">
+                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Active filters:</span>
+                    <span className="inline-flex items-center gap-1 px-3 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200 text-sm rounded-full border border-blue-200 dark:border-blue-700">
                       Brand: Apple
-                      <button className="ml-1 hover:text-blue-600">
-                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                        </svg>
+                      <button className="ml-1 hover:text-blue-600 dark:hover:text-blue-400">
+                        <X className="w-3 h-3" />
                       </button>
                     </span>
-                    <span className="inline-flex items-center gap-1 px-3 py-1 bg-green-100 text-green-800 text-sm rounded-full">
-                      Price: $500-$1000
-                      <button className="ml-1 hover:text-green-600">
-                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                        </svg>
+                    <span className="inline-flex items-center gap-1 px-3 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200 text-sm rounded-full border border-blue-200 dark:border-blue-700">
+                      Price: ₦50,000-₦100,000
+                      <button className="ml-1 hover:text-blue-600 dark:hover:text-blue-400">
+                        <X className="w-3 h-3" />
                       </button>
                     </span>
-                    <button className="text-sm text-gray-500 hover:text-gray-700 underline">
+                    <button className="text-sm text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 underline">
                       Clear all
                     </button>
                   </div>
@@ -158,42 +205,36 @@ export default function ProductsPage() {
                 </Suspense>
 
                 {/* Pagination */}
-                <div className="mt-12 border-t border-gray-200 pt-8">
+                <div className="mt-12 border-t border-gray-200 dark:border-gray-700 pt-8">
                   <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-                    <p className="text-sm text-gray-600">
-                      Showing <span className="font-medium">1</span> to <span className="font-medium">24</span> of{' '}
-                      <span className="font-medium">500+</span> results
+                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                      Showing <span className="font-medium text-blue-600 dark:text-blue-400">1</span> to <span className="font-medium text-blue-600 dark:text-blue-400">24</span> of{' '}
+                      <span className="font-medium text-blue-600 dark:text-blue-400">500+</span> results
                     </p>
                     
                     <nav className="flex items-center gap-1" aria-label="Pagination">
-                      <button className="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-l-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
-                        <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                        </svg>
+                      <button className="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-l-xl hover:bg-blue-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
                         Previous
                       </button>
                       
-                      <button className="inline-flex items-center px-3 py-2 text-sm font-medium text-white bg-blue-600 border border-blue-600">
+                      <button className="inline-flex items-center px-3 py-2 text-sm font-medium text-white bg-blue-600 border border-blue-600 hover:bg-blue-700 transition-colors">
                         1
                       </button>
-                      <button className="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 hover:bg-gray-50">
+                      <button className="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 hover:bg-blue-50 dark:hover:bg-gray-700 transition-colors">
                         2
                       </button>
-                      <button className="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 hover:bg-gray-50">
+                      <button className="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 hover:bg-blue-50 dark:hover:bg-gray-700 transition-colors">
                         3
                       </button>
-                      <span className="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300">
+                      <span className="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600">
                         ...
                       </span>
-                      <button className="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 hover:bg-gray-50">
+                      <button className="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 hover:bg-blue-50 dark:hover:bg-gray-700 transition-colors">
                         21
                       </button>
                       
-                      <button className="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-r-lg hover:bg-gray-50">
+                      <button className="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-r-xl hover:bg-blue-50 dark:hover:bg-gray-700 transition-colors">
                         Next
-                        <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                        </svg>
                       </button>
                     </nav>
                   </div>
@@ -203,23 +244,30 @@ export default function ProductsPage() {
           </div>
         </div>
 
-        {/* Newsletter Section */}
+        {/* Professional CTA Section - Removed promotional newsletter */}
         <div className="mt-16 mb-8">
-          <div className="bg-gradient-to-r from-indigo-500 via-purple-600 to-pink-500 rounded-2xl p-8 sm:p-12 text-center text-white">
-            <h3 className="text-2xl sm:text-3xl font-bold mb-4">
-              Stay Updated with Latest Phones
-            </h3>
-            <p className="text-lg opacity-90 mb-6 max-w-2xl mx-auto">
-              Get notified about new releases, exclusive deals, and tech reviews delivered to your inbox.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
-              <input
-                type="email"
-                placeholder="Enter your email"
-                className="flex-1 px-4 py-3 rounded-lg text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-white/50"
+          <div className="bg-gradient-to-r from-blue-600 to-blue-700 dark:from-blue-700 dark:to-blue-800 rounded-2xl p-8 sm:p-12 text-center text-white border border-blue-500 dark:border-blue-600">
+            <div className="flex items-center justify-center mb-4">
+              <Image
+                src="/smart.png"
+                alt="Smart Communications"
+                width={48}
+                height={48}
+                className="w-10 h-10 mr-3 object-contain"
               />
-              <button className="bg-white text-purple-600 font-semibold px-6 py-3 rounded-lg hover:bg-gray-100 transition-colors duration-200 whitespace-nowrap">
-                Subscribe
+              <h3 className="text-2xl sm:text-3xl font-bold">
+                Need Expert Advice?
+              </h3>
+            </div>
+            <p className="text-lg text-blue-100 mb-6 max-w-2xl mx-auto">
+              Our mobile technology experts are here to help you find the perfect smartphone that meets your needs and budget.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <button className="bg-white text-blue-600 font-semibold px-8 py-3 rounded-xl hover:bg-blue-50 transition-colors duration-200 border-2 border-white">
+                Contact Expert
+              </button>
+              <button className="border-2 border-white text-white font-semibold px-8 py-3 rounded-xl hover:bg-white hover:text-blue-600 transition-all duration-200">
+                Schedule Call
               </button>
             </div>
           </div>
@@ -235,14 +283,14 @@ function ProductsGridSkeleton() {
       {/* Grid Skeleton */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
         {Array.from({ length: 12 }).map((_, i) => (
-          <div key={i} className="bg-white rounded-xl border border-gray-200 p-4 sm:p-6 shadow-sm">
-            <Skeleton className="h-40 sm:h-48 w-full mb-4 rounded-lg" />
+          <div key={i} className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4 sm:p-6 shadow-sm">
+            <Skeleton className="h-40 sm:h-48 w-full mb-4 rounded-lg bg-gray-200 dark:bg-gray-700" />
             <div className="space-y-3">
-              <Skeleton className="h-4 w-3/4" />
-              <Skeleton className="h-4 w-1/2" />
+              <Skeleton className="h-4 w-3/4 bg-gray-200 dark:bg-gray-700" />
+              <Skeleton className="h-4 w-1/2 bg-gray-200 dark:bg-gray-700" />
               <div className="flex items-center justify-between pt-2">
-                <Skeleton className="h-6 w-20" />
-                <Skeleton className="h-8 w-24 rounded-lg" />
+                <Skeleton className="h-6 w-20 bg-gray-200 dark:bg-gray-700" />
+                <Skeleton className="h-8 w-24 rounded-lg bg-gray-200 dark:bg-gray-700" />
               </div>
             </div>
           </div>
@@ -250,10 +298,10 @@ function ProductsGridSkeleton() {
       </div>
       
       {/* Pagination Skeleton */}
-      <div className="flex justify-center pt-8 border-t border-gray-200">
+      <div className="flex justify-center pt-8 border-t border-gray-200 dark:border-gray-700">
         <div className="flex items-center gap-2">
           {Array.from({ length: 5 }).map((_, i) => (
-            <Skeleton key={i} className="h-10 w-10" />
+            <Skeleton key={i} className="h-10 w-10 bg-gray-200 dark:bg-gray-700" />
           ))}
         </div>
       </div>
