@@ -3,13 +3,11 @@
 import { Suspense } from "react"
 import { useState } from "react"
 import ProductsGrid from "@/components/products/products-grid"
-import ProductsFilters from "@/components/products/products-filters"
 import { Skeleton } from "@/components/ui/skeleton"
-import { Search, Filter, ChevronDown, X } from "lucide-react"
+import { Search } from "lucide-react"
 import Image from "next/image"
 
 export default function ProductsPage() {
-  const [showFilters, setShowFilters] = useState(false)
   const [searchQuery, setSearchQuery] = useState("")
 
   const handleSearch = (e: React.FormEvent) => {
@@ -95,156 +93,87 @@ export default function ProductsPage() {
         </div>
       </div>
 
-      {/* Main Content */}
+      {/* Main Content - Simplified without filters */}
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 -mt-8 relative z-10">
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden border border-gray-200 dark:border-gray-700">
           
-          {/* Mobile Filter Button */}
-          <div className="lg:hidden bg-blue-50 dark:bg-gray-700 border-b border-blue-200 dark:border-gray-600 p-4">
-            <button 
-              onClick={() => setShowFilters(!showFilters)}
-              className="w-full flex items-center justify-center gap-2 bg-white dark:bg-gray-800 border border-blue-300 dark:border-gray-600 rounded-xl py-3 px-4 text-gray-700 dark:text-gray-300 font-medium hover:bg-blue-50 dark:hover:bg-gray-700 transition-colors duration-200"
-            >
-              <Filter className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-              Filters & Sort
-              <ChevronDown className={`w-4 h-4 transition-transform ${showFilters ? 'rotate-180' : ''}`} />
-            </button>
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-5 xl:grid-cols-4 gap-0">
+          {/* Products Section - Full Width */}
+          <div className="p-4 sm:p-6 lg:p-8">
             
-            {/* Desktop Filters Sidebar */}
-            <div className="hidden lg:block lg:col-span-1 border-r border-gray-200 dark:border-gray-700 bg-blue-50 dark:bg-gray-700">
-              <div className="sticky top-4 p-6">
-                <div className="flex items-center gap-2 mb-6">
-                  <Filter className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-                  <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Filters</h2>
-                </div>
-                <ProductsFilters />
+            {/* Results Header */}
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6 sm:mb-8">
+              <div>
+                <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-1">
+                  Premium Smartphones
+                </h2>
+                <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400">
+                  Showing authentic devices from top brands
+                </p>
+              </div>
+              
+              {/* Sort Dropdown */}
+              <div className="flex items-center gap-2">
+                <label htmlFor="sort" className="text-sm font-medium text-gray-700 dark:text-gray-300 whitespace-nowrap">
+                  Sort by:
+                </label>
+                <select 
+                  id="sort"
+                  className="border border-gray-300 dark:border-gray-600 rounded-xl px-3 py-2 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent min-w-0 flex-shrink-0"
+                >
+                  <option value="featured">Featured</option>
+                  <option value="price-low">Price: Low to High</option>
+                  <option value="price-high">Price: High to Low</option>
+                  <option value="newest">Newest First</option>
+                  <option value="rating">Top Rated</option>
+                  <option value="popular">Most Popular</option>
+                </select>
               </div>
             </div>
 
-            {/* Mobile Filters Dropdown */}
-            {showFilters && (
-              <div className="lg:hidden col-span-1 border-b border-gray-200 dark:border-gray-700 bg-blue-50 dark:bg-gray-700 p-6">
-                <div className="flex items-center justify-between mb-6">
-                  <div className="flex items-center gap-2">
-                    <Filter className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-                    <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Filters</h2>
-                  </div>
-                  <button
-                    onClick={() => setShowFilters(false)}
-                    className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
-                  >
-                    <X className="w-5 h-5" />
-                  </button>
-                </div>
-                <ProductsFilters />
-              </div>
-            )}
+            {/* Products Grid - Full Width */}
+            <Suspense fallback={<ProductsGridSkeleton />}>
+              <ProductsGrid />
+            </Suspense>
 
-            {/* Products Grid Section */}
-            <div className="lg:col-span-4 xl:col-span-3">
-              <div className="p-4 sm:p-6 lg:p-8">
+            {/* Pagination */}
+            <div className="mt-12 border-t border-gray-200 dark:border-gray-700 pt-8">
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  Showing <span className="font-medium text-blue-600 dark:text-blue-400">1</span> to <span className="font-medium text-blue-600 dark:text-blue-400">24</span> of{' '}
+                  <span className="font-medium text-blue-600 dark:text-blue-400">500+</span> results
+                </p>
                 
-                {/* Results Header */}
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6 sm:mb-8">
-                  <div>
-                    <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-1">
-                      Premium Smartphones
-                    </h2>
-                    <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400">
-                      Showing authentic devices from top brands
-                    </p>
-                  </div>
+                <nav className="flex items-center gap-1" aria-label="Pagination">
+                  <button className="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-l-xl hover:bg-blue-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
+                    Previous
+                  </button>
                   
-                  {/* Sort Dropdown */}
-                  <div className="flex items-center gap-2">
-                    <label htmlFor="sort" className="text-sm font-medium text-gray-700 dark:text-gray-300 whitespace-nowrap">
-                      Sort by:
-                    </label>
-                    <select 
-                      id="sort"
-                      className="border border-gray-300 dark:border-gray-600 rounded-xl px-3 py-2 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent min-w-0 flex-shrink-0"
-                    >
-                      <option value="featured">Featured</option>
-                      <option value="price-low">Price: Low to High</option>
-                      <option value="price-high">Price: High to Low</option>
-                      <option value="newest">Newest First</option>
-                      <option value="rating">Top Rated</option>
-                      <option value="popular">Most Popular</option>
-                    </select>
-                  </div>
-                </div>
-
-                {/* Active Filters */}
-                <div className="mb-6">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Active filters:</span>
-                    <span className="inline-flex items-center gap-1 px-3 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200 text-sm rounded-full border border-blue-200 dark:border-blue-700">
-                      Brand: Apple
-                      <button className="ml-1 hover:text-blue-600 dark:hover:text-blue-400">
-                        <X className="w-3 h-3" />
-                      </button>
-                    </span>
-                    <span className="inline-flex items-center gap-1 px-3 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200 text-sm rounded-full border border-blue-200 dark:border-blue-700">
-                      Price: ₦50,000-₦100,000
-                      <button className="ml-1 hover:text-blue-600 dark:hover:text-blue-400">
-                        <X className="w-3 h-3" />
-                      </button>
-                    </span>
-                    <button className="text-sm text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 underline">
-                      Clear all
-                    </button>
-                  </div>
-                </div>
-
-                {/* Products Grid */}
-                <Suspense fallback={<ProductsGridSkeleton />}>
-                  <ProductsGrid />
-                </Suspense>
-
-                {/* Pagination */}
-                <div className="mt-12 border-t border-gray-200 dark:border-gray-700 pt-8">
-                  <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
-                      Showing <span className="font-medium text-blue-600 dark:text-blue-400">1</span> to <span className="font-medium text-blue-600 dark:text-blue-400">24</span> of{' '}
-                      <span className="font-medium text-blue-600 dark:text-blue-400">500+</span> results
-                    </p>
-                    
-                    <nav className="flex items-center gap-1" aria-label="Pagination">
-                      <button className="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-l-xl hover:bg-blue-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
-                        Previous
-                      </button>
-                      
-                      <button className="inline-flex items-center px-3 py-2 text-sm font-medium text-white bg-blue-600 border border-blue-600 hover:bg-blue-700 transition-colors">
-                        1
-                      </button>
-                      <button className="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 hover:bg-blue-50 dark:hover:bg-gray-700 transition-colors">
-                        2
-                      </button>
-                      <button className="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 hover:bg-blue-50 dark:hover:bg-gray-700 transition-colors">
-                        3
-                      </button>
-                      <span className="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600">
-                        ...
-                      </span>
-                      <button className="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 hover:bg-blue-50 dark:hover:bg-gray-700 transition-colors">
-                        21
-                      </button>
-                      
-                      <button className="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-r-xl hover:bg-blue-50 dark:hover:bg-gray-700 transition-colors">
-                        Next
-                      </button>
-                    </nav>
-                  </div>
-                </div>
+                  <button className="inline-flex items-center px-3 py-2 text-sm font-medium text-white bg-blue-600 border border-blue-600 hover:bg-blue-700 transition-colors">
+                    1
+                  </button>
+                  <button className="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 hover:bg-blue-50 dark:hover:bg-gray-700 transition-colors">
+                    2
+                  </button>
+                  <button className="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 hover:bg-blue-50 dark:hover:bg-gray-700 transition-colors">
+                    3
+                  </button>
+                  <span className="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600">
+                    ...
+                  </span>
+                  <button className="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 hover:bg-blue-50 dark:hover:bg-gray-700 transition-colors">
+                    21
+                  </button>
+                  
+                  <button className="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-r-xl hover:bg-blue-50 dark:hover:bg-gray-700 transition-colors">
+                    Next
+                  </button>
+                </nav>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Professional CTA Section - Removed promotional newsletter */}
+        {/* Professional CTA Section */}
         <div className="mt-16 mb-8">
           <div className="bg-gradient-to-r from-blue-600 to-blue-700 dark:from-blue-700 dark:to-blue-800 rounded-2xl p-8 sm:p-12 text-center text-white border border-blue-500 dark:border-blue-600">
             <div className="flex items-center justify-center mb-4">
@@ -280,9 +209,9 @@ export default function ProductsPage() {
 function ProductsGridSkeleton() {
   return (
     <div className="space-y-6">
-      {/* Grid Skeleton */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
-        {Array.from({ length: 12 }).map((_, i) => (
+      {/* Grid Skeleton - Now full width */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+        {Array.from({ length: 16 }).map((_, i) => (
           <div key={i} className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4 sm:p-6 shadow-sm">
             <Skeleton className="h-40 sm:h-48 w-full mb-4 rounded-lg bg-gray-200 dark:bg-gray-700" />
             <div className="space-y-3">
