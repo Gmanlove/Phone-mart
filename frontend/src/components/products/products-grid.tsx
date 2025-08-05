@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button"
 import { fetchProducts } from "@/lib/api"
 
 interface Product {
-    isNew: any
+    isNew: boolean
     rating: number
     _id: string
     id?: string
@@ -30,7 +30,7 @@ export default function ProductsGrid() {
             .then((data) => {
                 console.log("Fetched products:", data)
                 // Debug: Log each product's ID
-                data.forEach((product: any, index: number) => {
+                data.forEach((product: Product, index: number) => {
                     console.log(`Product ${index}: _id=${product._id}, id=${product.id}, name=${product.name}`)
                 })
                 setProducts(data)

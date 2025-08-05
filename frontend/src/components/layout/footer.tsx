@@ -35,7 +35,7 @@ export default function Footer() {
                       Smart Communications
                     </span>
                     <div className="text-sm text-gray-600 dark:text-gray-400 font-medium">
-                      Nigeria's Premier Mobile Store
+                      Nigeria&apos;s Premier Mobile Store
                     </div>
                   </div>
                 </div>

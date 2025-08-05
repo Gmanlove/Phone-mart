@@ -24,7 +24,7 @@ import {
 } from "lucide-react"
 
 interface EarningsData {
-  _id: any
+  _id: string | null
   total: number
   count: number
 }

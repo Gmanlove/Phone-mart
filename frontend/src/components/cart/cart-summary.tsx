@@ -228,7 +228,7 @@ export default function CartSummary() {
             <div className="bg-gradient-to-r from-yellow-50 to-orange-50 border border-yellow-200 rounded-xl p-4 animate-fade-in">
               <div className="flex items-center gap-2 text-yellow-800">
                 <Sparkles className="h-5 w-5" />
-                <span className="font-semibold">You're saving ${totalSavings.toFixed(2)}!</span>
+                <span className="font-semibold">You&apos;re saving ${totalSavings.toFixed(2)}!</span>
               </div>
             </div>
           )}

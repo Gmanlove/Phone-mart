@@ -6,7 +6,7 @@ export default function DebugPage() {
   type Product = { _id: string; name: string }
   const [products, setProducts] = useState<Product[]>([])
   const [testId, setTestId] = useState("")
-  type TestResult = { success: boolean; data?: any; error?: any } | null
+  type TestResult = { success: boolean; data?: unknown; error?: unknown } | null
   const [testResult, setTestResult] = useState<TestResult>(null)
 
   useEffect(() => {

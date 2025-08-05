@@ -27,7 +27,7 @@ export default function Hero() {
                 height={16}
                 className="w-4 h-4 mr-2 object-contain"
               />
-              Nigeria's #1 Trusted Mobile Store
+              Nigeria&apos;s #1 Trusted Mobile Store
               <Award className="h-4 w-4 ml-2" />
             </div>
 

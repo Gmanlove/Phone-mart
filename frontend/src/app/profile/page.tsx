@@ -240,7 +240,7 @@ export default function ProfilePage() {
             <div className="bg-gradient-to-br from-purple-600 via-purple-700 to-indigo-800 rounded-2xl p-6 sm:p-8 text-white">
               <h2 className="text-xl sm:text-2xl font-bold mb-4">Personalized for You</h2>
               <p className="text-purple-100 mb-6">
-                Based on your purchase history and preferences, we've found some products you might love.
+                Based on your purchase history and preferences, we&apos;ve found some products you might love.
               </p>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <button className="bg-white/20 backdrop-blur-sm hover:bg-white/30 rounded-xl p-4 text-left transition-all duration-200">

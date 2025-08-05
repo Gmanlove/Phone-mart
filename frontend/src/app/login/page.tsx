@@ -93,7 +93,7 @@ export default function LoginPage() {
               height={16}
               className="w-4 h-4 mr-2 object-contain"
             />
-            Nigeria's #1 Trusted Mobile Store
+            Nigeria&apos;s #1 Trusted Mobile Store
             <Award className="h-4 w-4 ml-2" />
           </div>
 
@@ -239,7 +239,7 @@ export default function LoginPage() {
               {/* Sign Up Link */}
               <div className="pt-6 border-t border-gray-200 dark:border-gray-600">
                 <p className="text-center text-sm text-gray-600 dark:text-gray-400">
-                  Don't have an account?{" "}
+                  Don&apos;t have an account?{" "}
                   <Link href="/register" className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-semibold transition-colors duration-200">
                     Sign up for free
                   </Link>
@@ -268,7 +268,7 @@ export default function LoginPage() {
               <span className="text-xs text-gray-600 dark:text-gray-400 ml-2">5.0/5 (2,847 reviews)</span>
             </div>
             <p className="text-gray-700 dark:text-gray-300 text-xs">
-              "Best mobile store in Nigeria! Fast, secure, and reliable."
+              &quot;Best mobile store in Nigeria! Fast, secure, and reliable.&quot;
             </p>
           </div>
         </div>

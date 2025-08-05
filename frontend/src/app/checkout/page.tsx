@@ -14,7 +14,9 @@ const PAYSTACK_PUBLIC_KEY = process.env.NEXT_PUBLIC_PAYSTACK_KEY || "pk_test_you
 
 declare global {
   interface Window {
-    PaystackPop?: any;
+    PaystackPop?: {
+      setup: (options: Record<string, unknown>) => { openIframe: () => void };
+    };
   }
 }
 
@@ -232,7 +234,7 @@ export default function CheckoutPage() {
           customer_name: `${billingInfo.firstName} ${billingInfo.lastName}`,
           phone: billingInfo.phone,
         },
-        callback: (response: any) => {
+        callback: (response: { status: string; reference: string }) => {
           console.log("Payment successful:", response)
           
           const order = {
@@ -653,7 +655,7 @@ export default function CheckoutPage() {
                           Order confirmation has been sent to {billingInfo.email}
                         </p>
                         <p className="text-green-600 text-sm mt-1">
-                          You'll receive tracking information once your order ships.
+                          You&apos;ll receive tracking information once your order ships.
                         </p>
                       </div>
                       

@@ -170,7 +170,7 @@ export default function RegisterPage() {
                   height={16}
                   className="w-4 h-4 mr-2 object-contain"
                 />
-                Nigeria's #1 Trusted Mobile Store
+                Nigeria&apos;s #1 Trusted Mobile Store
                 <Award className="h-4 w-4 ml-2" />
               </div>
               <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 dark:text-white mb-4 leading-tight">
@@ -211,7 +211,7 @@ export default function RegisterPage() {
                 <span className="text-sm text-gray-600 dark:text-gray-300 ml-2">5.0/5 (2,847 reviews)</span>
               </div>
               <p className="text-gray-700 dark:text-gray-300 text-sm italic">
-                "Best mobile store in Nigeria! Authentic products, fast delivery, and excellent customer service. Highly recommended!"
+                &quot;Best mobile store in Nigeria! Authentic products, fast delivery, and excellent customer service. Highly recommended!&quot;
               </p>
               <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">- Verified Customer</p>
             </div>

@@ -165,7 +165,7 @@ export default function SupportPage() {
               </div>
 
               <p className="text-lg sm:text-xl lg:text-2xl text-blue-100 mb-6 sm:mb-8 leading-relaxed max-w-3xl">
-                Get professional help from our certified mobile technology experts. We're here to ensure you get the most from your devices.
+                Get professional help from our certified mobile technology experts. We&apos;re here to ensure you get the most from your devices.
               </p>
 
               {/* Support Stats */}

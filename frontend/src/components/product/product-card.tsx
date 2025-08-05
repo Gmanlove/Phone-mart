@@ -12,7 +12,7 @@ import { CldImage } from "next-cloudinary"
 import { extractCloudinaryPublicId } from "@/lib/utils"
 
 export interface Product {
-  specs: any
+  specs: Record<string, unknown>
   _id: string
   id: string
   name: string

@@ -7,7 +7,29 @@ import { extractCloudinaryPublicId } from "@/lib/utils";
 
 import { useOrders } from "@/contexts/order-context"
 
-const OrderCard = ({ order }: { order: any }) => {
+interface OrderItem {
+  name: string;
+  image: string;
+  specs: string;
+  quantity: number;
+  price: number;
+}
+
+interface Order {
+  id: string;
+  date: string;
+  paymentMethod: string;
+  total: number;
+  items: OrderItem[];
+  status: string;
+  shippingAddress: string;
+  trackingNumber?: string;
+  estimatedDelivery?: string;
+  actualDelivery?: string;
+  cancelReason?: string;
+}
+
+const OrderCard = ({ order }: { order: Order }) => {
   const [isExpanded, setIsExpanded] = useState(false)
   
   const getStatusColor = (status: string) => {
@@ -75,7 +97,7 @@ const OrderCard = ({ order }: { order: any }) => {
       {/* Order Items Preview */}
       <div className="p-4 sm:p-6">
         <div className="flex flex-wrap gap-2 mb-4">
-          {order.items.slice(0, 3).map((item: any, index: number) => (
+          {order.items.slice(0, 3).map((item: OrderItem, index: number) => (
             <div key={index} className="flex items-center gap-2 bg-gray-50 rounded-lg px-3 py-2">
               <CldImage
                 width={100}
@@ -145,7 +167,7 @@ const OrderCard = ({ order }: { order: any }) => {
                 Order Items
               </h4>
               <div className="space-y-3">
-                {order.items.map((item: any, index: number) => (
+                {order.items.map((item: OrderItem, index: number) => (
                   <div key={index} className="flex items-center gap-3 p-3 bg-white rounded-xl">
                     <CldImage
                       width={100}
@@ -244,7 +266,7 @@ export default function OrdersPage() {
 
   const filteredOrders = orders.filter(order => {
     const matchesSearch = order.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      order.items.some((item: any) => item.name.toLowerCase().includes(searchTerm.toLowerCase()))
+      order.items.some((item: OrderItem) => item.name.toLowerCase().includes(searchTerm.toLowerCase()))
     const matchesStatus = statusFilter === "all" || order.status === statusFilter
     return matchesSearch && matchesStatus
   })

@@ -194,7 +194,7 @@ export default function AccessoriesPage() {
                   No Accessories Available
                 </h3>
                 <p className="text-gray-600 dark:text-gray-400 mb-6">
-                  We're working on adding more accessories to our collection.
+                  We&apos;re working on adding more accessories to our collection.
                 </p>
                 <Link
                   href="/products"

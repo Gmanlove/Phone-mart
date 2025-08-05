@@ -175,7 +175,7 @@ export default function Categories() {
 					</h2>
 					<p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
 						Explore our curated collection of premium smartphones and accessories
-						from the world's most trusted brands
+						from the world&apos;s most trusted brands
 					</p>
 				</div>
 

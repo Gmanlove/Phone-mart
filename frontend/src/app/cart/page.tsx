@@ -74,7 +74,7 @@ export default function CartPage() {
                 Your cart is empty
               </h1>
               <p className="text-gray-600 text-base sm:text-lg leading-relaxed">
-                Looks like you haven't added any items to your cart yet. Discover our amazing collection of phones and accessories!
+                Looks like you haven&apos;t added any items to your cart yet. Discover our amazing collection of phones and accessories!
               </p>
             </div>
             
@@ -124,7 +124,7 @@ export default function CartPage() {
                 Shopping Cart
               </h1>
               <p className="text-gray-600 text-sm sm:text-base">
-                Review your items and proceed to checkout when you're ready
+                Review your items and proceed to checkout when you&apos;re ready
               </p>
             </div>
             <div className="flex items-center gap-4">
