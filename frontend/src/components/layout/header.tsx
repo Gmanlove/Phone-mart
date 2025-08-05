@@ -6,6 +6,7 @@ import { useCart } from "@/contexts/cart-context"
 import { useAuth } from "@/contexts/auth-context"
 import Link from "next/link"
 import Image from "next/image"
+import { useRouter } from "next/navigation"
 
 // Mock components for demonstration
 import { ReactNode, ButtonHTMLAttributes } from "react"
@@ -53,6 +54,7 @@ const Input = ({ className = "", ...props }) => (
 export default function Header() {
   const cartContext = useCart()
   const authContext = useAuth()
+  const router = useRouter()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState("")
   const [isProfileOpen, setIsProfileOpen] = useState(false)
@@ -67,9 +69,11 @@ export default function Header() {
   const handleSearch = useCallback((e: React.FormEvent) => {
     e.preventDefault()
     if (searchQuery.trim()) {
-      window.location.href = `/search?q=${encodeURIComponent(searchQuery.trim())}`
+      // Navigate to products page with search query
+      router.push(`/products?search=${encodeURIComponent(searchQuery.trim())}`)
+      setSearchQuery("") // Clear search after navigation
     }
-  }, [searchQuery])
+  }, [searchQuery, router])
 
   const closeMenu = useCallback(() => {
     setIsMenuOpen(false)
@@ -159,24 +163,26 @@ export default function Header() {
               </div>
             </Link>
 
-            {/* Desktop Search */}
+            {/* Desktop Search - Redesigned */}
             <div className="hidden lg:block flex-1 max-w-2xl mx-8">
-              <form onSubmit={handleSearch} className="relative">
-                <Input
-                  type="text"
-                  placeholder="Search for smartphones, accessories, and more..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-12 pr-4 py-3 rounded-xl border-2 border-gray-200 dark:border-gray-600 focus:border-blue-500 dark:focus:border-blue-400 transition-colors"
-                />
-                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-                <Button 
-                  type="submit" 
-                  size="sm" 
-                  className="absolute right-2 top-1/2 transform -translate-y-1/2 rounded-lg"
-                >
-                  Search
-                </Button>
+              <form onSubmit={handleSearch} className="relative group">
+                <div className="relative">
+                  <Input
+                    type="text"
+                    placeholder="Search smartphones, accessories, brands..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full pl-12 pr-14 py-3 rounded-full border-2 border-gray-200 dark:border-gray-600 focus:border-blue-500 dark:focus:border-blue-400 transition-all duration-300 bg-gray-50 dark:bg-gray-800 hover:bg-white dark:hover:bg-gray-700 group-hover:shadow-md"
+                  />
+                  <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400 group-hover:text-blue-500 transition-colors duration-200" />
+                  <button
+                    type="submit"
+                    className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-blue-600 hover:bg-blue-700 text-white p-2 rounded-full transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                    aria-label="Search products"
+                  >
+                    <Search className="h-4 w-4" />
+                  </button>
+                </div>
               </form>
             </div>
 
@@ -280,17 +286,26 @@ export default function Header() {
             </div>
           </div>
 
-          {/* Mobile Search */}
+          {/* Mobile Search - Redesigned */}
           <div className="lg:hidden pb-4">
-            <form onSubmit={handleSearch} className="relative">
-              <Input
-                type="text"
-                placeholder="Search for smartphones, accessories..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600"
-              />
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <form onSubmit={handleSearch} className="relative group">
+              <div className="relative">
+                <Input
+                  type="text"
+                  placeholder="Search smartphones, accessories..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full pl-12 pr-14 py-3 rounded-full border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 hover:bg-white dark:hover:bg-gray-700 transition-all duration-200"
+                />
+                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                <button
+                  type="submit"
+                  className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-blue-600 hover:bg-blue-700 text-white p-2 rounded-full transition-all duration-200"
+                  aria-label="Search products"
+                >
+                  <Search className="h-4 w-4" />
+                </button>
+              </div>
             </form>
           </div>
         </div>
