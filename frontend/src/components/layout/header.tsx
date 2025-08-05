@@ -1,19 +1,28 @@
 "use client"
 
-import { useState, useCallback, useEffect } from "react"
-import { Search, ShoppingCart, User, Menu, X, Phone, ChevronDown, MapPin, Clock, Heart, Truck, LogOut } from "lucide-react"
+import { useState, useCallback, useEffect, SetStateAction } from "react"
+import { Search, ShoppingCart, User, Menu, X, Phone, ChevronDown, MapPin, Clock, Heart, Truck, LogOut, Wifi, Moon, Sun } from "lucide-react"
 import { useCart } from "@/contexts/cart-context"
 import { useAuth } from "@/contexts/auth-context"
 import Link from "next/link"
 
 // Mock components for demonstration
-const Button = ({ variant = "default", size = "default", className = "", children, ...props }) => {
+import { ReactNode, ButtonHTMLAttributes } from "react"
+
+type ButtonProps = {
+  variant?: "default" | "ghost" | "outline" | "secondary" | "destructive"
+  size?: "default" | "sm" | "lg" | "icon"
+  className?: string
+  children?: ReactNode
+} & ButtonHTMLAttributes<HTMLButtonElement>
+
+const Button = ({ variant = "default", size = "default", className = "", children, ...props }: ButtonProps) => {
   const baseClasses = "inline-flex items-center justify-center font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
   const variants = {
     default: "bg-blue-600 text-white hover:bg-blue-700 focus-visible:ring-blue-500",
-    ghost: "hover:bg-gray-100 hover:text-gray-900 focus-visible:ring-gray-500",
-    outline: "border border-gray-300 bg-white hover:bg-gray-50 focus-visible:ring-gray-500",
-    secondary: "bg-gray-100 text-gray-900 hover:bg-gray-200 focus-visible:ring-gray-500",
+    ghost: "hover:bg-gray-100 hover:text-gray-900 focus-visible:ring-gray-500 dark:hover:bg-gray-800 dark:hover:text-gray-100",
+    outline: "border border-gray-300 bg-white hover:bg-gray-50 focus-visible:ring-gray-500 dark:border-gray-600 dark:bg-gray-800 dark:hover:bg-gray-700",
+    secondary: "bg-gray-100 text-gray-900 hover:bg-gray-200 focus-visible:ring-gray-500 dark:bg-gray-700 dark:text-gray-100 dark:hover:bg-gray-600",
     destructive: "bg-red-600 text-white hover:bg-red-700 focus-visible:ring-red-500",
   }
   const sizes = {
@@ -35,457 +44,321 @@ const Button = ({ variant = "default", size = "default", className = "", childre
 
 const Input = ({ className = "", ...props }) => (
   <input
-    className={`flex h-10 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm ring-offset-white file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-gray-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 ${className}`}
+    className={`flex h-10 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm ring-offset-white file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-gray-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:placeholder:text-gray-400 dark:focus-visible:ring-blue-400 ${className}`}
     {...props}
   />
 )
 
-const Badge = ({ variant = "default", className = "", children }) => {
-  const variants = {
-    default: "bg-blue-600 text-white",
-    secondary: "bg-gray-100 text-gray-900",
-    destructive: "bg-red-600 text-white",
-    outline: "border border-gray-300 text-gray-900",
-  }
-  
-  return (
-    <div className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 ${variants[variant]} ${className}`}>
-      {children}
-    </div>
-  )
-}
-
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const [isScrolled, setIsScrolled] = useState(false)
   const [isSearchOpen, setIsSearchOpen] = useState(false)
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState("")
+  const [isDarkMode, setIsDarkMode] = useState(false)
   
-  const { itemCount } = useCart()
-  const { isAuthenticated, user, logout } = useAuth()
+  const { cartItems, cartItemsCount } = useCart()
+  const { user, logout } = useAuth()
 
-  // Handle scroll effect
+  // Dark mode toggle
   useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 20)
+    const isDark = localStorage.getItem('darkMode') === 'true'
+    setIsDarkMode(isDark)
+    if (isDark) {
+      document.documentElement.classList.add('dark')
+    } else {
+      document.documentElement.classList.remove('dark')
     }
-    window.addEventListener('scroll', handleScroll)
-    return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
-  // Handle responsive behavior
-  useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth >= 768) {
-        setIsMenuOpen(false)
-        setIsSearchOpen(false)
-      }
+  const toggleDarkMode = () => {
+    const newDarkMode = !isDarkMode
+    setIsDarkMode(newDarkMode)
+    localStorage.setItem('darkMode', newDarkMode.toString())
+    if (newDarkMode) {
+      document.documentElement.classList.add('dark')
+    } else {
+      document.documentElement.classList.remove('dark')
     }
-    window.addEventListener('resize', handleResize)
-    return () => window.removeEventListener('resize', handleResize)
-  }, [])
+  }
 
-  // Close mobile menu and search on escape or outside click
-  useEffect(() => {
-    const handleEscape = (e) => {
-      if (e.key === "Escape") {
-        setIsMenuOpen(false)
-        setIsSearchOpen(false)
-      }
-    }
-
-    const handleClickOutside = (e) => {
-      if (!e.target.closest("[data-mobile-menu]") && !e.target.closest("[data-search-toggle]")) {
-        setIsMenuOpen(false)
-      }
-      if (!e.target.closest("[data-mobile-search]") && !e.target.closest("[data-search-toggle]")) {
-        setIsSearchOpen(false)
-      }
-    }
-
-    if (isMenuOpen || isSearchOpen) {
-      document.addEventListener("keydown", handleEscape)
-      document.addEventListener("click", handleClickOutside)
-      if (isMenuOpen) document.body.style.overflow = "hidden"
-    }
-
-    return () => {
-      document.removeEventListener("keydown", handleEscape)
-      document.removeEventListener("click", handleClickOutside)
-      if (isMenuOpen) document.body.style.overflow = "unset"
-    }
-  }, [isMenuOpen, isSearchOpen])
-
-  const toggleMobileMenu = useCallback(() => {
-    setIsMenuOpen(prev => !prev)
-    setIsSearchOpen(false)
-  }, [])
-
-  const toggleMobileSearch = useCallback(() => {
-    setIsSearchOpen(prev => !prev)
-    setIsMenuOpen(false)
-  }, [])
-
-  const handleSearchSubmit = useCallback((e) => {
+  const handleSearch = useCallback((e: React.FormEvent) => {
     e.preventDefault()
     if (searchQuery.trim()) {
-      console.log(`Searching for: ${searchQuery.trim()}`)
-      setIsSearchOpen(false)
+      window.location.href = `/search?q=${encodeURIComponent(searchQuery.trim())}`
     }
   }, [searchQuery])
 
-  const closeMobileMenu = useCallback(() => {
-    setIsMenuOpen(false)
-  }, [])
-
-  const handleLogout = () => {
+  const handleLogout = useCallback(() => {
     logout()
-    // Optional: redirect to home page
-    window.location.href = '/'
-  }
+    setIsUserMenuOpen(false)
+  }, [logout])
 
   return (
     <>
-      <header 
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-          isScrolled 
-            ? 'bg-white/95 backdrop-blur-md shadow-xl border-b border-gray-200/50' 
-            : 'bg-white shadow-sm border-b border-gray-200'
-        }`}
-      >
-        {/* Top announcement bar - Responsive visibility */}
-        <div className="hidden lg:block bg-gradient-to-r from-slate-900 via-blue-900 to-slate-900 text-white">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div className="flex items-center justify-between py-2.5 text-sm">
-              <div className="flex items-center space-x-8">
-                <div className="flex items-center space-x-2">
-                  <Clock className="h-4 w-4 text-blue-300" />
-                  <span className="text-gray-200">Mon-Sat 9AM-8PM</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Phone className="h-4 w-4 text-blue-300" />
-                  <a 
-                    href="tel:08146452793" 
-                    className="text-gray-200 hover:text-blue-300 transition-colors duration-200"
-                  >
-                    0814 645 2793
-                  </a>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <MapPin className="h-4 w-4 text-blue-300" />
-                  <span className="text-gray-200">Uyo, Akwa Ibom</span>
-                </div>
+      {/* Top Bar */}
+      <div className="bg-blue-600 dark:bg-blue-700 text-white py-2 text-sm hidden md:block">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-6">
+              <div className="flex items-center space-x-2">
+                <Phone className="h-4 w-4 text-blue-300" />
+                <span>+234 123 456 7890</span>
               </div>
-              <div className="flex items-center space-x-8 text-gray-200">
-                <div className="flex items-center space-x-2">
-                  <Truck className="h-4 w-4 text-green-400" />
-                  <span className="font-medium">Free shipping on orders over ₦100,000</span>
-                </div>
-                <Link href="/track-order" className="hover:text-blue-300 transition-colors duration-200">
-                  Track Order
-                </Link>
+              <div className="flex items-center space-x-2">
+                <MapPin className="h-4 w-4 text-blue-300" />
+                <span>87 IKot Ekpene Road, Uyo</span>
               </div>
+              <div className="flex items-center space-x-2">
+                <Clock className="h-4 w-4 text-blue-300" />
+                <span>Mon-Sat: 9AM-8PM</span>
+              </div>
+            </div>
+            <div className="flex items-center space-x-4">
+              <button
+                onClick={toggleDarkMode}
+                className="p-1 rounded-full hover:bg-blue-700 dark:hover:bg-blue-600 transition-colors"
+                aria-label="Toggle dark mode"
+              >
+                {isDarkMode ? (
+                  <Sun className="h-4 w-4" />
+                ) : (
+                  <Moon className="h-4 w-4" />
+                )}
+              </button>
+              <span>Free delivery on orders over ₦50,000</span>
             </div>
           </div>
         </div>
+      </div>
 
-        {/* Main header */}
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16 lg:h-18">
-            
-            {/* Logo and Brand */}
-            <div className="flex items-center">
-              <Link href="/" className="flex items-center space-x-3 group">
-                <div className="relative">
-                  <div className="rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 p-2 lg:p-2.5 shadow-lg group-hover:shadow-xl transition-all duration-200">
-                    <Phone className="h-6 w-6 lg:h-7 lg:w-7 text-white" />
-                  </div>
-                </div>
-                <div className="hidden sm:block">
-                  <span className="text-xl lg:text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-                    PhoneMart
-                  </span>
-                  <div className="text-xs text-gray-500 font-medium -mt-1">
-                    Premium Electronics
-                  </div>
-                </div>
-              </Link>
-            </div>
+      {/* Main Header */}
+      <header className="sticky top-0 z-50 bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm border-b border-gray-200 dark:border-gray-700 shadow-sm">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
+          <div className="flex items-center justify-between h-16 lg:h-20">
+            {/* Logo */}
+            <Link href="/" className="flex items-center space-x-3 group">
+              <div className="bg-blue-600 dark:bg-blue-500 p-2 rounded-xl shadow-lg group-hover:shadow-xl transition-all duration-200">
+                <Wifi className="h-6 w-6 lg:h-7 lg:w-7 text-white" />
+              </div>
+              <div className="hidden sm:block">
+                <span className="text-xl lg:text-2xl font-bold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-200">
+                  Smart Communications
+                </span>
+              </div>
+            </Link>
 
-            {/* Desktop Search Bar */}
-            <div className="hidden xl:flex flex-1 max-w-2xl mx-8">
-              <div className="relative w-full">
+            {/* Desktop Search */}
+            <div className="hidden lg:block flex-1 max-w-2xl mx-8">
+              <form onSubmit={handleSearch} className="relative">
                 <Input
-                  type="search"
-                  placeholder="Search for phones, accessories, and more..."
-                  className="w-full pl-4 pr-24 py-3 text-base rounded-full border-2 border-gray-200 focus:border-blue-500 focus:ring-blue-500/20 bg-gray-50 focus:bg-white transition-all duration-200"
+                  type="text"
+                  placeholder="Search for smartphones, accessories, and more..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && handleSearchSubmit(e)}
+                  className="w-full pl-12 pr-4 py-3 rounded-xl border-2 border-gray-200 dark:border-gray-600 focus:border-blue-500 dark:focus:border-blue-400 transition-colors"
                 />
-                <div className="absolute inset-y-0 right-0 flex items-center pr-2">
-                  <Button 
-                    onClick={handleSearchSubmit}
-                    size="sm" 
-                    className="rounded-full bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 font-medium transition-all duration-200 hover:shadow-lg"
-                  >
-                    Search
-                  </Button>
-                </div>
-              </div>
-            </div>
-
-            {/* Right side actions */}
-            <div className="flex items-center space-x-1 sm:space-x-2 lg:space-x-3">
-              
-              {/* Mobile Search Toggle */}
-              <Button 
-                variant="ghost" 
-                size="icon"
-                className="xl:hidden rounded-full p-2 hover:bg-gray-100 transition-all duration-200" 
-                onClick={toggleMobileSearch}
-                data-search-toggle
-              >
-                <Search className="h-5 w-5 text-gray-600" />
-              </Button>
-
-              {/* Wishlist - Hidden on very small screens */}
-              <Link href="/wishlist" className="hidden sm:block">
+                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
                 <Button 
-                  variant="ghost" 
-                  size="icon"
-                  className="relative rounded-full p-2 hover:bg-gray-100 transition-all duration-200"
-                >
-                  <Heart className="h-5 w-5 text-gray-600 hover:text-red-500 transition-colors" />
-                </Button>
-              </Link>
-
-              {/* User menu - Enhanced responsive dropdown */}
-              <div className="hidden lg:block">
-                <div className="relative group">
-                  <Button 
-                    variant="ghost" 
-                    className="flex items-center space-x-2 rounded-full px-3 py-2 hover:bg-gray-100 transition-all duration-200"
-                  >
-                    <div className="rounded-full bg-gradient-to-r from-blue-500 to-blue-600 p-1.5">
-                      <User className="h-4 w-4 text-white" />
-                    </div>
-                    <span className="hidden xl:block text-sm font-medium text-gray-700">
-                      {isAuthenticated ? 'Account' : 'Sign In'}
-                    </span>
-                    <ChevronDown className="h-4 w-4 text-gray-500 transition-transform group-hover:rotate-180 duration-200" />
-                  </Button>
-                  
-                  {/* Dropdown menu */}
-                  <div className="absolute right-0 top-full mt-2 w-56 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 transform translate-y-2 group-hover:translate-y-0">
-                    <div className="bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden">
-                      {isAuthenticated ? (
-                        <div className="py-2">
-                          <div className="px-4 py-3 border-b border-gray-100 bg-gray-50">
-                            <p className="text-sm font-semibold text-gray-900">Welcome back!</p>
-                            <p className="text-xs text-gray-500">{user?.email}</p>
-                          </div>
-                          <Link href="/profile" className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors">
-                            <User className="mr-3 h-4 w-4" />
-                            My Account
-                          </Link>
-                          <Link href="/orders" className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors">
-                            <ShoppingCart className="mr-3 h-4 w-4" />
-                            My Orders
-                          </Link>
-                          <div className="border-t border-gray-100">
-                            <button 
-                              onClick={handleLogout}
-                              className="flex items-center w-full px-4 py-3 text-sm text-red-600 hover:bg-red-50 transition-colors"
-                            >
-                              <LogOut className="mr-3 h-4 w-4" />
-                              Sign Out
-                            </button>
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="py-2">
-                          <Link href="/login" className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors">
-                            Sign In
-                          </Link>
-                          <Link href="/register" className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors">
-                            Create Account
-                          </Link>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Enhanced Cart */}
-              <Link href="/cart">
-                <Button 
-                  variant="ghost" 
-                  size="icon"
-                  className="relative rounded-full p-2 hover:bg-gray-100 transition-all duration-200 hover:scale-105"
-                >
-                  <div className="rounded-full bg-gradient-to-r from-green-500 to-emerald-600 p-1.5">
-                    <ShoppingCart className="h-4 w-4 text-white" />
-                  </div>
-                  {itemCount > 0 && (
-                    <Badge className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center text-xs font-bold bg-red-500 text-white rounded-full border-2 border-white">
-                      {itemCount > 9 ? '9+' : itemCount}
-                    </Badge>
-                  )}
-                </Button>
-              </Link>
-
-              {/* Mobile menu button */}
-              <Button 
-                variant="ghost" 
-                size="icon"
-                className="lg:hidden rounded-full p-2 hover:bg-gray-100 transition-all duration-200"
-                onClick={toggleMobileMenu}
-                data-mobile-menu
-              >
-                {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-              </Button>
-            </div>
-          </div>
-        </div>
-
-        {/* Mobile Search */}
-        {isSearchOpen && (
-          <div 
-            className="xl:hidden border-t border-gray-200 bg-white/95 backdrop-blur-md"
-            data-mobile-search
-          >
-            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-4">
-              <form onSubmit={handleSearchSubmit} className="relative">
-                <Input
-                  type="search"
-                  placeholder="Search for phones, accessories..."
-                  className="w-full pl-4 pr-20 py-3 text-base rounded-full border-2 border-gray-200 focus:border-blue-500 focus:ring-blue-500/20"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  autoFocus
-                />
-                <Button 
-                  type="submit"
+                  type="submit" 
                   size="sm" 
-                  className="absolute right-2 top-1/2 transform -translate-y-1/2 rounded-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-1.5 text-sm font-medium"
+                  className="absolute right-2 top-1/2 transform -translate-y-1/2 rounded-lg"
                 >
                   Search
                 </Button>
               </form>
             </div>
-          </div>
-        )}
 
-        {/* Mobile Navigation Menu */}
-        {isMenuOpen && (
-          <div 
-            className="lg:hidden fixed inset-x-0 top-full bg-white border-t border-gray-200 shadow-xl z-40"
-            data-mobile-menu
-          >
-            <div className="px-4 py-6 space-y-4">
-              
-              {/* Authentication Section */}
-              <div className="border-b border-gray-200 pb-4 mb-4">
-                {isAuthenticated ? (
-                  <div className="space-y-3">
-                    <div className="flex items-center space-x-3">
-                      <div className="rounded-full bg-gradient-to-r from-blue-500 to-blue-600 p-2">
-                        <User className="h-5 w-5 text-white" />
-                      </div>
-                      <div>
-                        <p className="font-semibold text-gray-900">Welcome back!</p>
-                        <p className="text-sm text-gray-500">{user?.email}</p>
-                      </div>
-                    </div>
-                    <div className="grid grid-cols-2 gap-3">
-                      <Link href="/profile" onClick={closeMobileMenu}>
-                        <Button variant="outline" className="w-full justify-start">
-                          <User className="mr-2 h-4 w-4" />
-                          Profile
-                        </Button>
-                      </Link>
-                      <Link href="/orders" onClick={closeMobileMenu}>
-                        <Button variant="outline" className="w-full justify-start">
-                          <ShoppingCart className="mr-2 h-4 w-4" />
-                          Orders
-                        </Button>
-                      </Link>
-                    </div>
-                    <Button 
-                      variant="destructive" 
-                      className="w-full justify-start"
-                      onClick={() => {
-                        handleLogout()
-                        closeMobileMenu()
-                      }}
-                    >
-                      <LogOut className="mr-2 h-4 w-4" />
-                      Sign Out
-                    </Button>
-                  </div>
+            {/* Desktop Navigation */}
+            <nav className="hidden lg:flex items-center space-x-8">
+              <Link href="/products" className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition-colors duration-200">
+                Products
+              </Link>
+              <Link href="/accessories" className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition-colors duration-200">
+                Accessories
+              </Link>
+              <Link href="/deals" className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition-colors duration-200">
+                Deals
+              </Link>
+              <Link href="/support" className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition-colors duration-200">
+                Support
+              </Link>
+            </nav>
+
+            {/* Right Icons */}
+            <div className="flex items-center space-x-4">
+              {/* Mobile Search Toggle */}
+              <button
+                onClick={() => setIsSearchOpen(!isSearchOpen)}
+                className="lg:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                aria-label="Toggle search"
+              >
+                <Search className="h-5 w-5 text-gray-600 dark:text-gray-300" />
+              </button>
+
+              {/* Dark Mode Toggle - Mobile */}
+              <button
+                onClick={toggleDarkMode}
+                className="md:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                aria-label="Toggle dark mode"
+              >
+                {isDarkMode ? (
+                  <Sun className="h-5 w-5 text-gray-600 dark:text-gray-300" />
                 ) : (
-                  <div className="space-y-3">
-                    <Link href="/login" onClick={closeMobileMenu}>
-                      <Button className="w-full">Sign In</Button>
-                    </Link>
-                    <Link href="/register" onClick={closeMobileMenu}>
-                      <Button variant="outline" className="w-full">Create Account</Button>
-                    </Link>
+                  <Moon className="h-5 w-5 text-gray-600 dark:text-gray-300" />
+                )}
+              </button>
+
+              {/* Wishlist */}
+              <Link 
+                href="/wishlist" 
+                className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors relative"
+                aria-label="Wishlist"
+              >
+                <Heart className="h-5 w-5 text-gray-600 dark:text-gray-300" />
+              </Link>
+
+              {/* Cart */}
+              <Link 
+                href="/cart" 
+                className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors relative"
+                aria-label="Shopping cart"
+              >
+                <ShoppingCart className="h-5 w-5 text-gray-600 dark:text-gray-300" />
+                {cartItemsCount > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-blue-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-medium">
+                    {cartItemsCount}
+                  </span>
+                )}
+              </Link>
+
+              {/* User Menu */}
+              <div className="relative">
+                <button
+                  onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+                  className="flex items-center space-x-2 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                  aria-label="User menu"
+                >
+                  <User className="h-5 w-5 text-gray-600 dark:text-gray-300" />
+                  {user && (
+                    <span className="hidden md:block text-sm font-medium text-gray-700 dark:text-gray-300">
+                      {user.name}
+                    </span>
+                  )}
+                  <ChevronDown className="hidden md:block h-4 w-4 text-gray-400" />
+                </button>
+
+                {/* User Dropdown */}
+                {isUserMenuOpen && (
+                  <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-2 z-50">
+                    {user ? (
+                      <>
+                        <Link href="/profile" className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
+                          Profile
+                        </Link>
+                        <Link href="/orders" className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
+                          Orders
+                        </Link>
+                        <button
+                          onClick={handleLogout}
+                          className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center"
+                        >
+                          <LogOut className="h-4 w-4 mr-2" />
+                          Logout
+                        </button>
+                      </>
+                    ) : (
+                      <>
+                        <Link href="/login" className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
+                          Login
+                        </Link>
+                        <Link href="/register" className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
+                          Register
+                        </Link>
+                      </>
+                    )}
                   </div>
                 )}
               </div>
 
-              {/* Navigation Links */}
-              <div className="space-y-3">
-                <Link href="/products" onClick={closeMobileMenu}>
-                  <Button variant="ghost" className="w-full justify-start text-base font-medium">
-                    All Products
-                  </Button>
-                </Link>
-                <Link href="/deals" onClick={closeMobileMenu}>
-                  <Button variant="ghost" className="w-full justify-start text-base font-medium">
-                    Deals & Offers
-                  </Button>
-                </Link>
-                <Link href="/accessories" onClick={closeMobileMenu}>
-                  <Button variant="ghost" className="w-full justify-start text-base font-medium">
-                    Accessories
-                  </Button>
-                </Link>
-                <Link href="/support" onClick={closeMobileMenu}>
-                  <Button variant="ghost" className="w-full justify-start text-base font-medium">
-                    Support
-                  </Button>
-                </Link>
-                <Link href="/track-order" onClick={closeMobileMenu}>
-                  <Button variant="ghost" className="w-full justify-start text-base font-medium">
-                    Track Order
-                  </Button>
-                </Link>
-              </div>
+              {/* Mobile Menu Toggle */}
+              <button
+                onClick={() => setIsMenuOpen(!isMenuOpen)}
+                className="lg:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                aria-label="Toggle menu"
+              >
+                {isMenuOpen ? (
+                  <X className="h-5 w-5 text-gray-600 dark:text-gray-300" />
+                ) : (
+                  <Menu className="h-5 w-5 text-gray-600 dark:text-gray-300" />
+                )}
+              </button>
+            </div>
+          </div>
 
-              {/* Contact Info */}
-              <div className="border-t border-gray-200 pt-4 space-y-2">
-                <div className="flex items-center space-x-3 text-sm text-gray-600">
-                  <Phone className="h-4 w-4" />
-                  <a href="tel:08146452793" className="hover:text-blue-600 transition-colors">
-                    0814 645 2793
-                  </a>
+          {/* Mobile Search */}
+          {isSearchOpen && (
+            <div className="lg:hidden py-4 border-t border-gray-200 dark:border-gray-700">
+              <form onSubmit={handleSearch}>
+                <div className="flex space-x-2">
+                  <Input
+                    type="text"
+                    placeholder="Search for smartphones, accessories..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="flex-1"
+                  />
+                  <Button type="submit" size="sm">
+                    Search
+                  </Button>
                 </div>
-                <div className="flex items-center space-x-3 text-sm text-gray-600">
-                  <MapPin className="h-4 w-4" />
-                  <span>Uyo, Akwa Ibom</span>
+              </form>
+            </div>
+          )}
+        </div>
+
+        {/* Mobile Menu */}
+        {isMenuOpen && (
+          <div className="lg:hidden bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700">
+            <div className="container mx-auto px-4 py-4 space-y-4">
+              <Link 
+                href="/products" 
+                className="block py-2 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Products
+              </Link>
+              <Link 
+                href="/accessories" 
+                className="block py-2 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Accessories
+              </Link>
+              <Link 
+                href="/deals" 
+                className="block py-2 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Deals
+              </Link>
+              <Link 
+                href="/support" 
+                className="block py-2 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Support
+              </Link>
+              
+              <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
+                <div className="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-400">
+                  <Phone className="h-4 w-4" />
+                  <span>+234 123 456 7890</span>
                 </div>
               </div>
             </div>
           </div>
         )}
       </header>
-
-      {/* Spacer to prevent content from hiding behind fixed header */}
-      <div className="h-16 lg:h-[4.5rem]" />
     </>
   )
 }

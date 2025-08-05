@@ -51,8 +51,7 @@ export default function ProductActions({ product }: ProductActionsProps) {
     if (!isAuthenticated) {
       toast({
         title: "Sign in required",
-        description: "Please sign in to proceed with purchase.",
-        variant: "destructive"
+        description: "Please sign in to proceed with purchase."
       })
       router.push(`/login?returnTo=/products/${product._id}`)
       return

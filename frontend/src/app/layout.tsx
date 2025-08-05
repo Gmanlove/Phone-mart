@@ -22,16 +22,25 @@ const poppins = Poppins({
   variable: '--font-poppins'
 })
 
+export const metadata: Metadata = {
+  title: "Phone-mart | Premium Mobile Experience",
+  description: "Shop the latest smartphones and accessories with unbeatable prices, fast delivery, and expert support.",
+}
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${inter.variable} ${poppins.variable}`}> 
-      <body className="min-h-screen flex flex-col bg-white">
+    <html lang="en" className={`${inter.variable} ${poppins.variable} scroll-smooth`}> 
+      <body className="min-h-screen flex flex-col bg-white font-sans antialiased">
         <AuthProvider>
           <OrderProvider>
             <CartProvider>
-              <Header />
-              <main>{children}</main>
-              <Footer />
+              <div className="flex flex-col min-h-screen">
+                <Header />
+                <main className="flex-1 page-transition">
+                  {children}
+                </main>
+                <Footer />
+              </div>
               <Toaster />
             </CartProvider>
           </OrderProvider>

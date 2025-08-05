@@ -1,224 +1,112 @@
 "use client"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { ArrowRight, Star, Shield, Truck, Zap, Award, Clock } from "lucide-react"
-import { CldImage } from "next-cloudinary"
+import { ArrowRight, Star, Shield, Truck, Zap, Award, Clock, Wifi } from "lucide-react"
 
 export default function Hero() {
   return (
-    <section className="relative min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 overflow-hidden">
-      {/* Animated background elements */}
+    <section className="relative min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 overflow-hidden">
+      {/* Clean background pattern */}
       <div className="absolute inset-0">
-        <div className="absolute top-20 left-10 w-72 h-72 bg-blue-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-blob"></div>
-        <div className="absolute top-40 right-10 w-72 h-72 bg-purple-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-blob animation-delay-2000"></div>
-        <div className="absolute -bottom-8 left-20 w-72 h-72 bg-pink-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-blob animation-delay-4000"></div>
-        {/* Gradient overlay for readability */}
-        <div className="absolute inset-0 bg-gradient-to-t from-white/80 via-transparent to-transparent pointer-events-none"></div>
+        <div className="absolute top-20 left-10 w-72 h-72 bg-blue-200/30 dark:bg-blue-600/10 rounded-full mix-blend-multiply filter blur-xl opacity-70"></div>
+        <div className="absolute top-40 right-10 w-72 h-72 bg-blue-300/20 dark:bg-blue-500/10 rounded-full mix-blend-multiply filter blur-xl opacity-70"></div>
+        <div className="absolute -bottom-8 left-20 w-72 h-72 bg-blue-100/40 dark:bg-blue-700/10 rounded-full mix-blend-multiply filter blur-xl opacity-70"></div>
       </div>
 
       <div className="relative container mx-auto px-4 pt-16 pb-20 lg:pt-24 lg:pb-32">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center min-h-[calc(100vh-8rem)]">
           {/* Left content */}
           <div className="space-y-8 z-10">
-            {/* Trust badge */}
-            <div className="inline-flex items-center bg-gradient-to-r from-blue-100 to-purple-100 text-blue-800 px-4 py-2 rounded-full text-sm font-semibold shadow-sm">
-              <Award className="h-4 w-4 mr-2" />
-              Nigeria's #1 Trusted Phone Store
-              <span className="ml-2 animate-pulse" aria-hidden="true">✨</span>
+            {/* Trust badge with WiFi logo */}
+            <div className="inline-flex items-center bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200 px-4 py-2 rounded-full text-sm font-semibold shadow-sm">
+              <Wifi className="h-4 w-4 mr-2" />
+              Nigeria's #1 Trusted Mobile Store
+              <Award className="h-4 w-4 ml-2" />
             </div>
 
             {/* Main heading and value proposition */}
             <div className="space-y-4">
-              <h1 className="text-4xl sm:text-5xl lg:text-7xl font-bold text-gray-900 leading-tight">
-                Premium Mobile Experience
-                <span className="block bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 bg-clip-text text-transparent">
-                  Smartphones & Accessories
+              <h1 className="text-4xl sm:text-5xl lg:text-7xl font-bold text-gray-900 dark:text-white leading-tight">
+                <span className="flex items-center mb-4">
+                  <Wifi className="h-12 w-12 lg:h-16 lg:w-16 text-blue-600 dark:text-blue-400 mr-4" />
+                  Smart Communications
+                </span>
+                <span className="block text-blue-600 dark:text-blue-400">
+                  Premium Mobile Solutions
                 </span>
               </h1>
-              <p className="text-lg lg:text-xl text-gray-700 font-medium max-w-2xl">
-                Shop the latest devices, unbeatable prices, and enjoy fast delivery, warranty, and expert support. Your satisfaction is our priority.
+              <p className="text-lg lg:text-xl text-gray-700 dark:text-gray-300 font-medium max-w-2xl">
+                Professional mobile technology solutions with expert service, authentic products, and reliable support. Your trusted partner in mobile communications.
               </p>
             </div>
 
-            {/* CTA Buttons - improved accessibility */}
+            {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row gap-4">
               <Button 
                 asChild 
                 size="lg" 
-                className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold px-8 py-4 rounded-full shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                aria-label="Shop Now - Browse Products"
+                className="bg-blue-600 hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-700 text-white font-semibold px-8 py-4 rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300"
               >
-                <Link href="/products">
-                  <Zap className="mr-2 h-5 w-5" aria-hidden="true" />
-                  Shop Now
-                  <ArrowRight className="ml-2 h-5 w-5" aria-hidden="true" />
+                <Link href="/products" className="inline-flex items-center">
+                  Browse Products
+                  <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>
               </Button>
+              
               <Button 
                 asChild 
                 variant="outline" 
-                size="lg"
-                className="border-2 border-gray-300 text-gray-700 hover:border-blue-500 hover:text-blue-600 font-semibold px-8 py-4 rounded-full shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                aria-label="View Hot Deals"
+                size="lg" 
+                className="border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white dark:border-blue-400 dark:text-blue-400 dark:hover:bg-blue-600 dark:hover:text-white font-semibold px-8 py-4 rounded-xl transition-all duration-300"
               >
-                <Link href="/deals">
-                  <Star className="mr-2 h-5 w-5" aria-hidden="true" />
-                  View Hot Deals
+                <Link href="/support" className="inline-flex items-center">
+                  Visit Store
+                  <Zap className="ml-2 h-5 w-5" />
                 </Link>
               </Button>
             </div>
 
-            {/* Enhanced Features Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2 gap-6 pt-8">
-              <div className="flex items-center space-x-4 p-4 bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
-                <div className="bg-gradient-to-r from-green-500 to-emerald-500 p-3 rounded-xl shadow-lg">
-                  <Truck className="h-6 w-6 text-white" />
-                </div>
-                <div>
-                  <p className="font-bold text-gray-900 text-lg">Free Delivery</p>
-                  <p className="text-sm text-gray-600">Orders over ₦100,000</p>
-                </div>
+            {/* Trust indicators */}
+            <div className="flex flex-wrap items-center gap-6 pt-8">
+              <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
+                <Star className="h-4 w-4 text-yellow-500 mr-1" />
+                <span className="font-semibold">4.9/5</span>
+                <span className="ml-1">Customer Rating</span>
               </div>
-
-              <div className="flex items-center space-x-4 p-4 bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
-                <div className="bg-gradient-to-r from-blue-500 to-cyan-500 p-3 rounded-xl shadow-lg">
-                  <Shield className="h-6 w-6 text-white" />
-                </div>
-                <div>
-                  <p className="font-bold text-gray-900 text-lg">2-Year Warranty</p>
-                  <p className="text-sm text-gray-600">On all devices</p>
-                </div>
+              <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
+                <Shield className="h-4 w-4 text-green-500 mr-1" />
+                <span className="font-semibold">100%</span>
+                <span className="ml-1">Authentic Products</span>
               </div>
-
-              <div className="flex items-center space-x-4 p-4 bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
-                <div className="bg-gradient-to-r from-purple-500 to-pink-500 p-3 rounded-xl shadow-lg">
-                  <Clock className="h-6 w-6 text-white" />
-                </div>
-                <div>
-                  <p className="font-bold text-gray-900 text-lg">24/7 Support</p>
-                  <p className="text-sm text-gray-600">Expert assistance</p>
-                </div>
-              </div>
-
-              <div className="flex items-center space-x-4 p-4 bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
-                <div className="bg-gradient-to-r from-orange-500 to-red-500 p-3 rounded-xl shadow-lg">
-                  <Star className="h-6 w-6 text-white" />
-                </div>
-                <div>
-                  <p className="font-bold text-gray-900 text-lg">Authentic Only</p>
-                  <p className="text-sm text-gray-600">100% genuine products</p>
-                </div>
-              </div>
-            </div>
-
-            {/* Social proof */}
-            <div className="flex items-center space-x-8 pt-4">
-              <div className="text-center">
-                <div className="text-2xl lg:text-3xl font-bold text-blue-700">50K+</div>
-                <div className="text-sm text-gray-600">Happy Customers</div>
-              </div>
-              <div className="text-center">
-                <div className="text-2xl lg:text-3xl font-bold text-blue-700">4.9</div>
-                <div className="flex items-center justify-center text-yellow-400">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="h-4 w-4 fill-current" />
-                  ))}
-                </div>
-                <div className="text-sm text-gray-600">Rating</div>
-              </div>
-              <div className="text-center">
-                <div className="text-2xl lg:text-3xl font-bold text-blue-700">1000+</div>
-                <div className="text-sm text-gray-600">Products</div>
+              <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
+                <Truck className="h-4 w-4 text-blue-500 mr-1" />
+                <span className="font-semibold">Same Day</span>
+                <span className="ml-1">Delivery Available</span>
               </div>
             </div>
           </div>
 
-          {/* Right content - Enhanced hero image */}
+          {/* Right content - Hero Image */}
           <div className="relative z-10">
-            {/* Main image container */}
             <div className="relative">
-              <div className="relative z-20 transform hover:scale-105 transition-transform duration-500">
-                <div className="bg-gradient-to-br from-white to-gray-100 rounded-3xl p-8 shadow-2xl">
-                  <CldImage
-                    src="love"
-                    alt="Latest Premium Smartphones"
-                    width={500}
-                    height={600}
-                    className="w-full h-auto rounded-2xl"
-                    priority
-                  />
-                </div>
-              </div>
-
-              {/* Floating elements */}
-              <div className="absolute top-4 right-4 bg-gradient-to-r from-red-500 to-pink-500 text-white px-4 py-2 rounded-full text-sm font-bold z-30 shadow-xl animate-bounce">
-                Up to 40% OFF
-              </div>
-
-              {/* Background decorative elements */}
-              <div className="absolute -top-8 -left-8 w-32 h-32 bg-gradient-to-r from-blue-200 to-purple-200 rounded-full opacity-50 animate-pulse"></div>
-              <div className="absolute -bottom-8 -right-8 w-40 h-40 bg-gradient-to-r from-pink-200 to-orange-200 rounded-full opacity-30 animate-pulse animation-delay-2000"></div>
-              {/* Floating particles */}
-              <div className="absolute top-1/4 left-1/4 w-2 h-2 bg-blue-400 rounded-full animate-ping"></div>
-              <div className="absolute top-3/4 right-1/4 w-3 h-3 bg-purple-400 rounded-full animate-ping animation-delay-1000"></div>
-              <div className="absolute bottom-1/4 left-1/3 w-2 h-2 bg-pink-400 rounded-full animate-ping animation-delay-3000"></div>
-            </div>
-
-            {/* Stats overlay - visible and engaging */}
-            <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1/2 z-30">
-              <div className="bg-white rounded-2xl shadow-2xl p-6 border border-gray-100 flex items-center space-x-6">
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-blue-600">24h</div>
-                  <div className="text-xs text-gray-600">Delivery</div>
-                </div>
-                <div className="w-px h-8 bg-gray-200"></div>
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-green-600">99%</div>
-                  <div className="text-xs text-gray-600">Satisfaction</div>
-                </div>
-                <div className="w-px h-8 bg-gray-200"></div>
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-purple-600">5⭐</div>
-                  <div className="text-xs text-gray-600">Reviews</div>
+              <div className="absolute inset-0 bg-gradient-to-br from-blue-400/20 to-blue-600/20 dark:from-blue-600/20 dark:to-blue-800/20 rounded-3xl blur-2xl transform rotate-6"></div>
+              <div className="relative bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-3xl p-8 shadow-2xl">
+                <img
+                  src="/api/placeholder/500/400"
+                  alt="Smart Communications Store"
+                  className="w-full h-auto rounded-2xl shadow-lg"
+                />
+                <div className="absolute -bottom-4 -right-4 bg-blue-600 text-white p-4 rounded-2xl shadow-lg">
+                  <div className="text-center">
+                    <div className="text-2xl font-bold">50K+</div>
+                    <div className="text-sm">Happy Customers</div>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-
-        {/* Scroll indicator with hint */}
-        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce flex flex-col items-center">
-          <div className="w-6 h-10 border-2 border-gray-400 rounded-full flex justify-center">
-            <div className="w-1 h-3 bg-gray-400 rounded-full mt-2 animate-pulse"></div>
-          </div>
-          <span className="mt-2 text-xs text-gray-500">Scroll down</span>
         </div>
       </div>
-
-      {/* Custom animations */}
-      <style jsx>{`
-        @keyframes blob {
-          0% { transform: translate(0px, 0px) scale(1); }
-          33% { transform: translate(30px, -50px) scale(1.1); }
-          66% { transform: translate(-20px, 20px) scale(0.9); }
-          100% { transform: translate(0px, 0px) scale(1); }
-        }
-        .animate-blob {
-          animation: blob 7s infinite;
-        }
-        .animation-delay-2000 {
-          animation-delay: 2s;
-        }
-        .animation-delay-4000 {
-          animation-delay: 4s;
-        }
-        .animation-delay-1000 {
-          animation-delay: 1s;
-        }
-        .animation-delay-3000 {
-          animation-delay: 3s;
-        }
-      `}</style>
     </section>
   )
 }

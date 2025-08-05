@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button"
 import { fetchProducts } from "@/lib/api"
 
 interface Product {
+    isNew: any
+    rating: number
     _id: string
     id?: string
     name: string
@@ -118,7 +120,7 @@ export default function ProductsGrid() {
                     const imageUrl = getValidImageUrl(product.images);
                     
                     // Use _id as the primary identifier
-                    const productId = product._id || product.id
+                    const productId = product._id || product.id || "";
                     console.log(`Rendering product card with ID: ${productId} for product: ${product.name}`)
                     console.log(`Image URL for ${product.name}: ${imageUrl}`)
                     
