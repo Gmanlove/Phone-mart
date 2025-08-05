@@ -1,176 +1,109 @@
 "use client"
-import { useState } from "react"
-import { Flame, Clock, Star, Heart, ArrowRight, Filter, Grid3X3, List, Zap, Gift, Percent, Timer } from "lucide-react"
-import { CldImage } from "next-cloudinary";
-import { extractCloudinaryPublicId } from "@/lib/utils";
 
-const deals = [
-  {
-    id: 1,
-    name: "iPhone 15 Pro Max",
-    brand: "Apple",
-    originalPrice: 2100000,
-    salePrice: 1750000,
-    discount: 17,
-    image: "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=400&h=400&fit=crop",
-    badge: "Flash Sale",
-    timeLeft: "2h 45m",
-    rating: 4.9,
-    reviews: 1205,
-    specs: "256GB, Deep Purple",
-    category: "iPhone"
-  },
-  {
-    id: 2,
-    name: "Galaxy S24 Ultra",
-    brand: "Samsung",
-    originalPrice: 2200000,
-    salePrice: 1850000,
-    discount: 16,
-    image: "https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?w=400&h=400&fit=crop",
-    badge: "Limited Deal",
-    timeLeft: "1d 12h",
-    rating: 4.8,
-    reviews: 892,
-    specs: "512GB, Titanium Black",
-    category: "Samsung"
-  },
-  {
-    id: 3,
-    name: "AirPods Pro (2nd Gen)",
-    brand: "Apple",
-    originalPrice: 450000,
-    salePrice: 350000,
-    discount: 22,
-    image: "https://images.unsplash.com/photo-1588423771073-b8903fbb85b5?w=400&h=400&fit=crop",
-    badge: "Best Seller",
-    timeLeft: "3h 20m",
-    rating: 4.7,
-    reviews: 2340,
-    specs: "Wireless, Noise Cancelling",
-    category: "Accessories"
-  },
-  {
-    id: 4,
-    name: "Pixel 8 Pro",
-    brand: "Google",
-    originalPrice: 1800000,
-    salePrice: 1500000,
-    discount: 17,
-    image: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=400&h=400&fit=crop",
-    badge: "Hot Deal",
-    timeLeft: "5h 15m",
-    rating: 4.6,
-    reviews: 567,
-    specs: "128GB, Obsidian",
-    category: "Android/Pixel"
-  },
-  {
-    id: 5,
-    name: "iPhone 14 Plus",
-    brand: "Apple",
-    originalPrice: 1650000,
-    salePrice: 1350000,
-    discount: 18,
-    image: "https://images.unsplash.com/photo-1695048133142-1a20484d2569?w=400&h=400&fit=crop",
-    badge: "Weekend Deal",
-    timeLeft: "1d 8h",
-    rating: 4.5,
-    reviews: 1890,
-    specs: "128GB, Midnight",
-    category: "iPhone"
-  },
-  {
-    id: 6,
-    name: "Samsung Buds2 Pro",
-    brand: "Samsung",
-    originalPrice: 280000,
-    salePrice: 200000,
-    discount: 29,
-    image: "https://images.unsplash.com/photo-1590658165737-15a047b7de72?w=400&h=400&fit=crop",
-    badge: "Mega Save",
-    timeLeft: "6h 30m",
-    rating: 4.4,
-    reviews: 743,
-    specs: "Wireless, ANC",
-    category: "Accessories"
+import { useState, useEffect } from "react"
+import { fetchProducts } from "@/lib/api"
+import { Flame, Clock, Star, Heart, ArrowRight, Zap, Gift, Percent, Timer } from "lucide-react"
+import Image from "next/image"
+import Link from "next/link"
+
+interface Product {
+  _id: string
+  name: string
+  brand: string
+  price: number
+  description: string
+  category: string
+  images: string[]
+  createdAt?: string
+  updatedAt?: string
+}
+
+interface Deal extends Product {
+  originalPrice: number
+  discount: number
+  timeLeft: string
+  badge: string
+}
+
+export default function DealsPage() {
+  const [deals, setDeals] = useState<Deal[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState("")
+
+  useEffect(() => {
+    const fetchDeals = async () => {
+      try {
+        setLoading(true)
+        const products: Product[] = await fetchProducts()
+        
+        // Transform products into deals with mock discounts
+        const dealsData: Deal[] = products.map((product, index) => {
+          const discountPercent = [15, 20, 25, 30, 35][index % 5]
+          const originalPrice = Math.round(product.price / (1 - discountPercent / 100))
+          
+          return {
+            ...product,
+            originalPrice,
+            discount: discountPercent,
+            timeLeft: ["2h 45m", "1d 12h", "3h 20m", "5h 30m", "45m"][index % 5],
+            badge: ["Flash Sale", "Limited Deal", "Best Seller", "Hot Deal", "Special Offer"][index % 5]
+          }
+        }).slice(0, 12) // Show first 12 products as deals
+        
+        setDeals(dealsData)
+        setLoading(false)
+      } catch (err) {
+        console.error("Error fetching deals:", err)
+        setError("Failed to load deals")
+        setLoading(false)
+      }
+    }
+
+    fetchDeals()
+  }, [])
+
+  // Helper function to construct proper image URL
+  const getValidImageUrl = (images: string[] | undefined): string => {
+    if (!images || images.length === 0) {
+      return "/api/placeholder/300/300"
+    }
+    
+    const firstImage = images[0]
+    
+    if (firstImage.startsWith("http")) {
+      return firstImage
+    }
+    
+    if (firstImage.includes("phone-mart-products/")) {
+      return `https://res.cloudinary.com/dn7zah8um/image/upload/${firstImage}.png`
+    }
+    
+    if (!firstImage.includes("phone-mart-products/") && !firstImage.startsWith("http")) {
+      return `https://res.cloudinary.com/dn7zah8um/image/upload/phone-mart-products/${firstImage}.png`
+    }
+    
+    return firstImage
   }
-]
 
-const DealCard = ({ deal, viewMode }: { deal: any, viewMode: string }) => {
-  const [isFavorited, setIsFavorited] = useState(false)
-  const savings = deal.originalPrice - deal.salePrice
-
-  if (viewMode === 'list') {
+  if (loading) {
     return (
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 sm:p-6 hover:shadow-lg transition-all duration-300 group">
-        <div className="flex flex-col sm:flex-row gap-4 sm:gap-6">
-          <div className="relative flex-shrink-0 w-full sm:w-32 md:w-40">
-            <div className="aspect-square rounded-xl overflow-hidden bg-gray-100">
-              <CldImage width={200} height={200} src={extractCloudinaryPublicId(deal.image) || "sample"} alt={deal.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-            </div>
-            <div className="absolute top-2 left-2">
-              <span className={`px-2 py-1 text-xs font-bold rounded-full text-white ${
-                deal.badge === 'Flash Sale' ? 'bg-red-500' :
-                deal.badge === 'Limited Deal' ? 'bg-orange-500' :
-                deal.badge === 'Best Seller' ? 'bg-green-500' :
-                deal.badge === 'Hot Deal' ? 'bg-purple-500' :
-                deal.badge === 'Weekend Deal' ? 'bg-blue-500' : 'bg-pink-500'
-              }`}>
-                {deal.badge}
-              </span>
-            </div>
-            <button 
-              onClick={() => setIsFavorited(!isFavorited)}
-              className="absolute top-2 right-2 p-2 bg-white/80 backdrop-blur-sm rounded-full shadow-sm hover:bg-white transition-all duration-200"
-            >
-              <Heart className={`w-4 h-4 ${isFavorited ? 'fill-red-500 text-red-500' : 'text-gray-600'}`} />
-            </button>
+      <div className="min-h-screen bg-white dark:bg-gray-900">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-20">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+            <p className="text-gray-600 dark:text-gray-400">Loading amazing deals...</p>
           </div>
+        </div>
+      </div>
+    )
+  }
 
-          <div className="flex-1 min-w-0">
-            <div className="flex flex-col sm:flex-row sm:justify-between gap-4">
-              <div className="flex-1">
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="text-sm font-medium text-gray-500">{deal.brand}</span>
-                  <div className="flex items-center gap-1">
-                    <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                    <span className="text-sm font-medium text-gray-700">{deal.rating}</span>
-                    <span className="text-xs text-gray-500">({deal.reviews.toLocaleString()})</span>
-                  </div>
-                </div>
-                
-                <h3 className="text-lg font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors duration-200">
-                  {deal.name}
-                </h3>
-                
-                <p className="text-sm text-gray-600 mb-3">{deal.specs}</p>
-                
-                <div className="flex items-center gap-2 mb-4">
-                  <Clock className="w-4 h-4 text-red-500" />
-                  <span className="text-sm font-medium text-red-600">Ends in {deal.timeLeft}</span>
-                </div>
-              </div>
-
-              <div className="text-right">
-                <div className="mb-3">
-                  <div className="text-2xl font-bold text-gray-900 mb-1">
-                    ₦{deal.salePrice.toLocaleString()}
-                  </div>
-                  <div className="text-sm text-gray-500 line-through">
-                    ₦{deal.originalPrice.toLocaleString()}
-                  </div>
-                  <div className="text-sm font-semibold text-green-600">
-                    Save ₦{savings.toLocaleString()}
-                  </div>
-                </div>
-                
-                <button className="w-full sm:w-auto bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 flex items-center justify-center gap-2">
-                  Shop Deal
-                  <ArrowRight className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
+  if (error) {
+    return (
+      <div className="min-h-screen bg-white dark:bg-gray-900">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-20">
+          <div className="text-center">
+            <p className="text-red-600 dark:text-red-400 text-lg">{error}</p>
           </div>
         </div>
       </div>
@@ -178,219 +111,187 @@ const DealCard = ({ deal, viewMode }: { deal: any, viewMode: string }) => {
   }
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-300 group">
-      <div className="relative">
-        <div className="aspect-square bg-gray-100 overflow-hidden">
-          <CldImage 
-            width={200} 
-            height={200} 
-            src={extractCloudinaryPublicId(deal.image) || "sample"} 
-            alt={deal.name} 
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-          />
-        </div>
-        
-        <div className="absolute top-3 left-3">
-          <span className={`px-3 py-1 text-xs font-bold rounded-full text-white ${
-            deal.badge === 'Flash Sale' ? 'bg-red-500' :
-            deal.badge === 'Limited Deal' ? 'bg-orange-500' :
-            deal.badge === 'Best Seller' ? 'bg-green-500' :
-            deal.badge === 'Hot Deal' ? 'bg-purple-500' :
-            deal.badge === 'Weekend Deal' ? 'bg-blue-500' : 'bg-pink-500'
-          }`}>
-            {deal.badge}
-          </span>
-        </div>
-        
-        <div className="absolute top-3 right-3">
-          <div className="bg-red-500 text-white px-2 py-1 rounded-full text-xs font-bold">
-            -{deal.discount}%
-          </div>
-        </div>
-        
-        <button 
-          onClick={() => setIsFavorited(!isFavorited)}
-          className="absolute bottom-3 right-3 p-2 bg-white/80 backdrop-blur-sm rounded-full shadow-sm hover:bg-white transition-all duration-200"
-        >
-          <Heart className={`w-4 h-4 ${isFavorited ? 'fill-red-500 text-red-500' : 'text-gray-600'}`} />
-        </button>
-      </div>
-      
-      <div className="p-4 sm:p-6">
-        <div className="flex items-center justify-between mb-2">
-          <span className="text-sm font-medium text-gray-500">{deal.brand}</span>
-          <div className="flex items-center gap-1">
-            <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-            <span className="text-sm font-medium text-gray-700">{deal.rating}</span>
-          </div>
-        </div>
-        
-        <h3 className="text-lg font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors duration-200">
-          {deal.name}
-        </h3>
-        
-        <p className="text-sm text-gray-600 mb-3">{deal.specs}</p>
-        
-        <div className="flex items-center gap-2 mb-4">
-          <Clock className="w-4 h-4 text-red-500" />
-          <span className="text-sm font-medium text-red-600">Ends in {deal.timeLeft}</span>
-        </div>
-        
-        <div className="mb-4">
-          <div className="flex items-baseline gap-2 mb-1">
-            <span className="text-2xl font-bold text-gray-900">
-              ₦{deal.salePrice.toLocaleString()}
-            </span>
-            <span className="text-sm text-gray-500 line-through">
-              ₦{deal.originalPrice.toLocaleString()}
-            </span>
-          </div>
-          <div className="text-sm font-semibold text-green-600">
-            Save ₦{savings.toLocaleString()}
-          </div>
-        </div>
-        
-        <button className="w-full bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white font-semibold py-3 px-4 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 flex items-center justify-center gap-2">
-          Shop Deal
-          <ArrowRight className="w-4 h-4" />
-        </button>
-      </div>
-    </div>
-  )
-}
+    <div className="min-h-screen bg-white dark:bg-gray-900">
+      {/* Hero Section */}
+      <div className="bg-gradient-to-br from-blue-600 via-blue-700 to-blue-800 dark:from-blue-800 dark:via-blue-900 dark:to-gray-900 text-white">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="py-12 sm:py-16 lg:py-20">
+            <div className="max-w-4xl">
+              {/* Logo and Brand */}
+              <div className="flex items-center mb-6">
+                <Image
+                  src="/smart.png"
+                  alt="Smart Communications"
+                  width={48}
+                  height={48}
+                  className="w-10 h-10 lg:w-12 lg:h-12 mr-4 object-contain"
+                />
+                <div>
+                  <h1 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold leading-tight flex items-center">
+                    <Flame className="h-8 w-8 lg:h-12 lg:w-12 mr-3 text-orange-400" />
+                    Hot Deals
+                  </h1>
+                  <p className="text-blue-200 text-sm lg:text-base mt-1">
+                    Exclusive Smart Communications Offers
+                  </p>
+                </div>
+              </div>
 
-export default function DealsPage() {
-  const [viewMode, setViewMode] = useState('grid')
-  const [selectedCategory, setSelectedCategory] = useState('All')
-  const [sortBy, setSortBy] = useState('discount')
+              <p className="text-lg sm:text-xl lg:text-2xl text-blue-100 mb-6 sm:mb-8 leading-relaxed max-w-3xl">
+                Discover incredible savings on premium smartphones and accessories. Limited time offers on authentic products.
+              </p>
 
-  const categories = ['All', 'iPhone', 'Samsung', 'Android/Pixel', 'Accessories']
-
-  const filteredDeals = deals.filter(deal => 
-    selectedCategory === 'All' || deal.category === selectedCategory
-  ).sort((a, b) => {
-    if (sortBy === 'discount') return b.discount - a.discount
-    if (sortBy === 'price-low') return a.salePrice - b.salePrice
-    if (sortBy === 'price-high') return b.salePrice - a.salePrice
-    if (sortBy === 'rating') return b.rating - a.rating
-    return 0
-  })
-
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-red-50 to-orange-50 py-4 sm:py-8">
-      <div className="container mx-auto px-4 max-w-7xl">
-        {/* Hero Section */}
-        <div className="text-center mb-8 sm:mb-12">
-          <div className="flex justify-center mb-4">
-            <div className="p-4 bg-gradient-to-r from-red-600 to-orange-600 rounded-full">
-              <Flame className="w-8 h-8 text-white" />
-            </div>
-          </div>
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-red-600 to-orange-600 bg-clip-text text-transparent mb-4">
-            🔥 Hot Deals & Flash Sales
-          </h1>
-          <p className="text-gray-600 text-base sm:text-lg max-w-2xl mx-auto mb-6">
-            Grab the best deals on top phones and accessories! Limited time offers with massive savings.
-          </p>
-          
-          {/* Stats */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 max-w-2xl mx-auto">
-            <div className="bg-white/80 backdrop-blur-sm rounded-xl p-3 sm:p-4 border border-white/20">
-              <div className="text-xl sm:text-2xl font-bold text-red-600 mb-1">50+</div>
-              <div className="text-xs sm:text-sm text-gray-600">Active Deals</div>
-            </div>
-            <div className="bg-white/80 backdrop-blur-sm rounded-xl p-3 sm:p-4 border border-white/20">
-              <div className="text-xl sm:text-2xl font-bold text-orange-600 mb-1">Up to 30%</div>
-              <div className="text-xs sm:text-sm text-gray-600">Max Discount</div>
-            </div>
-            <div className="bg-white/80 backdrop-blur-sm rounded-xl p-3 sm:p-4 border border-white/20">
-              <div className="text-xl sm:text-2xl font-bold text-green-600 mb-1">24/7</div>
-              <div className="text-xs sm:text-sm text-gray-600">Deal Updates</div>
-            </div>
-            <div className="bg-white/80 backdrop-blur-sm rounded-xl p-3 sm:p-4 border border-white/20">
-              <div className="text-xl sm:text-2xl font-bold text-blue-600 mb-1">Free</div>
-              <div className="text-xs sm:text-sm text-gray-600">Shipping</div>
-            </div>
-          </div>
-        </div>
-
-        {/* Filters and Controls */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 sm:p-6 mb-6 sm:mb-8">
-          <div className="flex flex-col lg:flex-row gap-4 lg:items-center lg:justify-between">
-            {/* Categories */}
-            <div className="flex flex-wrap gap-2">
-              {categories.map(category => (
-                <button
-                  key={category}
-                  onClick={() => setSelectedCategory(category)}
-                  className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
-                    selectedCategory === category
-                      ? 'bg-red-600 text-white shadow-lg'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                  }`}
-                >
-                  {category}
-                </button>
-              ))}
-            </div>
-
-            {/* Controls */}
-            <div className="flex items-center gap-4">
-              <select
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value)}
-                className="px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-transparent text-sm"
-              >
-                <option value="discount">Best Discount</option>
-                <option value="price-low">Price: Low to High</option>
-                <option value="price-high">Price: High to Low</option>
-                <option value="rating">Highest Rated</option>
-              </select>
-
-              <div className="flex items-center bg-gray-100 rounded-xl p-1">
-                <button
-                  onClick={() => setViewMode('grid')}
-                  className={`p-2 rounded-lg transition-all duration-200 ${
-                    viewMode === 'grid' ? 'bg-white shadow-sm text-red-600' : 'text-gray-600'
-                  }`}
-                >
-                  <Grid3X3 className="w-4 h-4" />
-                </button>
-                <button
-                  onClick={() => setViewMode('list')}
-                  className={`p-2 rounded-lg transition-all duration-200 ${
-                    viewMode === 'list' ? 'bg-white shadow-sm text-red-600' : 'text-gray-600'
-                  }`}
-                >
-                  <List className="w-4 h-4" />
-                </button>
+              {/* Deal Stats */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6 mt-8 sm:mt-12">
+                <div className="text-center bg-white/10 rounded-xl p-4 backdrop-blur-sm">
+                  <div className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white">Up to 35%</div>
+                  <div className="text-sm sm:text-base text-blue-200 mt-1">Savings</div>
+                </div>
+                <div className="text-center bg-white/10 rounded-xl p-4 backdrop-blur-sm">
+                  <div className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white">{deals.length}+</div>
+                  <div className="text-sm sm:text-base text-blue-200 mt-1">Products</div>
+                </div>
+                <div className="text-center bg-white/10 rounded-xl p-4 backdrop-blur-sm">
+                  <div className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white">24h</div>
+                  <div className="text-sm sm:text-base text-blue-200 mt-1">Limited Time</div>
+                </div>
+                <div className="text-center bg-white/10 rounded-xl p-4 backdrop-blur-sm">
+                  <div className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white">★ 4.9</div>
+                  <div className="text-sm sm:text-base text-blue-200 mt-1">Customer Rating</div>
+                </div>
               </div>
             </div>
           </div>
         </div>
+      </div>
 
-        {/* Deals Grid/List */}
-        <div className={`${
-          viewMode === 'grid' 
-            ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8'
-            : 'space-y-4 sm:space-y-6'
-        }`}>
-          {filteredDeals.map((deal) => (
-            <DealCard key={deal.id} deal={deal} viewMode={viewMode} />
-          ))}
+      {/* Main Content */}
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 -mt-8 relative z-10">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden border border-gray-200 dark:border-gray-700">
+          
+          {/* Deals Grid */}
+          <div className="p-4 sm:p-6 lg:p-8">
+            <div className="flex items-center justify-between mb-6 sm:mb-8">
+              <div>
+                <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-1 flex items-center">
+                  <Gift className="h-6 w-6 mr-2 text-blue-600 dark:text-blue-400" />
+                  Exclusive Deals
+                </h2>
+                <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400">
+                  Limited time offers on premium devices
+                </p>
+              </div>
+              
+              <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+                <Timer className="h-4 w-4 text-orange-500" />
+                <span>Deals refresh daily</span>
+              </div>
+            </div>
+
+            {/* Products Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {deals.map((deal) => (
+                <div key={deal._id} className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 overflow-hidden">
+                  {/* Deal Badge */}
+                  <div className="relative">
+                    <div className="aspect-square bg-gray-100 dark:bg-gray-700 rounded-t-xl overflow-hidden">
+                      <img
+                        src={getValidImageUrl(deal.images)}
+                        alt={deal.name}
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          e.currentTarget.src = "/api/placeholder/300/300"
+                        }}
+                      />
+                    </div>
+                    <div className="absolute top-3 left-3 bg-red-500 text-white px-2 py-1 rounded-full text-xs font-bold">
+                      -{deal.discount}%
+                    </div>
+                    <div className="absolute top-3 right-3 bg-blue-600 text-white px-2 py-1 rounded-full text-xs font-bold">
+                      {deal.badge}
+                    </div>
+                    <div className="absolute bottom-3 left-3 bg-black/70 text-white px-2 py-1 rounded-full text-xs flex items-center">
+                      <Clock className="h-3 w-3 mr-1" />
+                      {deal.timeLeft}
+                    </div>
+                  </div>
+
+                  {/* Product Info */}
+                  <div className="p-4 space-y-3">
+                    <div>
+                      <p className="text-sm text-gray-500 dark:text-gray-400">{deal.brand}</p>
+                      <h3 className="font-semibold text-lg text-gray-900 dark:text-white line-clamp-2">
+                        {deal.name}
+                      </h3>
+                    </div>
+
+                    <p className="text-sm text-gray-600 dark:text-gray-300 line-clamp-2">
+                      {deal.description}
+                    </p>
+
+                    {/* Pricing */}
+                    <div className="space-y-2">
+                      <div className="flex items-center space-x-2">
+                        <span className="text-2xl font-bold text-blue-600 dark:text-blue-400">
+                          ₦{deal.price.toLocaleString()}
+                        </span>
+                        <span className="text-lg text-gray-500 dark:text-gray-400 line-through">
+                          ₦{deal.originalPrice.toLocaleString()}
+                        </span>
+                      </div>
+                      <div className="text-sm text-green-600 dark:text-green-400 font-medium">
+                        Save ₦{(deal.originalPrice - deal.price).toLocaleString()}
+                      </div>
+                    </div>
+
+                    {/* CTA Button */}
+                    <Link
+                      href={`/products/${deal._id}`}
+                      className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 px-4 rounded-xl font-semibold transition-colors duration-200 flex items-center justify-center group"
+                    >
+                      Grab Deal
+                      <ArrowRight className="h-4 w-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                    </Link>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* View More Deals */}
+            <div className="text-center mt-12">
+              <Link
+                href="/products"
+                className="inline-flex items-center bg-gradient-to-r from-blue-600 to-blue-700 text-white px-8 py-3 rounded-xl font-semibold hover:from-blue-700 hover:to-blue-800 transition-all duration-200 transform hover:scale-105"
+              >
+                View All Products
+                <ArrowRight className="h-5 w-5 ml-2" />
+              </Link>
+            </div>
+          </div>
         </div>
 
-        {/* Call to Action */}
-        <div className="mt-12 sm:mt-16 text-center">
-          <div className="bg-gradient-to-r from-red-600 to-orange-600 rounded-2xl p-6 sm:p-8 text-white">
-            <Timer className="w-12 h-12 mx-auto mb-4 animate-pulse" />
-            <h3 className="text-xl sm:text-2xl font-bold mb-2">Don't Miss Out!</h3>
-            <p className="text-red-100 mb-6 max-w-md mx-auto">
-              These deals won't last forever. Sign up for notifications and never miss a flash sale again.
+        {/* Newsletter CTA */}
+        <div className="mt-16 mb-8">
+          <div className="bg-gradient-to-r from-blue-600 to-blue-700 dark:from-blue-700 dark:to-blue-800 rounded-2xl p-8 sm:p-12 text-center text-white border border-blue-500 dark:border-blue-600">
+            <div className="flex items-center justify-center mb-4">
+              <Zap className="h-10 w-10 mr-3 text-yellow-400" />
+              <h3 className="text-2xl sm:text-3xl font-bold">
+                Never Miss a Deal!
+              </h3>
+            </div>
+            <p className="text-lg text-blue-100 mb-6 max-w-2xl mx-auto">
+              Get notified about flash sales, exclusive offers, and new arrivals before anyone else.
             </p>
-            <button className="bg-white text-red-600 font-semibold py-3 px-8 rounded-xl hover:bg-gray-100 transition-all duration-200 shadow-lg">
-              Get Deal Alerts
-            </button>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center max-w-md mx-auto">
+              <input
+                type="email"
+                placeholder="Enter your email"
+                className="flex-1 px-4 py-3 rounded-xl text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-white/50"
+              />
+              <button className="bg-white text-blue-600 font-semibold px-6 py-3 rounded-xl hover:bg-blue-50 transition-colors duration-200 whitespace-nowrap">
+                Get Deals
+              </button>
+            </div>
           </div>
         </div>
       </div>

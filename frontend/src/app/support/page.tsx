@@ -14,9 +14,16 @@ import {
   Video,
   Download,
   ExternalLink,
-  Star
+  Star,
+  MapPin,
+  Shield,
+  Wrench,
+  Truck,
+  CreditCard,
+  RefreshCw
 } from "lucide-react";
 import { useState } from "react";
+import Image from "next/image";
 
 export default function SupportPage() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -25,8 +32,8 @@ export default function SupportPage() {
   const supportOptions = [
     {
       icon: MessageCircle,
-      title: "Live Chat",
-      description: "Get instant help from our support team",
+      title: "Live Chat Support",
+      description: "Get instant help from our mobile technology experts",
       availability: "Available 24/7",
       action: "Start Chat",
       color: "bg-blue-500",
@@ -34,257 +41,294 @@ export default function SupportPage() {
     },
     {
       icon: Phone,
-      title: "Phone Support",
-      description: "Speak directly with a support specialist",
-      availability: "Mon-Fri 9AM-6PM EST",
-      action: "Call Now",
+      title: "Expert Phone Support",
+      description: "Speak directly with our certified mobile specialists",
+      availability: "Mon-Sat 9AM-8PM WAT",
+      action: "Call 0814 645 2793",
       color: "bg-green-500",
       hoverColor: "hover:bg-green-600"
     },
     {
       icon: Mail,
-      title: "Email Support",
-      description: "Send us your questions and we'll respond within 24 hours",
-      availability: "Response within 24hrs",
+      title: "Technical Email Support",
+      description: "Send detailed queries to our technical support team",
+      availability: "Response within 4 hours",
       action: "Send Email",
       color: "bg-purple-500",
       hoverColor: "hover:bg-purple-600"
+    },
+    {
+      icon: MapPin,
+      title: "Visit Our Store",
+      description: "Get hands-on support at our Uyo location",
+      availability: "Mon-Sat 9AM-8PM WAT",
+      action: "Get Directions",
+      color: "bg-orange-500",
+      hoverColor: "hover:bg-orange-600"
     }
   ];
 
   const faqCategories = [
-    { id: "all", name: "All Topics", count: 24 },
-    { id: "account", name: "Account & Billing", count: 8 },
-    { id: "technical", name: "Technical Issues", count: 6 },
-    { id: "getting-started", name: "Getting Started", count: 5 },
-    { id: "features", name: "Features", count: 5 }
+    { id: "all", name: "All Topics", icon: HelpCircle },
+    { id: "orders", name: "Orders & Delivery", icon: Truck },
+    { id: "products", name: "Product Information", icon: Book },
+    { id: "technical", name: "Technical Support", icon: Wrench },
+    { id: "warranty", name: "Warranty & Returns", icon: Shield },
+    { id: "payment", name: "Payment & Billing", icon: CreditCard }
   ];
 
   const faqs = [
     {
-      category: "account",
-      question: "How do I reset my password?",
-      answer: "You can reset your password by clicking the 'Forgot Password' link on the login page.",
-      popularity: 5
+      category: "orders",
+      question: "How long does delivery take in Nigeria?",
+      answer: "We offer same-day delivery in Lagos and Abuja for orders placed before 2PM. Other cities typically receive orders within 1-3 business days."
+    },
+    {
+      category: "products",
+      question: "Are all smartphones authentic and original?",
+      answer: "Yes, we guarantee 100% authentic products. All devices come with manufacturer warranties and official documentation."
     },
     {
       category: "technical",
-      question: "Why is the app running slowly?",
-      answer: "Check your internet connection and try clearing your browser cache.",
-      popularity: 4
+      question: "Do you provide device setup and data transfer services?",
+      answer: "Yes, our certified technicians provide free device setup, data transfer, and basic training for all smartphone purchases."
     },
     {
-      category: "getting-started",
-      question: "How do I create my first project?",
-      answer: "Navigate to the dashboard and click the 'New Project' button to get started.",
-      popularity: 5
+      category: "warranty",
+      question: "What is your return and exchange policy?",
+      answer: "We offer a 30-day return policy for unopened items and 7-day exchange for defective products. All returns include free pickup service."
     },
     {
-      category: "features",
-      question: "Can I export my data?",
-      answer: "Yes, you can export your data in multiple formats from the Settings page.",
-      popularity: 3
-    },
-    {
-      category: "account",
-      question: "How do I upgrade my plan?",
-      answer: "Go to Account Settings > Billing to view and upgrade your subscription plan.",
-      popularity: 4
+      category: "payment",
+      question: "What payment methods do you accept?",
+      answer: "We accept all major debit/credit cards, bank transfers, and cash on delivery. All transactions are secured with bank-level encryption."
     },
     {
       category: "technical",
-      question: "What browsers are supported?",
-      answer: "We support Chrome, Firefox, Safari, and Edge (latest versions).",
-      popularity: 3
+      question: "Do you offer device repair services?",
+      answer: "Yes, we have certified repair technicians for screen replacement, battery replacement, and other common repairs with genuine parts."
     }
   ];
 
-  const resources = [
+  const filteredFaqs = selectedCategory === "all" 
+    ? faqs 
+    : faqs.filter(faq => faq.category === selectedCategory);
+
+  const services = [
+    {
+      icon: Wrench,
+      title: "Device Setup & Configuration",
+      description: "Professional setup and optimization of your new device"
+    },
+    {
+      icon: RefreshCw,
+      title: "Data Transfer & Migration",
+      description: "Seamless transfer of your data from old to new device"
+    },
+    {
+      icon: Shield,
+      title: "Security Configuration",
+      description: "Set up security features and privacy settings"
+    },
     {
       icon: Book,
-      title: "Documentation",
-      description: "Comprehensive guides and API references",
-      link: "#"
-    },
-    {
-      icon: Video,
-      title: "Video Tutorials",
-      description: "Step-by-step video guides",
-      link: "#"
-    },
-    {
-      icon: Download,
-      title: "Downloads",
-      description: "Apps, plugins, and tools",
-      link: "#"
-    },
-    {
-      icon: Users,
-      title: "Community Forum",
-      description: "Connect with other users",
-      link: "#"
+      title: "Device Training",
+      description: "Learn to maximize your device's features and capabilities"
     }
   ];
 
-  const filteredFaqs = faqs.filter(faq => {
-    const matchesCategory = selectedCategory === "all" || faq.category === selectedCategory;
-    const matchesSearch = faq.question.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         faq.answer.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesCategory && matchesSearch;
-  });
-
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-gradient-to-br from-blue-600 via-blue-700 to-blue-800 text-white">
-        <div className="container mx-auto px-4 py-16">
-          <div className="text-center max-w-3xl mx-auto">
-            <h1 className="text-4xl md:text-5xl font-bold mb-4">
-              How can we help you?
-            </h1>
-            <p className="text-xl text-blue-100 mb-8">
-              Get the support you need, when you need it
-            </p>
-            
-            {/* Search Bar */}
-            <div className="relative max-w-2xl mx-auto">
-              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-              <input
-                type="text"
-                placeholder="Search for help articles, guides, and more..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-12 pr-4 py-4 text-gray-900 bg-white rounded-xl border-0 shadow-lg focus:ring-4 focus:ring-blue-300/50 outline-none transition-all text-lg"
-              />
+    <div className="min-h-screen bg-white dark:bg-gray-900">
+      {/* Hero Section */}
+      <div className="bg-gradient-to-br from-blue-600 via-blue-700 to-blue-800 dark:from-blue-800 dark:via-blue-900 dark:to-gray-900 text-white">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="py-12 sm:py-16 lg:py-20">
+            <div className="max-w-4xl">
+              {/* Logo and Brand */}
+              <div className="flex items-center mb-6">
+                <Image
+                  src="/smart.png"
+                  alt="Smart Communications"
+                  width={48}
+                  height={48}
+                  className="w-10 h-10 lg:w-12 lg:h-12 mr-4 object-contain"
+                />
+                <div>
+                  <h1 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold leading-tight flex items-center">
+                    <Users className="h-8 w-8 lg:h-12 lg:w-12 mr-3 text-blue-300" />
+                    Expert Support
+                  </h1>
+                  <p className="text-blue-200 text-sm lg:text-base mt-1">
+                    Professional Mobile Technology Assistance
+                  </p>
+                </div>
+              </div>
+
+              <p className="text-lg sm:text-xl lg:text-2xl text-blue-100 mb-6 sm:mb-8 leading-relaxed max-w-3xl">
+                Get professional help from our certified mobile technology experts. We're here to ensure you get the most from your devices.
+              </p>
+
+              {/* Support Stats */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6 mt-8 sm:mt-12">
+                <div className="text-center bg-white/10 rounded-xl p-4 backdrop-blur-sm">
+                  <div className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white">24/7</div>
+                  <div className="text-sm sm:text-base text-blue-200 mt-1">Expert Support</div>
+                </div>
+                <div className="text-center bg-white/10 rounded-xl p-4 backdrop-blur-sm">
+                  <div className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white">4hrs</div>
+                  <div className="text-sm sm:text-base text-blue-200 mt-1">Response Time</div>
+                </div>
+                <div className="text-center bg-white/10 rounded-xl p-4 backdrop-blur-sm">
+                  <div className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white">★ 4.9</div>
+                  <div className="text-sm sm:text-base text-blue-200 mt-1">Support Rating</div>
+                </div>
+                <div className="text-center bg-white/10 rounded-xl p-4 backdrop-blur-sm">
+                  <div className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white">50K+</div>
+                  <div className="text-sm sm:text-base text-blue-200 mt-1">Happy Customers</div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="container mx-auto px-4 -mt-8 relative z-10">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 -mt-8 relative z-10">
         {/* Support Options */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
-          {supportOptions.map((option, index) => {
-            const IconComponent = option.icon;
-            return (
-              <div key={index} className="bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 p-6 border border-gray-100">
-                <div className={`${option.color} w-12 h-12 rounded-lg flex items-center justify-center mb-4`}>
-                  <IconComponent className="w-6 h-6 text-white" />
-                </div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">{option.title}</h3>
-                <p className="text-gray-600 mb-3">{option.description}</p>
-                <div className="flex items-center text-sm text-gray-500 mb-4">
-                  <Clock className="w-4 h-4 mr-1" />
-                  {option.availability}
-                </div>
-                <button className={`w-full ${option.color} ${option.hoverColor} text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200`}>
-                  {option.action}
-                </button>
-              </div>
-            );
-          })}
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
-          {/* FAQ Section */}
-          <div className="lg:col-span-2">
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">Frequently Asked Questions</h2>
-              
-              {/* Category Filters */}
-              <div className="flex flex-wrap gap-2 mb-6">
-                {faqCategories.map((category) => (
-                  <button
-                    key={category.id}
-                    onClick={() => setSelectedCategory(category.id)}
-                    className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                      selectedCategory === category.id
-                        ? 'bg-blue-100 text-blue-700 border border-blue-200'
-                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                    }`}
-                  >
-                    {category.name} ({category.count})
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden border border-gray-200 dark:border-gray-700 mb-8">
+          <div className="p-6 sm:p-8">
+            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-6 text-center">
+              How Can We Help You Today?
+            </h2>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {supportOptions.map((option, index) => (
+                <div
+                  key={index}
+                  className="bg-white dark:bg-gray-700 rounded-xl border border-gray-200 dark:border-gray-600 p-6 hover:shadow-lg transition-all duration-300 transform hover:scale-105 cursor-pointer group"
+                >
+                  <div className={`${option.color} ${option.hoverColor} text-white w-12 h-12 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-200`}>
+                    <option.icon className="h-6 w-6" />
+                  </div>
+                  
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                    {option.title}
+                  </h3>
+                  
+                  <p className="text-gray-600 dark:text-gray-300 text-sm mb-4">
+                    {option.description}
+                  </p>
+                  
+                  <div className="text-xs text-gray-500 dark:text-gray-400 mb-4">
+                    {option.availability}
+                  </div>
+                  
+                  <button className={`w-full ${option.color} ${option.hoverColor} text-white py-2 px-4 rounded-lg font-medium transition-colors duration-200`}>
+                    {option.action}
                   </button>
-                ))}
-              </div>
-
-              {/* FAQ List */}
-              <div className="space-y-4">
-                {filteredFaqs.map((faq, index) => (
-                  <details key={index} className="group border border-gray-200 rounded-lg">
-                    <summary className="flex items-center justify-between p-4 cursor-pointer hover:bg-gray-50 transition-colors">
-                      <div className="flex items-center gap-3">
-                        <HelpCircle className="w-5 h-5 text-blue-600 flex-shrink-0" />
-                        <h3 className="font-medium text-gray-900">{faq.question}</h3>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <div className="flex">
-                          {[...Array(faq.popularity)].map((_, i) => (
-                            <Star key={i} className="w-3 h-3 fill-yellow-400 text-yellow-400" />
-                          ))}
-                        </div>
-                        <ChevronRight className="w-5 h-5 text-gray-400 group-open:rotate-90 transition-transform" />
-                      </div>
-                    </summary>
-                    <div className="px-4 pb-4">
-                      <p className="text-gray-600 pl-8">{faq.answer}</p>
-                    </div>
-                  </details>
-                ))}
-              </div>
-
-              {filteredFaqs.length === 0 && (
-                <div className="text-center py-12">
-                  <HelpCircle className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-                  <p className="text-gray-500">No FAQs found matching your criteria.</p>
                 </div>
-              )}
+              ))}
             </div>
           </div>
+        </div>
 
-          {/* Resources Sidebar */}
-          <div className="space-y-6">
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-              <h3 className="text-xl font-semibold text-gray-900 mb-4">Help Resources</h3>
-              <div className="space-y-4">
-                {resources.map((resource, index) => {
-                  const IconComponent = resource.icon;
-                  return (
-                    <a
-                      key={index}
-                      href={resource.link}
-                      className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors group"
-                    >
-                      <div className="bg-gray-100 w-10 h-10 rounded-lg flex items-center justify-center group-hover:bg-blue-100 transition-colors">
-                        <IconComponent className="w-5 h-5 text-gray-600 group-hover:text-blue-600 transition-colors" />
-                      </div>
-                      <div className="flex-1">
-                        <h4 className="font-medium text-gray-900">{resource.title}</h4>
-                        <p className="text-sm text-gray-500">{resource.description}</p>
-                      </div>
-                      <ExternalLink className="w-4 h-4 text-gray-400 group-hover:text-blue-600 transition-colors" />
-                    </a>
-                  );
-                })}
-              </div>
+        {/* FAQ Section */}
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden border border-gray-200 dark:border-gray-700 mb-8">
+          <div className="p-6 sm:p-8">
+            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-6">
+              Frequently Asked Questions
+            </h2>
+
+            {/* FAQ Categories */}
+            <div className="flex flex-wrap gap-2 mb-8">
+              {faqCategories.map((category) => (
+                <button
+                  key={category.id}
+                  onClick={() => setSelectedCategory(category.id)}
+                  className={`flex items-center px-4 py-2 rounded-full text-sm font-medium transition-colors duration-200 ${
+                    selectedCategory === category.id
+                      ? 'bg-blue-600 text-white'
+                      : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                  }`}
+                >
+                  <category.icon className="h-4 w-4 mr-2" />
+                  {category.name}
+                </button>
+              ))}
             </div>
 
-            {/* Contact Info */}
-            <div className="bg-gradient-to-br from-gray-900 to-gray-800 text-white rounded-xl p-6">
-              <h3 className="text-xl font-semibold mb-4">Still need help?</h3>
-              <p className="text-gray-300 mb-4">
-                Our support team is here to help you succeed.
-              </p>
-              <div className="space-y-2 text-sm">
-                <div className="flex items-center gap-2">
-                  <Mail className="w-4 h-4 text-blue-400" />
-                  <span>support@company.com</span>
+            {/* FAQ Items */}
+            <div className="space-y-4">
+              {filteredFaqs.map((faq, index) => (
+                <div
+                  key={index}
+                  className="bg-gray-50 dark:bg-gray-700 rounded-xl p-6 border border-gray-200 dark:border-gray-600"
+                >
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3 flex items-start">
+                    <HelpCircle className="h-5 w-5 text-blue-600 dark:text-blue-400 mr-2 mt-0.5 flex-shrink-0" />
+                    {faq.question}
+                  </h3>
+                  <p className="text-gray-600 dark:text-gray-300 leading-relaxed ml-7">
+                    {faq.answer}
+                  </p>
                 </div>
-                <div className="flex items-center gap-2">
-                  <Phone className="w-4 h-4 text-green-400" />
-                  <span>1-800-123-4567</span>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Additional Services */}
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden border border-gray-200 dark:border-gray-700 mb-8">
+          <div className="p-6 sm:p-8">
+            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-6">
+              Professional Services
+            </h2>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {services.map((service, index) => (
+                <div
+                  key={index}
+                  className="text-center p-6 bg-blue-50 dark:bg-blue-900/20 rounded-xl border border-blue-200 dark:border-blue-700 hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors duration-200"
+                >
+                  <div className="bg-blue-600 text-white w-12 h-12 rounded-xl flex items-center justify-center mx-auto mb-4">
+                    <service.icon className="h-6 w-6" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                    {service.title}
+                  </h3>
+                  <p className="text-gray-600 dark:text-gray-300 text-sm">
+                    {service.description}
+                  </p>
                 </div>
-              </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Contact CTA */}
+        <div className="mb-8">
+          <div className="bg-gradient-to-r from-blue-600 to-blue-700 dark:from-blue-700 dark:to-blue-800 rounded-2xl p-8 sm:p-12 text-center text-white border border-blue-500 dark:border-blue-600">
+            <div className="flex items-center justify-center mb-4">
+              <Image
+                src="/smart.png"
+                alt="Smart Communications"
+                width={48}
+                height={48}
+                className="w-10 h-10 mr-3 object-contain"
+              />
+              <h3 className="text-2xl sm:text-3xl font-bold">
+                Still Need Help?
+              </h3>
+            </div>
+            <p className="text-lg text-blue-100 mb-6 max-w-2xl mx-auto">
+              Our certified mobile technology experts are standing by to provide personalized assistance for all your mobile communication needs.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <button className="bg-white text-blue-600 font-semibold px-8 py-3 rounded-xl hover:bg-blue-50 transition-colors duration-200 border-2 border-white">
+                Contact Expert Now
+              </button>
+              <button className="border-2 border-white text-white font-semibold px-8 py-3 rounded-xl hover:bg-white hover:text-blue-600 transition-all duration-200">
+                Schedule Consultation
+              </button>
             </div>
           </div>
         </div>
