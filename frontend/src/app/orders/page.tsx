@@ -5,29 +5,8 @@ import { Package, Truck, CheckCircle, Clock, Search, Filter, Eye, Download, Star
 import { CldImage } from "next-cloudinary";
 import { extractCloudinaryPublicId } from "@/lib/utils";
 
-import { useOrders } from "@/contexts/order-context"
-
-interface OrderItem {
-  name: string;
-  image: string;
-  specs: string;
-  quantity: number;
-  price: number;
-}
-
-interface Order {
-  id: string;
-  date: string;
-  paymentMethod: string;
-  total: number;
-  items: OrderItem[];
-  status: string;
-  shippingAddress: string;
-  trackingNumber?: string;
-  estimatedDelivery?: string;
-  actualDelivery?: string;
-  cancelReason?: string;
-}
+import { useOrders, Order } from "@/contexts/order-context"
+import { CartItem } from "@/contexts/cart-context"
 
 const OrderCard = ({ order }: { order: Order }) => {
   const [isExpanded, setIsExpanded] = useState(false)
@@ -70,7 +49,7 @@ const OrderCard = ({ order }: { order: Order }) => {
                 </span>
                 <span className="flex items-center gap-1">
                   <CreditCard className="w-4 h-4" />
-                  {order.paymentMethod}
+                  Online Payment
                 </span>
               </div>
             </div>
@@ -97,7 +76,7 @@ const OrderCard = ({ order }: { order: Order }) => {
       {/* Order Items Preview */}
       <div className="p-4 sm:p-6">
         <div className="flex flex-wrap gap-2 mb-4">
-          {order.items.slice(0, 3).map((item: OrderItem, index: number) => (
+          {order.items.slice(0, 3).map((item: CartItem, index: number) => (
             <div key={index} className="flex items-center gap-2 bg-gray-50 rounded-lg px-3 py-2">
               <CldImage
                 width={100}
@@ -167,7 +146,7 @@ const OrderCard = ({ order }: { order: Order }) => {
                 Order Items
               </h4>
               <div className="space-y-3">
-                {order.items.map((item: OrderItem, index: number) => (
+                {order.items.map((item: CartItem, index: number) => (
                   <div key={index} className="flex items-center gap-3 p-3 bg-white rounded-xl">
                     <CldImage
                       width={100}
@@ -178,7 +157,6 @@ const OrderCard = ({ order }: { order: Order }) => {
                     />
                     <div className="flex-1 min-w-0">
                       <h5 className="font-medium text-gray-900 truncate">{item.name}</h5>
-                      <p className="text-sm text-gray-600">{item.specs}</p>
                       <div className="flex items-center justify-between mt-1">
                         <span className="text-sm text-gray-500">Qty: {item.quantity}</span>
                         <span className="font-semibold text-gray-900">₦{item.price.toLocaleString()}</span>
@@ -194,36 +172,16 @@ const OrderCard = ({ order }: { order: Order }) => {
               <div>
                 <h4 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
                   <MapPin className="w-4 h-4" />
-                  Shipping Details
+                  Order Details
                 </h4>
                 <div className="bg-white p-4 rounded-xl">
-                  <p className="text-sm text-gray-600 mb-2">Delivery Address:</p>
-                  <p className="font-medium text-gray-900">{order.shippingAddress}</p>
+                  <p className="text-sm text-gray-600 mb-2">Order Status:</p>
+                  <p className="font-medium text-gray-900 capitalize">{order.status}</p>
                   
-                  {order.trackingNumber && (
-                    <>
-                      <p className="text-sm text-gray-600 mt-3 mb-2">Tracking Number:</p>
-                      <p className="font-mono text-sm bg-gray-100 px-2 py-1 rounded">{order.trackingNumber}</p>
-                    </>
-                  )}
-                  
-                  {order.estimatedDelivery && (
-                    <>
-                      <p className="text-sm text-gray-600 mt-3 mb-2">
-                        {order.status === 'delivered' ? 'Delivered:' : 'Estimated Delivery:'}
-                      </p>
-                      <p className="font-medium text-gray-900">
-                        {new Date(order.actualDelivery || order.estimatedDelivery).toLocaleDateString('en-NG')}
-                      </p>
-                    </>
-                  )}
-                  
-                  {order.cancelReason && (
-                    <>
-                      <p className="text-sm text-gray-600 mt-3 mb-2">Cancel Reason:</p>
-                      <p className="text-red-600 font-medium">{order.cancelReason}</p>
-                    </>
-                  )}
+                  <p className="text-sm text-gray-600 mt-3 mb-2">Order Date:</p>
+                  <p className="font-medium text-gray-900">
+                    {new Date(order.date).toLocaleDateString('en-NG')}
+                  </p>
                 </div>
               </div>
 
@@ -266,7 +224,7 @@ export default function OrdersPage() {
 
   const filteredOrders = orders.filter(order => {
     const matchesSearch = order.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      order.items.some((item: OrderItem) => item.name.toLowerCase().includes(searchTerm.toLowerCase()))
+      order.items.some((item: CartItem) => item.name.toLowerCase().includes(searchTerm.toLowerCase()))
     const matchesStatus = statusFilter === "all" || order.status === statusFilter
     return matchesSearch && matchesStatus
   })
