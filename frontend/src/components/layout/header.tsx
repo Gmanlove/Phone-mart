@@ -1,10 +1,11 @@
 "use client"
 
 import { useState, useCallback, useEffect, SetStateAction } from "react"
-import { Search, ShoppingCart, User, Menu, X, Phone, ChevronDown, MapPin, Clock, Heart, Truck, LogOut, Wifi, Moon, Sun } from "lucide-react"
+import { Search, ShoppingCart, User, Menu, X, Phone, ChevronDown, MapPin, Clock, Heart, Truck, LogOut } from "lucide-react"
 import { useCart } from "@/contexts/cart-context"
 import { useAuth } from "@/contexts/auth-context"
 import Link from "next/link"
+import Image from "next/image"
 
 // Mock components for demonstration
 import { ReactNode, ButtonHTMLAttributes } from "react"
@@ -50,36 +51,18 @@ const Input = ({ className = "", ...props }) => (
 )
 
 export default function Header() {
+  const cartContext = useCart()
+  const authContext = useAuth()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const [isSearchOpen, setIsSearchOpen] = useState(false)
-  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState("")
-  const [isDarkMode, setIsDarkMode] = useState(false)
-  
-  const { cartItems, cartItemsCount } = useCart()
-  const { user, logout } = useAuth()
+  const [isProfileOpen, setIsProfileOpen] = useState(false)
 
-  // Dark mode toggle
-  useEffect(() => {
-    const isDark = localStorage.getItem('darkMode') === 'true'
-    setIsDarkMode(isDark)
-    if (isDark) {
-      document.documentElement.classList.add('dark')
-    } else {
-      document.documentElement.classList.remove('dark')
-    }
-  }, [])
+  // Safe access to cart items with fallback
+  const cartItems = cartContext?.items || []
+  const user = authContext?.user
+  const logout = authContext?.logout
 
-  const toggleDarkMode = () => {
-    const newDarkMode = !isDarkMode
-    setIsDarkMode(newDarkMode)
-    localStorage.setItem('darkMode', newDarkMode.toString())
-    if (newDarkMode) {
-      document.documentElement.classList.add('dark')
-    } else {
-      document.documentElement.classList.remove('dark')
-    }
-  }
+  const cartItemsCount = cartItems.reduce((total, item) => total + item.quantity, 0)
 
   const handleSearch = useCallback((e: React.FormEvent) => {
     e.preventDefault()
@@ -88,45 +71,68 @@ export default function Header() {
     }
   }, [searchQuery])
 
-  const handleLogout = useCallback(() => {
-    logout()
-    setIsUserMenuOpen(false)
-  }, [logout])
+  const closeMenu = useCallback(() => {
+    setIsMenuOpen(false)
+  }, [])
+
+  const closeProfile = useCallback(() => {
+    setIsProfileOpen(false)
+  }, [])
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      // Close menu if clicking outside
+      if (isMenuOpen) {
+        const menu = document.getElementById('mobile-menu')
+        if (menu && !menu.contains(event.target as Node)) {
+          closeMenu()
+        }
+      }
+
+      // Close profile if clicking outside
+      if (isProfileOpen) {
+        const profile = document.getElementById('profile-dropdown')
+        if (profile && !profile.contains(event.target as Node)) {
+          closeProfile()
+        }
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [isMenuOpen, isProfileOpen, closeMenu, closeProfile])
+
+  const handleLogout = async () => {
+    if (logout) {
+      await logout()
+    }
+    closeProfile()
+  }
 
   return (
     <>
       {/* Top Bar */}
-      <div className="bg-blue-600 dark:bg-blue-700 text-white py-2 text-sm hidden md:block">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-6">
-              <div className="flex items-center space-x-2">
-                <Phone className="h-4 w-4 text-blue-300" />
-                <span>+234 123 456 7890</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <MapPin className="h-4 w-4 text-blue-300" />
-                <span>87 IKot Ekpene Road, Uyo</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <Clock className="h-4 w-4 text-blue-300" />
-                <span>Mon-Sat: 9AM-8PM</span>
-              </div>
-            </div>
-            <div className="flex items-center space-x-4">
-              <button
-                onClick={toggleDarkMode}
-                className="p-1 rounded-full hover:bg-blue-700 dark:hover:bg-blue-600 transition-colors"
-                aria-label="Toggle dark mode"
-              >
-                {isDarkMode ? (
-                  <Sun className="h-4 w-4" />
-                ) : (
-                  <Moon className="h-4 w-4" />
-                )}
-              </button>
-              <span>Free delivery on orders over ₦50,000</span>
-            </div>
+      <div className="bg-blue-600 dark:bg-blue-700 text-white py-2 px-4 text-sm">
+        <div className="container mx-auto max-w-7xl flex flex-col sm:flex-row justify-between items-center space-y-1 sm:space-y-0">
+          <div className="flex items-center space-x-4">
+            <span className="flex items-center">
+              <Phone className="h-4 w-4 text-blue-300 mr-1" />
+              <strong>0814 645 2793</strong>
+            </span>
+            <span className="hidden md:flex items-center">
+              <MapPin className="h-4 w-4 text-blue-300 mr-1" />
+              Uyo, Akwa Ibom State
+            </span>
+          </div>
+          <div className="flex items-center space-x-4 text-xs sm:text-sm">
+            <span className="flex items-center">
+              <Clock className="h-4 w-4 text-blue-300 mr-1" />
+              Mon-Sat: 9AM-8PM WAT
+            </span>
+            <span className="flex items-center">
+              <Truck className="h-4 w-4 text-blue-300 mr-1" />
+              Free delivery on orders over ₦50,000
+            </span>
           </div>
         </div>
       </div>
@@ -137,8 +143,14 @@ export default function Header() {
           <div className="flex items-center justify-between h-16 lg:h-20">
             {/* Logo */}
             <Link href="/" className="flex items-center space-x-3 group">
-              <div className="bg-blue-600 dark:bg-blue-500 p-2 rounded-xl shadow-lg group-hover:shadow-xl transition-all duration-200">
-                <Wifi className="h-6 w-6 lg:h-7 lg:w-7 text-white" />
+              <div className="relative">
+                <Image
+                  src="/smart.png"
+                  alt="Smart Communications Logo"
+                  width={40}
+                  height={40}
+                  className="w-8 h-8 lg:w-10 lg:h-10 object-contain group-hover:scale-110 transition-transform duration-200"
+                />
               </div>
               <div className="hidden sm:block">
                 <span className="text-xl lg:text-2xl font-bold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-200">
@@ -168,192 +180,210 @@ export default function Header() {
               </form>
             </div>
 
-            {/* Desktop Navigation */}
-            <nav className="hidden lg:flex items-center space-x-8">
-              <Link href="/products" className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition-colors duration-200">
-                Products
-              </Link>
-              <Link href="/accessories" className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition-colors duration-200">
-                Accessories
-              </Link>
-              <Link href="/deals" className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition-colors duration-200">
-                Deals
-              </Link>
-              <Link href="/support" className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition-colors duration-200">
-                Support
-              </Link>
-            </nav>
-
-            {/* Right Icons */}
-            <div className="flex items-center space-x-4">
-              {/* Mobile Search Toggle */}
-              <button
-                onClick={() => setIsSearchOpen(!isSearchOpen)}
-                className="lg:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-                aria-label="Toggle search"
-              >
-                <Search className="h-5 w-5 text-gray-600 dark:text-gray-300" />
-              </button>
-
-              {/* Dark Mode Toggle - Mobile */}
-              <button
-                onClick={toggleDarkMode}
-                className="md:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-                aria-label="Toggle dark mode"
-              >
-                {isDarkMode ? (
-                  <Sun className="h-5 w-5 text-gray-600 dark:text-gray-300" />
-                ) : (
-                  <Moon className="h-5 w-5 text-gray-600 dark:text-gray-300" />
-                )}
-              </button>
-
-              {/* Wishlist */}
-              <Link 
-                href="/wishlist" 
-                className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors relative"
-                aria-label="Wishlist"
-              >
-                <Heart className="h-5 w-5 text-gray-600 dark:text-gray-300" />
-              </Link>
-
-              {/* Cart */}
-              <Link 
-                href="/cart" 
-                className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors relative"
-                aria-label="Shopping cart"
-              >
-                <ShoppingCart className="h-5 w-5 text-gray-600 dark:text-gray-300" />
-                {cartItemsCount > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-blue-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-medium">
-                    {cartItemsCount}
-                  </span>
-                )}
-              </Link>
-
-              {/* User Menu */}
-              <div className="relative">
-                <button
-                  onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-                  className="flex items-center space-x-2 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-                  aria-label="User menu"
-                >
-                  <User className="h-5 w-5 text-gray-600 dark:text-gray-300" />
-                  {user && (
-                    <span className="hidden md:block text-sm font-medium text-gray-700 dark:text-gray-300">
-                      {user.name}
+            {/* Desktop Actions */}
+            <div className="hidden lg:flex items-center space-x-4">
+              {user ? (
+                <div className="relative" id="profile-dropdown">
+                  <Button
+                    variant="ghost"
+                    onClick={() => setIsProfileOpen(!isProfileOpen)}
+                    className="flex items-center space-x-2 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400"
+                  >
+                    <User className="h-5 w-5" />
+                    <span className="text-sm font-medium">
+                      {user.name ? user.name.split(' ')[0] : 'Account'}
                     </span>
-                  )}
-                  <ChevronDown className="hidden md:block h-4 w-4 text-gray-400" />
-                </button>
+                    <ChevronDown className="h-4 w-4" />
+                  </Button>
 
-                {/* User Dropdown */}
-                {isUserMenuOpen && (
-                  <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-2 z-50">
-                    {user ? (
-                      <>
-                        <Link href="/profile" className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
-                          Profile
+                  {isProfileOpen && (
+                    <div className="absolute right-0 mt-2 w-56 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 py-2 z-50">
+                      <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-700">
+                        <p className="text-sm font-medium text-gray-900 dark:text-white">
+                          {user.name || 'User'}
+                        </p>
+                        <p className="text-sm text-gray-500 dark:text-gray-400 truncate">
+                          {user.email}
+                        </p>
+                      </div>
+                      
+                      <div className="py-1">
+                        <Link
+                          href="/profile"
+                          className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                          onClick={closeProfile}
+                        >
+                          <User className="h-4 w-4 mr-2" />
+                          Profile Settings
                         </Link>
-                        <Link href="/orders" className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
-                          Orders
+                        <Link
+                          href="/orders"
+                          className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                          onClick={closeProfile}
+                        >
+                          <Truck className="h-4 w-4 mr-2" />
+                          My Orders
                         </Link>
                         <button
                           onClick={handleLogout}
-                          className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center"
+                          className="flex items-center w-full text-left px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700"
                         >
                           <LogOut className="h-4 w-4 mr-2" />
-                          Logout
+                          Sign Out
                         </button>
-                      </>
-                    ) : (
-                      <>
-                        <Link href="/login" className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
-                          Login
-                        </Link>
-                        <Link href="/register" className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
-                          Register
-                        </Link>
-                      </>
-                    )}
-                  </div>
-                )}
-              </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <Link href="/login">
+                  <Button variant="ghost" className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400">
+                    <User className="h-5 w-5 mr-2" />
+                    Sign In
+                  </Button>
+                </Link>
+              )}
 
-              {/* Mobile Menu Toggle */}
-              <button
+              <Link href="/cart" className="relative">
+                <Button variant="ghost" className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400">
+                  <ShoppingCart className="h-5 w-5" />
+                  {cartItemsCount > 0 && (
+                    <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-bold">
+                      {cartItemsCount}
+                    </span>
+                  )}
+                </Button>
+              </Link>
+            </div>
+
+            {/* Mobile Actions */}
+            <div className="lg:hidden flex items-center space-x-2">
+              <Link href="/cart" className="relative">
+                <Button variant="ghost" size="icon" className="text-gray-700 dark:text-gray-300">
+                  <ShoppingCart className="h-5 w-5" />
+                  {cartItemsCount > 0 && (
+                    <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-bold">
+                      {cartItemsCount}
+                    </span>
+                  )}
+                </Button>
+              </Link>
+
+              <Button
+                variant="ghost"
+                size="icon"
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
-                className="lg:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-                aria-label="Toggle menu"
+                className="text-gray-700 dark:text-gray-300"
               >
-                {isMenuOpen ? (
-                  <X className="h-5 w-5 text-gray-600 dark:text-gray-300" />
-                ) : (
-                  <Menu className="h-5 w-5 text-gray-600 dark:text-gray-300" />
-                )}
-              </button>
+                {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+              </Button>
             </div>
           </div>
 
           {/* Mobile Search */}
-          {isSearchOpen && (
-            <div className="lg:hidden py-4 border-t border-gray-200 dark:border-gray-700">
-              <form onSubmit={handleSearch}>
-                <div className="flex space-x-2">
-                  <Input
-                    type="text"
-                    placeholder="Search for smartphones, accessories..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="flex-1"
-                  />
-                  <Button type="submit" size="sm">
-                    Search
-                  </Button>
-                </div>
-              </form>
-            </div>
-          )}
+          <div className="lg:hidden pb-4">
+            <form onSubmit={handleSearch} className="relative">
+              <Input
+                type="text"
+                placeholder="Search for smartphones, accessories..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600"
+              />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+            </form>
+          </div>
         </div>
 
         {/* Mobile Menu */}
         {isMenuOpen && (
-          <div className="lg:hidden bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700">
-            <div className="container mx-auto px-4 py-4 space-y-4">
-              <Link 
-                href="/products" 
-                className="block py-2 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Products
-              </Link>
-              <Link 
-                href="/accessories" 
-                className="block py-2 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Accessories
-              </Link>
-              <Link 
-                href="/deals" 
-                className="block py-2 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Deals
-              </Link>
-              <Link 
-                href="/support" 
-                className="block py-2 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Support
-              </Link>
-              
-              <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
-                <div className="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-400">
-                  <Phone className="h-4 w-4" />
-                  <span>+234 123 456 7890</span>
-                </div>
+          <div id="mobile-menu" className="lg:hidden bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700">
+            <div className="px-4 py-4 space-y-3">
+              {/* Navigation Links */}
+              <div className="space-y-2">
+                <Link
+                  href="/"
+                  className="block py-2 text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 font-medium"
+                  onClick={closeMenu}
+                >
+                  Home
+                </Link>
+                <Link
+                  href="/products"
+                  className="block py-2 text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 font-medium"
+                  onClick={closeMenu}
+                >
+                  All Products
+                </Link>
+                <Link
+                  href="/deals"
+                  className="block py-2 text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 font-medium"
+                  onClick={closeMenu}
+                >
+                  Deals
+                </Link>
+                <Link
+                  href="/accessories"
+                  className="block py-2 text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 font-medium"
+                  onClick={closeMenu}
+                >
+                  Accessories
+                </Link>
+                <Link
+                  href="/support"
+                  className="block py-2 text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 font-medium"
+                  onClick={closeMenu}
+                >
+                  Support
+                </Link>
+              </div>
+
+              {/* User Actions */}
+              <div className="pt-4 border-t border-gray-200 dark:border-gray-700 space-y-2">
+                {user ? (
+                  <>
+                    <div className="py-2">
+                      <p className="text-sm font-medium text-gray-900 dark:text-white">
+                        {user.name || 'User'}
+                      </p>
+                      <p className="text-sm text-gray-500 dark:text-gray-400">
+                        {user.email}
+                      </p>
+                    </div>
+                    <Link
+                      href="/profile"
+                      className="flex items-center py-2 text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400"
+                      onClick={closeMenu}
+                    >
+                      <User className="h-4 w-4 mr-2" />
+                      Profile
+                    </Link>
+                    <Link
+                      href="/orders"
+                      className="flex items-center py-2 text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400"
+                      onClick={closeMenu}
+                    >
+                      <Truck className="h-4 w-4 mr-2" />
+                      My Orders
+                    </Link>
+                    <button
+                      onClick={handleLogout}
+                      className="flex items-center py-2 text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300"
+                    >
+                      <LogOut className="h-4 w-4 mr-2" />
+                      Sign Out
+                    </button>
+                  </>
+                ) : (
+                  <Link
+                    href="/login"
+                    className="flex items-center py-2 text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400"
+                    onClick={closeMenu}
+                  >
+                    <User className="h-4 w-4 mr-2" />
+                    Sign In
+                  </Link>
+                )}
               </div>
             </div>
           </div>

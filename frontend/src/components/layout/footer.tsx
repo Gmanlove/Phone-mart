@@ -1,10 +1,11 @@
 "use client"
 
 import Link from "next/link"
+import Image from "next/image"
 import { 
   Phone, Mail, MapPin, Facebook, Twitter, Instagram, Youtube,
   Shield, Award, Clock, CheckCircle2, CreditCard, 
-  ArrowRight, ExternalLink, Smartphone, Headphones, Wifi
+  ArrowRight, ExternalLink, Smartphone, Headphones
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
@@ -21,9 +22,13 @@ export default function Footer() {
               <div className="space-y-4">
                 <div className="flex items-center space-x-3">
                   <div className="relative">
-                    <div className="bg-blue-600 dark:bg-blue-500 text-white p-3 rounded-2xl shadow-lg">
-                      <Wifi className="h-7 w-7 animate-wifi-pulse" />
-                    </div>
+                    <Image
+                      src="/smart.png"
+                      alt="Smart Communications Logo"
+                      width={48}
+                      height={48}
+                      className="w-10 h-10 lg:w-12 lg:h-12 object-contain"
+                    />
                   </div>
                   <div>
                     <span className="text-2xl lg:text-3xl font-bold text-blue-600 dark:text-blue-400">
