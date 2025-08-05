@@ -1,4 +1,5 @@
 "use client"
+
 import { useEffect, useState } from "react"
 import { 
   Package, 
@@ -17,422 +18,632 @@ import {
   Check,
   X,
   Grid,
-  List
+  List,
+  Star,
+  Tag,
+  DollarSign,
+  Loader2
 } from "lucide-react"
+import Link from "next/link"
+import Image from "next/image"
 
 interface Product {
   _id: string
   name: string
   brand: string
   category: string
+  subcategory?: string
   price: number
-  isBought: boolean
-  createdAt?: string
-  image?: string
-  stock?: number
+  originalPrice?: number
+  stock: number
+  isHotDeal: boolean
+  hotDealDiscount: number
+  tags: string[]
+  images: string[]
+  description: string
+  isActive: boolean
+  createdAt: string
+  updatedAt: string
+}
+
+interface ProductsResponse {
+  products: Product[]
+  totalPages: number
+  currentPage: number
+  total: number
 }
 
 export default function AdminProductsPage() {
   const [products, setProducts] = useState<Product[]>([])
-  const [filteredProducts, setFilteredProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState("")
   const [searchTerm, setSearchTerm] = useState("")
   const [selectedCategory, setSelectedCategory] = useState("all")
-  const [selectedStatus, setSelectedStatus] = useState("all")
   const [viewMode, setViewMode] = useState<"grid" | "table">("table")
-  const [sortBy, setSortBy] = useState("name")
-  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc")
+  const [sortBy, setSortBy] = useState("createdAt")
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc")
+  const [currentPage, setCurrentPage] = useState(1)
+  const [totalPages, setTotalPages] = useState(1)
+  const [selectedProducts, setSelectedProducts] = useState<string[]>([])
+  const [showEditModal, setShowEditModal] = useState(false)
+  const [editingProduct, setEditingProduct] = useState<Product | null>(null)
+  const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null)
+
+  const categories = ["all", "iPhone", "Samsung", "Android/Pixel", "Accessories", "Laptops", "Hot Deals", "Other"]
 
   useEffect(() => {
     fetchProducts()
-  }, [])
-
-  useEffect(() => {
-    filterAndSortProducts()
-  }, [products, searchTerm, selectedCategory, selectedStatus, sortBy, sortOrder])
+  }, [currentPage, selectedCategory, searchTerm, sortBy, sortOrder])
 
   const fetchProducts = async () => {
     setLoading(true)
     try {
-      const res = await fetch("http://localhost:5000/api/products")
-      const data = await res.json()
-      setProducts(data)
+      const params = new URLSearchParams({
+        page: currentPage.toString(),
+        limit: "20",
+        sort: sortOrder === "desc" ? `-${sortBy}` : sortBy
+      })
+      
+      if (selectedCategory !== "all") params.append("category", selectedCategory)
+      if (searchTerm) params.append("search", searchTerm)
+
+      const res = await fetch(`http://localhost:5000/api/admin/products?adminEmail=admin@phonehub.com&${params}`)
+      if (res.ok) {
+        const data: ProductsResponse = await res.json()
+        setProducts(data.products)
+        setTotalPages(data.totalPages)
+      } else {
+        setError("Failed to load products")
+      }
     } catch (err) {
-      setError("Failed to load products. Please try again.")
+      setError("Network error occurred")
     } finally {
       setLoading(false)
     }
   }
 
-  const filterAndSortProducts = () => {
-    let filtered = products.filter(product => {
-      const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           product.brand.toLowerCase().includes(searchTerm.toLowerCase())
-      const matchesCategory = selectedCategory === "all" || product.category === selectedCategory
-      const matchesStatus = selectedStatus === "all" || 
-                           (selectedStatus === "available" && !product.isBought) ||
-                           (selectedStatus === "bought" && product.isBought)
+  const handleDelete = async (productId: string) => {
+    try {
+      const res = await fetch(`http://localhost:5000/api/admin/product/${productId}?adminEmail=admin@phonehub.com`, {
+        method: "DELETE"
+      })
       
-      return matchesSearch && matchesCategory && matchesStatus
-    })
-
-    // Sort products
-    filtered.sort((a, b) => {
-      let aValue = a[sortBy as keyof Product]
-      let bValue = b[sortBy as keyof Product]
-
-      // Provide default values if undefined
-      if (typeof aValue === "undefined" || aValue === null) aValue = ""
-      if (typeof bValue === "undefined" || bValue === null) bValue = ""
-
-      if (typeof aValue === "string") aValue = aValue.toLowerCase()
-      if (typeof bValue === "string") bValue = bValue.toLowerCase()
-
-      if (sortOrder === "asc") {
-        return aValue > bValue ? 1 : -1
+      if (res.ok) {
+        setProducts(products.filter(p => p._id !== productId))
+        setDeleteConfirm(null)
       } else {
-        return aValue < bValue ? 1 : -1
+        setError("Failed to delete product")
       }
+    } catch (err) {
+      setError("Network error occurred")
+    }
+  }
+
+  const handleUpdatePrice = async (productId: string, newPrice: number) => {
+    try {
+      const res = await fetch(`http://localhost:5000/api/admin/product/${productId}?adminEmail=admin@phonehub.com`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ price: newPrice })
+      })
+      
+      if (res.ok) {
+        const updatedProduct = await res.json()
+        setProducts(products.map(p => p._id === productId ? updatedProduct.product : p))
+      } else {
+        setError("Failed to update price")
+      }
+    } catch (err) {
+      setError("Network error occurred")
+    }
+  }
+
+  const toggleProductActive = async (productId: string, isActive: boolean) => {
+    try {
+      const res = await fetch(`http://localhost:5000/api/admin/product/${productId}?adminEmail=admin@phonehub.com`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ isActive })
+      })
+      
+      if (res.ok) {
+        setProducts(products.map(p => p._id === productId ? { ...p, isActive } : p))
+      }
+    } catch (err) {
+      setError("Failed to update product status")
+    }
+  }
+
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat('en-NG', {
+      style: 'currency',
+      currency: 'NGN'
+    }).format(amount)
+  }
+
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
     })
-
-    setFilteredProducts(filtered)
   }
 
-  const getUniqueCategories = () => {
-    return [...new Set(products.map(p => p.category))]
-  }
-
-  const getStats = () => {
-    const total = products.length
-    const available = products.filter(p => !p.isBought).length
-    const bought = products.filter(p => p.isBought).length
-    const totalValue = products.reduce((sum, p) => sum + p.price, 0)
-    
-    return { total, available, bought, totalValue }
-  }
-
-  const formatPrice = (price: number) => {
-    return `₦${price.toLocaleString()}`
-  }
-
-  const stats = getStats()
-
-  if (loading) {
+  if (loading && products.length === 0) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center">
-        <div className="text-center">
-          <RefreshCw className="w-12 h-12 text-blue-600 animate-spin mx-auto mb-4" />
-          <p className="text-gray-600 text-lg">Loading products...</p>
-        </div>
-      </div>
-    )
-  }
-
-  if (error) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center">
-        <div className="text-center max-w-md mx-auto p-6">
-          <AlertCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Error Loading Products</h2>
-          <p className="text-gray-600 mb-6">{error}</p>
-          <button
-            onClick={fetchProducts}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-medium transition-colors"
-          >
-            Try Again
-          </button>
-        </div>
+      <div className="flex items-center justify-center min-h-96">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-      {/* Header */}
-      <div className="bg-white shadow-sm border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-            <div>
-              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 flex items-center gap-3">
-                <Package className="w-8 h-8 text-blue-600" />
-                Product Management
-              </h1>
-              <p className="text-gray-600 mt-1">Manage and monitor all uploaded products</p>
-            </div>
-            <div className="flex flex-col sm:flex-row gap-3">
-              <button
-                onClick={fetchProducts}
-                className="flex items-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-xl transition-colors"
-              >
-                <RefreshCw className="w-4 h-4" />
-                <span className="hidden sm:inline">Refresh</span>
-              </button>
-              <button className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl transition-colors">
-                <Plus className="w-4 h-4" />
-                Add Product
-              </button>
+    <div className="space-y-6">
+      {/* Page Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Products</h1>
+          <p className="text-gray-600 dark:text-gray-400 mt-1">Manage your product inventory</p>
+        </div>
+        <Link
+          href="/admin/upload-product"
+          className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-lg transition-colors"
+        >
+          <Plus className="w-5 h-5" />
+          Add Product
+        </Link>
+      </div>
+
+      {/* Filters and Controls */}
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+        <div className="flex flex-col lg:flex-row gap-4">
+          {/* Search */}
+          <div className="flex-1">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+              <input
+                type="text"
+                placeholder="Search products..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+              />
             </div>
           </div>
+
+          {/* Category Filter */}
+          <div className="lg:w-48">
+            <select
+              value={selectedCategory}
+              onChange={(e) => setSelectedCategory(e.target.value)}
+              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+            >
+              {categories.map(cat => (
+                <option key={cat} value={cat}>
+                  {cat === "all" ? "All Categories" : cat}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Sort */}
+          <div className="lg:w-48">
+            <select
+              value={`${sortBy}-${sortOrder}`}
+              onChange={(e) => {
+                const [field, order] = e.target.value.split('-')
+                setSortBy(field)
+                setSortOrder(order as "asc" | "desc")
+              }}
+              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+            >
+              <option value="createdAt-desc">Newest First</option>
+              <option value="createdAt-asc">Oldest First</option>
+              <option value="name-asc">Name A-Z</option>
+              <option value="name-desc">Name Z-A</option>
+              <option value="price-asc">Price Low-High</option>
+              <option value="price-desc">Price High-Low</option>
+              <option value="stock-asc">Stock Low-High</option>
+              <option value="stock-desc">Stock High-Low</option>
+            </select>
+          </div>
+
+          {/* View Mode */}
+          <div className="flex items-center bg-gray-100 dark:bg-gray-700 rounded-lg p-1">
+            <button
+              onClick={() => setViewMode("table")}
+              className={`p-2 rounded-md transition-colors ${
+                viewMode === "table"
+                  ? "bg-white dark:bg-gray-600 text-gray-900 dark:text-white shadow-sm"
+                  : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
+              }`}
+            >
+              <List className="w-4 h-4" />
+            </button>
+            <button
+              onClick={() => setViewMode("grid")}
+              className={`p-2 rounded-md transition-colors ${
+                viewMode === "grid"
+                  ? "bg-white dark:bg-gray-600 text-gray-900 dark:text-white shadow-sm"
+                  : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
+              }`}
+            >
+              <Grid className="w-4 h-4" />
+            </button>
+          </div>
+
+          <button
+            onClick={fetchProducts}
+            className="flex items-center gap-2 px-4 py-3 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+          >
+            <RefreshCw className="w-4 h-4" />
+            Refresh
+          </button>
         </div>
       </div>
 
-      {/* Stats Cards */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 pt-12">
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-          <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-sm border border-gray-200">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Total Products</p>
-                <p className="text-2xl sm:text-3xl font-bold text-gray-900">{stats.total}</p>
-              </div>
-              <div className="bg-blue-100 p-3 rounded-xl">
-                <Package className="w-6 h-6 text-blue-600" />
-              </div>
-            </div>
-          </div>
-          
-          <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-sm border border-gray-200">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Available</p>
-                <p className="text-2xl sm:text-3xl font-bold text-green-900">{stats.available}</p>
-              </div>
-              <div className="bg-green-100 p-3 rounded-xl">
-                <Check className="w-6 h-6 text-green-600" />
-              </div>
-            </div>
-          </div>
-          
-          <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-sm border border-gray-200">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Sold</p>
-                <p className="text-2xl sm:text-3xl font-bold text-orange-900">{stats.bought}</p>
-              </div>
-              <div className="bg-orange-100 p-3 rounded-xl">
-                <ShoppingCart className="w-6 h-6 text-orange-600" />
-              </div>
-            </div>
-          </div>
-          
-          <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-sm border border-gray-200">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Total Value</p>
-                <p className="text-lg sm:text-xl font-bold text-purple-900">{formatPrice(stats.totalValue)}</p>
-              </div>
-              <div className="bg-purple-100 p-3 rounded-xl">
-                <TrendingUp className="w-6 h-6 text-purple-600" />
-              </div>
-            </div>
+      {/* Error Message */}
+      {error && (
+        <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
+          <div className="flex items-center">
+            <AlertCircle className="h-5 w-5 text-red-400 mr-2" />
+            <span className="text-red-800 dark:text-red-200">{error}</span>
           </div>
         </div>
+      )}
 
-        {/* Filters and Search */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-4 sm:p-6 mb-6">
-          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-            <div className="flex flex-col sm:flex-row gap-4 flex-1">
-              {/* Search */}
-              <div className="relative flex-1 max-w-md">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-                <input
-                  type="text"
-                  placeholder="Search products..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                />
-              </div>
-              
-              {/* Category Filter */}
-              <select
-                value={selectedCategory}
-                onChange={(e) => setSelectedCategory(e.target.value)}
-                className="px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="all">All Categories</option>
-                {getUniqueCategories().map(category => (
-                  <option key={category} value={category}>{category}</option>
-                ))}
-              </select>
-              
-              {/* Status Filter */}
-              <select
-                value={selectedStatus}
-                onChange={(e) => setSelectedStatus(e.target.value)}
-                className="px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="all">All Status</option>
-                <option value="available">Available</option>
-                <option value="bought">Sold</option>
-              </select>
-            </div>
-            
-            {/* View Toggle and Sort */}
-            <div className="flex items-center gap-3">
-              <div className="flex items-center bg-gray-100 rounded-xl p-1">
-                <button
-                  onClick={() => setViewMode("table")}
-                  className={`p-2 rounded-lg transition-colors ${
-                    viewMode === "table" ? "bg-white shadow-sm text-blue-600" : "text-gray-600"
-                  }`}
-                >
-                  <List className="w-4 h-4" />
-                </button>
-                <button
-                  onClick={() => setViewMode("grid")}
-                  className={`p-2 rounded-lg transition-colors ${
-                    viewMode === "grid" ? "bg-white shadow-sm text-blue-600" : "text-gray-600"
-                  }`}
-                >
-                  <Grid className="w-4 h-4" />
-                </button>
-              </div>
-              
-              <select
-                value={`${sortBy}-${sortOrder}`}
-                onChange={(e) => {
-                  const [field, order] = e.target.value.split("-")
-                  setSortBy(field)
-                  setSortOrder(order as "asc" | "desc")
-                }}
-                className="px-3 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
-              >
-                <option value="name-asc">Name (A-Z)</option>
-                <option value="name-desc">Name (Z-A)</option>
-                <option value="price-asc">Price (Low-High)</option>
-                <option value="price-desc">Price (High-Low)</option>
-                <option value="brand-asc">Brand (A-Z)</option>
-              </select>
-            </div>
-          </div>
-        </div>
-
-        {/* Products Display */}
-        {viewMode === "table" ? (
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead className="bg-gray-50 border-b border-gray-200">
-                  <tr>
-                    <th className="text-left px-4 sm:px-6 py-4 text-sm font-semibold text-gray-900">Product</th>
-                    <th className="text-left px-4 sm:px-6 py-4 text-sm font-semibold text-gray-900 hidden sm:table-cell">Brand</th>
-                    <th className="text-left px-4 sm:px-6 py-4 text-sm font-semibold text-gray-900 hidden md:table-cell">Category</th>
-                    <th className="text-left px-4 sm:px-6 py-4 text-sm font-semibold text-gray-900">Price</th>
-                    <th className="text-left px-4 sm:px-6 py-4 text-sm font-semibold text-gray-900">Status</th>
-                    <th className="text-left px-4 sm:px-6 py-4 text-sm font-semibold text-gray-900">Actions</th>
+      {/* Products Display */}
+      {viewMode === "table" ? (
+        /* Table View */
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead className="bg-gray-50 dark:bg-gray-700">
+                <tr>
+                  <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    Product
+                  </th>
+                  <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    Category
+                  </th>
+                  <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    Price
+                  </th>
+                  <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    Stock
+                  </th>
+                  <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    Status
+                  </th>
+                  <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    Date
+                  </th>
+                  <th className="px-6 py-4 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    Actions
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+                {products.map((product) => (
+                  <tr key={product._id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50">
+                    <td className="px-6 py-4">
+                      <div className="flex items-center">
+                        <div className="h-16 w-16 flex-shrink-0">
+                          <Image
+                            src={product.images[0] || "/placeholder-product.jpg"}
+                            alt={product.name}
+                            width={64}
+                            height={64}
+                            className="h-16 w-16 rounded-lg object-cover"
+                          />
+                        </div>
+                        <div className="ml-4">
+                          <div className="text-sm font-medium text-gray-900 dark:text-white">
+                            {product.name}
+                          </div>
+                          <div className="text-sm text-gray-500 dark:text-gray-400">
+                            {product.brand}
+                          </div>
+                          {product.isHotDeal && (
+                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400 mt-1">
+                              Hot Deal {product.hotDealDiscount}% OFF
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="text-sm text-gray-900 dark:text-white">{product.category}</div>
+                      {product.subcategory && (
+                        <div className="text-xs text-gray-500 dark:text-gray-400">{product.subcategory}</div>
+                      )}
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="text-sm font-medium text-gray-900 dark:text-white">
+                        {formatCurrency(product.price)}
+                      </div>
+                      {product.originalPrice && product.originalPrice > product.price && (
+                        <div className="text-xs text-gray-500 dark:text-gray-400 line-through">
+                          {formatCurrency(product.originalPrice)}
+                        </div>
+                      )}
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                        product.stock > 10
+                          ? 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400'
+                          : product.stock > 0
+                          ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400'
+                          : 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400'
+                      }`}>
+                        {product.stock} in stock
+                      </span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <button
+                        onClick={() => toggleProductActive(product._id, !product.isActive)}
+                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                          product.isActive
+                            ? 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400'
+                            : 'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400'
+                        }`}
+                      >
+                        {product.isActive ? 'Active' : 'Inactive'}
+                      </button>
+                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
+                      {formatDate(product.createdAt)}
+                    </td>
+                    <td className="px-6 py-4 text-right">
+                      <div className="flex items-center justify-end space-x-2">
+                        <QuickPriceEdit 
+                          product={product} 
+                          onUpdate={(newPrice) => handleUpdatePrice(product._id, newPrice)}
+                        />
+                        <button
+                          onClick={() => setDeleteConfirm(product._id)}
+                          className="p-2 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                          title="Delete Product"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </td>
                   </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-200">
-                  {filteredProducts.map((product) => (
-                    <tr key={product._id} className="hover:bg-gray-50 transition-colors">
-                      <td className="px-4 sm:px-6 py-4">
-                        <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 bg-gradient-to-br from-blue-100 to-purple-100 rounded-xl flex items-center justify-center">
-                            <Package className="w-5 h-5 text-blue-600" />
-                          </div>
-                          <div className="min-w-0">
-                            <p className="text-sm font-medium text-gray-900 truncate">{product.name}</p>
-                            <p className="text-sm text-gray-500 sm:hidden">{product.brand}</p>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-4 sm:px-6 py-4 text-sm text-gray-900 hidden sm:table-cell">{product.brand}</td>
-                      <td className="px-4 sm:px-6 py-4 text-sm text-gray-900 hidden md:table-cell">
-                        <span className="bg-gray-100 text-gray-800 px-2 py-1 rounded-lg text-xs font-medium">
-                          {product.category}
-                        </span>
-                      </td>
-                      <td className="px-4 sm:px-6 py-4 text-sm font-semibold text-gray-900">{formatPrice(product.price)}</td>
-                      <td className="px-4 sm:px-6 py-4">
-                        <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-medium ${
-                          product.isBought 
-                            ? "bg-orange-100 text-orange-800" 
-                            : "bg-green-100 text-green-800"
-                        }`}>
-                          {product.isBought ? <ShoppingCart className="w-3 h-3" /> : <Check className="w-3 h-3" />}
-                          {product.isBought ? "Sold" : "Available"}
-                        </span>
-                      </td>
-                      <td className="px-4 sm:px-6 py-4">
-                        <div className="flex items-center gap-2">
-                          <button className="p-1 text-gray-400 hover:text-blue-600 transition-colors">
-                            <Eye className="w-4 h-4" />
-                          </button>
-                          <button className="p-1 text-gray-400 hover:text-green-600 transition-colors">
-                            <Edit className="w-4 h-4" />
-                          </button>
-                          <button className="p-1 text-gray-400 hover:text-red-600 transition-colors">
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      ) : (
+        /* Grid View */
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {products.map((product) => (
+            <div key={product._id} className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-lg transition-shadow">
+              <div className="relative">
+                <Image
+                  src={product.images[0] || "/placeholder-product.jpg"}
+                  alt={product.name}
+                  width={300}
+                  height={200}
+                  className="w-full h-48 object-cover"
+                />
+                {product.isHotDeal && (
+                  <div className="absolute top-2 left-2 bg-red-500 text-white px-2 py-1 rounded-lg text-xs font-medium">
+                    {product.hotDealDiscount}% OFF
+                  </div>
+                )}
+                <div className="absolute top-2 right-2">
+                  <button
+                    onClick={() => toggleProductActive(product._id, !product.isActive)}
+                    className={`p-2 rounded-lg text-xs font-medium ${
+                      product.isActive
+                        ? 'bg-green-500 text-white'
+                        : 'bg-gray-500 text-white'
+                    }`}
+                  >
+                    {product.isActive ? 'Active' : 'Inactive'}
+                  </button>
+                </div>
+              </div>
+              
+              <div className="p-4">
+                <div className="flex items-start justify-between mb-2">
+                  <h3 className="font-semibold text-gray-900 dark:text-white text-sm line-clamp-2">
+                    {product.name}
+                  </h3>
+                </div>
+                
+                <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">{product.brand}</p>
+                
+                <div className="flex items-center justify-between mb-3">
+                  <div>
+                    <span className="text-lg font-bold text-gray-900 dark:text-white">
+                      {formatCurrency(product.price)}
+                    </span>
+                    {product.originalPrice && product.originalPrice > product.price && (
+                      <span className="text-sm text-gray-500 dark:text-gray-400 line-through ml-2">
+                        {formatCurrency(product.originalPrice)}
+                      </span>
+                    )}
+                  </div>
+                  <span className={`text-xs px-2 py-1 rounded-full ${
+                    product.stock > 10
+                      ? 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400'
+                      : product.stock > 0
+                      ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400'
+                      : 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400'
+                  }`}>
+                    {product.stock} left
+                  </span>
+                </div>
+                
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-gray-500 dark:text-gray-400">
+                    {product.category}
+                  </span>
+                  <div className="flex items-center space-x-1">
+                    <QuickPriceEdit 
+                      product={product} 
+                      onUpdate={(newPrice) => handleUpdatePrice(product._id, newPrice)}
+                    />
+                    <button
+                      onClick={() => setDeleteConfirm(product._id)}
+                      className="p-1 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/20 rounded"
+                    >
+                      <Trash2 className="w-3 h-3" />
+                    </button>
+                  </div>
+                </div>
+              </div>
             </div>
-            
-            {filteredProducts.length === 0 && (
-              <div className="text-center py-12">
-                <Package className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 mb-2">No products found</h3>
-                <p className="text-gray-500">Try adjusting your search or filter criteria.</p>
-              </div>
-            )}
+          ))}
+        </div>
+      )}
+
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="flex items-center justify-between bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4">
+          <div className="text-sm text-gray-700 dark:text-gray-300">
+            Showing page {currentPage} of {totalPages}
           </div>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {filteredProducts.map((product) => (
-              <div key={product._id} className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow">
-                <div className="h-48 bg-gradient-to-br from-blue-100 to-purple-100 flex items-center justify-center">
-                  <Package className="w-16 h-16 text-blue-600" />
-                </div>
-                <div className="p-4">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="bg-gray-100 text-gray-800 px-2 py-1 rounded-lg text-xs font-medium">
-                      {product.category}
-                    </span>
-                    <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-medium ${
-                      product.isBought 
-                        ? "bg-orange-100 text-orange-800" 
-                        : "bg-green-100 text-green-800"
-                    }`}>
-                      {product.isBought ? <ShoppingCart className="w-3 h-3" /> : <Check className="w-3 h-3" />}
-                      {product.isBought ? "Sold" : "Available"}
-                    </span>
-                  </div>
-                  <h3 className="font-semibold text-gray-900 mb-1 truncate">{product.name}</h3>
-                  <p className="text-sm text-gray-500 mb-3">{product.brand}</p>
-                  <div className="flex items-center justify-between">
-                    <span className="text-lg font-bold text-gray-900">{formatPrice(product.price)}</span>
-                    <div className="flex items-center gap-2">
-                      <button className="p-1 text-gray-400 hover:text-blue-600 transition-colors">
-                        <Eye className="w-4 h-4" />
-                      </button>
-                      <button className="p-1 text-gray-400 hover:text-green-600 transition-colors">
-                        <Edit className="w-4 h-4" />
-                      </button>
-                      <button className="p-1 text-gray-400 hover:text-red-600 transition-colors">
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ))}
-            
-            {filteredProducts.length === 0 && (
-              <div className="col-span-full text-center py-12">
-                <Package className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 mb-2">No products found</h3>
-                <p className="text-gray-500">Try adjusting your search or filter criteria.</p>
-              </div>
-            )}
+          <div className="flex items-center space-x-2">
+            <button
+              onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+              disabled={currentPage === 1}
+              className="px-3 py-2 text-sm bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+            >
+              Previous
+            </button>
+            <div className="flex items-center space-x-1">
+              {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                const page = i + 1
+                return (
+                  <button
+                    key={page}
+                    onClick={() => setCurrentPage(page)}
+                    className={`px-3 py-2 text-sm rounded-lg transition-colors ${
+                      currentPage === page
+                        ? 'bg-blue-600 text-white'
+                        : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                    }`}
+                  >
+                    {page}
+                  </button>
+                )
+              })}
+            </div>
+            <button
+              onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+              disabled={currentPage === totalPages}
+              className="px-3 py-2 text-sm bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+            >
+              Next
+            </button>
           </div>
-        )}
-      </div>
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {deleteConfirm && (
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center z-50">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-xl max-w-md w-full mx-4 p-6">
+            <div className="flex items-center mb-4">
+              <AlertCircle className="h-6 w-6 text-red-600 mr-3" />
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                Confirm Delete
+              </h3>
+            </div>
+            <p className="text-gray-600 dark:text-gray-400 mb-6">
+              Are you sure you want to delete this product? This action cannot be undone.
+            </p>
+            <div className="flex items-center justify-end space-x-3">
+              <button
+                onClick={() => setDeleteConfirm(null)}
+                className="px-4 py-2 text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => handleDelete(deleteConfirm)}
+                className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Loading Overlay */}
+      {loading && products.length > 0 && (
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center z-50">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-xl p-6">
+            <div className="flex items-center">
+              <Loader2 className="animate-spin h-6 w-6 text-blue-600 mr-3" />
+              <span className="text-gray-900 dark:text-white">Loading products...</span>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
+  )
+}
+
+// Quick Price Edit Component
+function QuickPriceEdit({ product, onUpdate }: { product: Product, onUpdate: (newPrice: number) => void }) {
+  const [isEditing, setIsEditing] = useState(false)
+  const [newPrice, setNewPrice] = useState(product.price.toString())
+  const [loading, setLoading] = useState(false)
+
+  const handleUpdate = async () => {
+    const price = parseFloat(newPrice)
+    if (isNaN(price) || price < 0) return
+    
+    setLoading(true)
+    await onUpdate(price)
+    setLoading(false)
+    setIsEditing(false)
+  }
+
+  if (isEditing) {
+    return (
+      <div className="flex items-center space-x-1">
+        <input
+          type="number"
+          value={newPrice}
+          onChange={(e) => setNewPrice(e.target.value)}
+          className="w-20 px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+          step="0.01"
+          min="0"
+        />
+        <button
+          onClick={handleUpdate}
+          disabled={loading}
+          className="p-1 text-green-600 dark:text-green-400 hover:bg-green-100 dark:hover:bg-green-900/20 rounded"
+        >
+          {loading ? <Loader2 className="w-3 h-3 animate-spin" /> : <Check className="w-3 h-3" />}
+        </button>
+        <button
+          onClick={() => {
+            setIsEditing(false)
+            setNewPrice(product.price.toString())
+          }}
+          className="p-1 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-900/20 rounded"
+        >
+          <X className="w-3 h-3" />
+        </button>
+      </div>
+    )
+  }
+
+  return (
+    <button
+      onClick={() => setIsEditing(true)}
+      className="p-2 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/20 rounded-lg transition-colors"
+      title="Edit Price"
+    >
+      <DollarSign className="w-4 h-4" />
+    </button>
   )
 }
