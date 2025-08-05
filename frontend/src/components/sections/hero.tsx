@@ -94,49 +94,43 @@ export default function Hero() {
             </div>
           </div>
 
-          {/* Right content - Hero Image */}
-          <div className="relative z-10">
-            <div className="relative bg-gradient-to-br from-blue-100 to-blue-200 dark:from-blue-900 dark:to-blue-800 rounded-3xl p-8 lg:p-12 shadow-2xl">
-              <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-purple-500/10 rounded-3xl"></div>
+          {/* Right content - Hero Image (No Card Background) */}
+          <div className="relative z-10 flex flex-col items-center">
+            {/* Large Logo/Image - No card wrapper */}
+            <div className="relative mb-8">
+              <Image
+                src="/smart.png"
+                alt="Smart Communications - Latest Smartphones"
+                width={400}
+                height={400}
+                className="w-80 h-80 lg:w-96 lg:h-96 object-contain drop-shadow-2xl hover:scale-105 transition-transform duration-300"
+              />
               
-              {/* Placeholder for hero image - you can replace with actual product images */}
-              <div className="relative">
-                <div className="aspect-square bg-white dark:bg-gray-700 rounded-2xl shadow-lg flex items-center justify-center">
-                  <div className="text-center space-y-4">
-                    <Image
-                      src="/smart.png"
-                      alt="Smart Communications"
-                      width={120}
-                      height={120}
-                      className="w-20 h-20 lg:w-30 lg:h-30 mx-auto object-contain opacity-50"
-                    />
-                    <div className="space-y-2">
-                      <h3 className="text-xl font-bold text-gray-800 dark:text-gray-200">
-                        Latest Smartphones
-                      </h3>
-                      <p className="text-gray-600 dark:text-gray-400">
-                        Premium devices from top brands
-                      </p>
-                    </div>
-                  </div>
-                </div>
-                
-                {/* Floating badges */}
-                <div className="absolute -top-4 -right-4 bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-bold shadow-lg">
-                  New Arrivals
-                </div>
-                <div className="absolute -bottom-4 -left-4 bg-white dark:bg-gray-800 text-blue-600 dark:text-blue-400 px-3 py-1 rounded-full text-sm font-bold shadow-lg border border-blue-200 dark:border-blue-700">
-                  Best Prices
-                </div>
+              {/* Floating badges around the image */}
+              <div className="absolute -top-6 -right-6 bg-blue-600 text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg animate-bounce-gentle">
+                New Arrivals
+              </div>
+              <div className="absolute -bottom-6 -left-6 bg-white dark:bg-gray-800 text-blue-600 dark:text-blue-400 px-4 py-2 rounded-full text-sm font-bold shadow-lg border border-blue-200 dark:border-blue-700 animate-pulse-soft">
+                Best Prices
               </div>
             </div>
 
-            {/* Floating elements */}
-            <div className="absolute top-10 -left-4 bg-blue-500 text-white p-3 rounded-xl shadow-lg animate-float">
-              <Clock className="h-6 w-6" />
+            {/* Text below the image */}
+            <div className="text-center space-y-4 max-w-md">
+              <h3 className="text-2xl lg:text-3xl font-bold text-gray-900 dark:text-white">
+                Latest Smartphones
+              </h3>
+              <p className="text-lg text-gray-600 dark:text-gray-300 leading-relaxed">
+                Premium devices from top brands with cutting-edge technology and exceptional performance
+              </p>
             </div>
-            <div className="absolute bottom-10 -right-4 bg-white dark:bg-gray-800 text-blue-600 dark:text-blue-400 p-3 rounded-xl shadow-lg animate-float animation-delay-2000 border border-blue-200 dark:border-blue-700">
-              <Zap className="h-6 w-6" />
+
+            {/* Floating elements around the image */}
+            <div className="absolute top-16 -left-8 bg-blue-500 text-white p-4 rounded-xl shadow-lg animate-float">
+              <Clock className="h-8 w-8" />
+            </div>
+            <div className="absolute bottom-20 -right-8 bg-white dark:bg-gray-800 text-blue-600 dark:text-blue-400 p-4 rounded-xl shadow-lg animate-float animation-delay-2000 border border-blue-200 dark:border-blue-700">
+              <Zap className="h-8 w-8" />
             </div>
           </div>
         </div>
