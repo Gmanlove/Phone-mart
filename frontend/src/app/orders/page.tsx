@@ -221,7 +221,7 @@ const OrderCard = ({ order }: { order: any }) => {
   )
 }
 
-
+export default function OrdersPage() {
   const { orders } = useOrders()
   const [searchTerm, setSearchTerm] = useState("")
   const [statusFilter, setStatusFilter] = useState("all")
