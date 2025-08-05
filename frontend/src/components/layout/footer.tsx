@@ -21,15 +21,15 @@ export default function Footer() {
               {/* Brand */}
               <div className="space-y-4">
                 <div className="flex items-center space-x-3">
-                  <div className="relative">
+                    <div className="relative">
                     <Image
                       src="/smart.png"
                       alt="Smart Communications Logo"
-                      width={48}
-                      height={48}
-                      className="w-10 h-10 lg:w-12 lg:h-12 object-contain"
+                      width={80}
+                      height={80}
+                      className="w-16 h-16 lg:w-20 lg:h-20 object-contain"
                     />
-                  </div>
+                    </div>
                   <div>
                     <span className="text-2xl lg:text-3xl font-bold text-blue-600 dark:text-blue-400">
                       Smart Communications

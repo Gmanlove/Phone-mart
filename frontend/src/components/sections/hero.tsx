@@ -32,24 +32,17 @@ export default function Hero() {
             </div>
 
             {/* Main heading and value proposition */}
-            <div className="space-y-4">
+            <div className="space-y-4 -ml-4">
               <h1 className="text-4xl sm:text-5xl lg:text-7xl font-bold text-gray-900 dark:text-white leading-tight">
-                <span className="flex items-center mb-4">
-                  <Image
-                    src="/smart.png"
-                    alt="Smart Communications Logo"
-                    width={64}
-                    height={64}
-                    className="w-12 h-12 lg:w-16 lg:h-16 mr-4 object-contain"
-                  />
-                  Smart Communications
-                </span>
-                <span className="block text-blue-600 dark:text-blue-400">
-                  Premium Mobile Solutions
-                </span>
+              <span className="block mb-4">
+                Smart Communications
+              </span>
+              <span className="block text-blue-600 dark:text-blue-400">
+                Premium Mobile Solutions
+              </span>
               </h1>
               <p className="text-lg lg:text-xl text-gray-700 dark:text-gray-300 font-medium max-w-2xl">
-                Professional mobile technology solutions with expert service, authentic products, and reliable support. Your trusted partner in mobile communications.
+              Professional mobile technology solutions with expert service, authentic products, and reliable support. Your trusted partner in mobile communications.
               </p>
             </div>
 
