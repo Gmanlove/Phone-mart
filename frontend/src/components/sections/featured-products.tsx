@@ -4,7 +4,6 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { useEffect, useState } from "react"
 import { fetchProducts } from "@/lib/api"
-import { ChevronLeft, ChevronRight } from "lucide-react"
 
 interface Product {
     _id: string
@@ -23,16 +22,15 @@ export default function FeaturedProducts() {
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState("")
     const [currentSlide, setCurrentSlide] = useState(0)
-    const [isAutoPlay, setIsAutoPlay] = useState(true)
 
-    // Fetch products from API
+    // Fetch ALL products from API
     useEffect(() => {
         setLoading(true)
         fetchProducts()
             .then((data: Product[]) => {
                 console.log("Fetched products for featured section:", data)
-                // Take only the first 8 products for featured section
-                setProducts(data.slice(0, 8))
+                // Show ALL products instead of limiting to 8
+                setProducts(data)
                 setLoading(false)
             })
             .catch((err) => {
@@ -67,28 +65,16 @@ export default function FeaturedProducts() {
 
     const totalSlides = Math.ceil(products.length / productsPerSlide)
 
-    // Auto-play functionality
+    // Continuous auto-play functionality - slower sliding (6 seconds interval)
     useEffect(() => {
-        if (!isAutoPlay || totalSlides <= 1) return
+        if (totalSlides <= 1) return
 
         const interval = setInterval(() => {
             setCurrentSlide((prev) => (prev + 1) % totalSlides)
-        }, 4000)
+        }, 6000) // Increased from 4000ms to 6000ms for slower sliding
 
         return () => clearInterval(interval)
-    }, [totalSlides, isAutoPlay])
-
-    const nextSlide = () => {
-        if (totalSlides <= 1) return
-        setCurrentSlide((prev) => (prev + 1) % totalSlides)
-        setIsAutoPlay(false)
-    }
-
-    const prevSlide = () => {
-        if (totalSlides <= 1) return
-        setCurrentSlide((prev) => (prev - 1 + totalSlides) % totalSlides)
-        setIsAutoPlay(false)
-    }
+    }, [totalSlides])
 
     // Helper function to construct proper Cloudinary URL
     const getValidImageUrl = (images: string[] | undefined): string => {
@@ -125,7 +111,7 @@ export default function FeaturedProducts() {
                         Featured Products
                     </h2>
                     <p className="text-gray-600 dark:text-gray-300 text-lg max-w-2xl mx-auto">
-                        Discover our handpicked selection of premium mobile devices
+                        Discover our complete collection of premium mobile devices
                     </p>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -182,37 +168,16 @@ export default function FeaturedProducts() {
                     Featured Products
                 </h2>
                 <p className="text-gray-600 dark:text-gray-300 text-lg max-w-2xl mx-auto">
-                    Discover our handpicked selection of premium mobile devices
+                    Discover our complete collection of premium mobile devices
                 </p>
             </div>
 
             {/* Carousel Container */}
             <div className="relative">
-                {/* Navigation Buttons - Only show if more than one slide */}
-                {totalSlides > 1 && (
-                    <>
-                        <button
-                            onClick={prevSlide}
-                            className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 z-10 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 p-3 rounded-full shadow-lg transition-all duration-200 group"
-                            aria-label="Previous products"
-                        >
-                            <ChevronLeft className="h-6 w-6 text-gray-600 dark:text-gray-300 group-hover:text-blue-600 dark:group-hover:text-blue-400" />
-                        </button>
-                        
-                        <button
-                            onClick={nextSlide}
-                            className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 z-10 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 p-3 rounded-full shadow-lg transition-all duration-200 group"
-                            aria-label="Next products"
-                        >
-                            <ChevronRight className="h-6 w-6 text-gray-600 dark:text-gray-300 group-hover:text-blue-600 dark:group-hover:text-blue-400" />
-                        </button>
-                    </>
-                )}
-
-                {/* Products Grid */}
+                {/* Products Grid - Auto-sliding without manual controls */}
                 <div className="overflow-hidden rounded-2xl">
                     <div 
-                        className="flex transition-transform duration-500 ease-in-out"
+                        className="flex transition-transform duration-1000 ease-in-out"
                         style={{ 
                             transform: `translateX(-${currentSlide * 100}%)`,
                             width: `${totalSlides * 100}%`
@@ -280,22 +245,17 @@ export default function FeaturedProducts() {
                     </div>
                 </div>
 
-                {/* Slide Indicators - Only show if more than one slide */}
+                {/* Slide Indicators - Show current progress */}
                 {totalSlides > 1 && (
                     <div className="flex justify-center space-x-2 mt-8">
                         {Array.from({ length: totalSlides }).map((_, index) => (
-                            <button
+                            <div
                                 key={index}
-                                onClick={() => {
-                                    setCurrentSlide(index)
-                                    setIsAutoPlay(false)
-                                }}
-                                className={`w-3 h-3 rounded-full transition-all duration-200 ${
+                                className={`w-3 h-3 rounded-full transition-all duration-300 ${
                                     index === currentSlide 
                                         ? 'bg-blue-600 dark:bg-blue-400' 
-                                        : 'bg-gray-300 dark:bg-gray-600 hover:bg-gray-400 dark:hover:bg-gray-500'
+                                        : 'bg-gray-300 dark:bg-gray-600'
                                 }`}
-                                aria-label={`Go to slide ${index + 1}`}
                             />
                         ))}
                     </div>
