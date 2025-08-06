@@ -26,6 +26,12 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET || "R-YWdGVQlebAhRHmXtUaw5E5U_o",
 });
 
+console.log('Cloudinary config:', {
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME || "dn7zah8um",
+  api_key: process.env.CLOUDINARY_API_KEY || '626199732678851',
+  api_secret: process.env.CLOUDINARY_API_SECRET || "R-YWdGVQlebAhRHmXtUaw5E5U_o" ? '***' : undefined,
+});
+
 const cloudinaryStorage = new CloudinaryStorage({
   cloudinary,
   params: {
@@ -321,20 +327,49 @@ router.get('/earnings', isAdmin, async (req, res) => {
   }
 });
 
-// Image upload route (admin only) - Cloudinary
+// Single image upload route (admin only) - Cloudinary
 router.post('/upload-image', isAdmin, uploadCloud.single('image'), (req, res) => {
-  if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
-  res.json({ url: req.file.path });
+  try {
+    console.log('Single image upload request received');
+    if (!req.file) {
+      console.log('No file uploaded');
+      return res.status(400).json({ error: 'No file uploaded' });
+    }
+    console.log('File uploaded successfully:', req.file.path);
+    res.json({ url: req.file.path });
+  } catch (error) {
+    console.error('Single image upload error:', error);
+    res.status(500).json({ error: 'Image upload failed' });
+  }
 });
 
-// Multiple images upload
+// Multiple images upload route (admin only) - Cloudinary
 router.post('/upload-images', isAdmin, uploadCloud.array('images', 5), (req, res) => {
-  if (!req.files || req.files.length === 0) {
-    return res.status(400).json({ error: 'No files uploaded' });
+  try {
+    console.log('Multiple images upload request received');
+    console.log('Files received:', req.files ? req.files.length : 0);
+    
+    if (!req.files || req.files.length === 0) {
+      console.log('No files uploaded');
+      return res.status(400).json({ error: 'No files uploaded' });
+    }
+    
+    const urls = req.files.map(file => {
+      console.log('File uploaded:', file.path);
+      return file.path;
+    });
+    
+    console.log('All files uploaded successfully:', urls);
+    res.json({ urls });
+  } catch (error) {
+    console.error('Multiple image upload error:', error);
+    res.status(500).json({ error: 'Multiple image upload failed' });
   }
-  
-  const urls = req.files.map(file => file.path);
-  res.json({ urls });
+});
+
+// Test route to verify admin routes are working
+router.get('/test', (req, res) => {
+  res.json({ message: 'Admin routes are working!', timestamp: new Date().toISOString() });
 });
 
 module.exports = router;
