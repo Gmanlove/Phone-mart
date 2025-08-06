@@ -254,27 +254,28 @@ export default function CheckoutPage() {
           customer_name: `${billingInfo.firstName} ${billingInfo.lastName}`,
           phone: billingInfo.phone,
         },
-        callback: async (response: { status: string; reference: string }) => {
+        callback: function(response) {
           console.log("Payment successful:", response)
           
-          try {
-            // Prepare customer info with all required fields
-            const customerInfo = prepareCustomerInfo()
-            
-            console.log('Placing order after payment with customer info:', customerInfo)
-            
-            // Place order in backend
-            await placeOrder(items, total, customerInfo)
-            clearCart()
-            setCurrentStep(4)
-          } catch (error) {
-            console.error('Error processing order after payment:', error)
-            setPaymentError("Payment successful but failed to save order. Please contact support.")
-          } finally {
-            setIsProcessing(false)
-          }
+          // Handle successful payment - use regular function, not async
+          const customerInfo = prepareCustomerInfo()
+          
+          console.log('Placing order after payment with customer info:', customerInfo)
+          
+          // Place order in backend
+          placeOrder(items, total, customerInfo)
+            .then(() => {
+              clearCart()
+              setCurrentStep(4)
+              setIsProcessing(false)
+            })
+            .catch((error) => {
+              console.error('Error processing order after payment:', error)
+              setPaymentError("Payment successful but failed to save order. Please contact support.")
+              setIsProcessing(false)
+            })
         },
-        onClose: () => {
+        onClose: function() {
           setIsProcessing(false)
           setPaymentError("Payment was cancelled. Please try again.")
         },
