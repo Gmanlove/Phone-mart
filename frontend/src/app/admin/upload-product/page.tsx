@@ -184,17 +184,31 @@ export default function AdminUploadProduct() {
           imageFormData.append("images", image)
         })
 
+        console.log('Uploading images...', form.images.length)
+        
         const imgRes = await fetch("http://localhost:5000/api/admin/upload-images?adminEmail=admin@phonehub.com", {
           method: "POST",
           body: imageFormData
         })
         
+        console.log('Image upload response status:', imgRes.status)
+        
+        if (!imgRes.ok) {
+          const errorText = await imgRes.text()
+          console.error('Image upload failed:', errorText)
+          throw new Error(`Image upload failed: ${imgRes.status}`)
+        }
+        
         const imgData = await imgRes.json()
-        if (imgRes.ok && imgData.urls) {
+        console.log('Image upload response:', imgData)
+        
+        if (imgData.urls && imgData.urls.length > 0) {
           imageUrls = imgData.urls
         } else {
-          throw new Error("Image upload failed")
+          throw new Error("No image URLs returned from upload")
         }
+      } else {
+        throw new Error("Please select at least one image")
       }
 
       // Prepare specs object
@@ -222,40 +236,52 @@ export default function AdminUploadProduct() {
         tags: form.tags
       }
 
+      console.log('Creating product with data:', productData)
+
       const response = await fetch("http://localhost:5000/api/admin/product?adminEmail=admin@phonehub.com", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(productData)
       })
 
-      const data = await response.json()
-      
-      if (response.ok) {
-        setMessage("Product uploaded successfully!")
-        setMessageType("success")
-        
-        // Reset form
-        setForm({
-          name: "",
-          brand: "",
-          price: "",
-          originalPrice: "",
-          description: "",
-          category: categories[0].value,
-          subcategory: "",
-          specs: "",
-          stock: "1",
-          isHotDeal: false,
-          hotDealDiscount: "",
-          tags: [],
-          images: []
-        })
-        setImagePreviewUrls([])
-        setSpecFields([{ key: "", value: "" }])
-      } else {
-        throw new Error(data.error || "Upload failed")
+      console.log('Product creation response status:', response.status)
+
+      if (!response.ok) {
+        const errorText = await response.text()
+        console.error('Product creation failed:', errorText)
+        throw new Error(`Product creation failed: ${response.status}`)
       }
+
+      const data = await response.json()
+      console.log('Product creation response:', data)
+      
+      setMessage("Product uploaded successfully!")
+      setMessageType("success")
+      
+      // Reset form
+      setForm({
+        name: "",
+        brand: "",
+        price: "",
+        originalPrice: "",
+        description: "",
+        category: categories[0].value,
+        subcategory: "",
+        specs: "",
+        stock: "1",
+        isHotDeal: false,
+        hotDealDiscount: "",
+        tags: [],
+        images: []
+      })
+      setImagePreviewUrls([])
+      setSpecFields([{ key: "", value: "" }])
+      
+      // Clear message after 5 seconds
+      setTimeout(() => setMessage(""), 5000)
+      
     } catch (error) {
+      console.error('Upload error:', error)
       setMessage(error instanceof Error ? error.message : "Network error occurred")
       setMessageType("error")
     } finally {
@@ -572,7 +598,7 @@ export default function AdminUploadProduct() {
             <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
               <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6 flex items-center">
                 <ImageIcon className="h-5 w-5 mr-2" />
-                Product Images
+                Product Images *
               </h2>
               
               {/* Upload Area */}
