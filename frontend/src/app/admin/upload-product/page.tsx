@@ -186,7 +186,7 @@ export default function AdminUploadProduct() {
 
         console.log('Uploading images...', form.images.length)
         
-        const imgRes = await fetch("http://localhost:5000/api/admin/upload-images?adminEmail=admin@phonehub.com", {
+        const imgRes = await fetch("https://smartcoms.onrender.com/api/admin/upload-images?adminEmail=admin@phonehub.com", {
           method: "POST",
           body: imageFormData
         })
@@ -238,7 +238,7 @@ export default function AdminUploadProduct() {
 
       console.log('Creating product with data:', productData)
 
-      const response = await fetch("http://localhost:5000/api/admin/product?adminEmail=admin@phonehub.com", {
+      const response = await fetch("https://smartcoms.onrender.com/api/admin/product?adminEmail=admin@phonehub.com", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(productData)

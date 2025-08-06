@@ -75,7 +75,7 @@ export default function AdminAnalytics() {
 
   const fetchAnalytics = async () => {
     try {
-      const response = await fetch("http://localhost:5000/api/admin/dashboard-stats?adminEmail=admin@phonehub.com")
+      const response = await fetch("https://smartcoms.onrender.com/api/admin/dashboard-stats?adminEmail=admin@phonehub.com")
       if (response.ok) {
         const data = await response.json()
         setAnalytics(data)
@@ -102,7 +102,7 @@ export default function AdminAnalytics() {
         groupBy
       })
 
-      const response = await fetch(`http://localhost:5000/api/admin/earnings?adminEmail=admin@phonehub.com&${params}`)
+      const response = await fetch(`https://smartcoms.onrender.com/api/admin/earnings?adminEmail=admin@phonehub.com&${params}`)
       if (response.ok) {
         const data = await response.json()
         setEarningsData(data)

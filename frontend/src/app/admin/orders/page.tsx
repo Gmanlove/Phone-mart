@@ -84,7 +84,7 @@ export default function AdminOrdersPage() {
         sort: sortOrder === "desc" ? `-${sortBy}` : sortBy
       })
       
-      const response = await fetch(`http://localhost:5000/api/admin/orders?adminEmail=admin@phonehub.com&${params}`)
+      const response = await fetch(`https://smartcoms.onrender.com/api/admin/orders?adminEmail=admin@phonehub.com&${params}`)
       
       if (response.ok) {
         const data = await response.json()
@@ -104,7 +104,7 @@ export default function AdminOrdersPage() {
   const updateOrderStatus = async (orderId: string, newStatus: string) => {
     setUpdating(orderId)
     try {
-      const response = await fetch(`http://localhost:5000/api/admin/order/${orderId}?adminEmail=admin@phonehub.com`, {
+      const response = await fetch(`https://smartcoms.onrender.com/api/admin/order/${orderId}?adminEmail=admin@phonehub.com`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ status: newStatus })
@@ -129,7 +129,7 @@ export default function AdminOrdersPage() {
     if (!confirm("Are you sure you want to delete this order?")) return
     
     try {
-      const response = await fetch(`http://localhost:5000/api/orders/${orderId}`, {
+      const response = await fetch(`https://smartcoms.onrender.com/api/orders/${orderId}`, {
         method: "DELETE"
       })
 

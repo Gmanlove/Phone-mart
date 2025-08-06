@@ -107,7 +107,7 @@ export default function AdminEarningsPage() {
         groupBy
       })
 
-      const response = await fetch(`http://localhost:5000/api/admin/earnings?adminEmail=admin@phonehub.com&${params}`)
+      const response = await fetch(`https://smartcoms.onrender.com/api/admin/earnings?adminEmail=admin@phonehub.com&${params}`)
       if (response.ok) {
         const data = await response.json()
         setEarningsData(data)
@@ -119,7 +119,7 @@ export default function AdminEarningsPage() {
 
   const fetchRecentOrders = async () => {
     try {
-      const response = await fetch("http://localhost:5000/api/admin/orders?adminEmail=admin@phonehub.com&limit=10&status=delivered")
+      const response = await fetch("https://smartcoms.onrender.com/api/admin/orders?adminEmail=admin@phonehub.com&limit=10&status=delivered")
       if (response.ok) {
         const data = await response.json()
         setRecentOrders(data.orders || [])
@@ -131,7 +131,7 @@ export default function AdminEarningsPage() {
 
   const fetchSummaryData = async () => {
     try {
-      const response = await fetch("http://localhost:5000/api/admin/dashboard-stats?adminEmail=admin@phonehub.com")
+      const response = await fetch("https://smartcoms.onrender.com/api/admin/dashboard-stats?adminEmail=admin@phonehub.com")
       if (response.ok) {
         const data = await response.json()
         setSummary({

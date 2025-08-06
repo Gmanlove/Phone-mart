@@ -26,7 +26,7 @@ interface Product {
 async function fetchProduct(id: string): Promise<Product | null> {
   try {
     console.log(`Fetching product with ID: ${id}`)
-    const res = await fetch(`http://localhost:5000/api/products/${id}`, {
+    const res = await fetch(`https://smartcoms.onrender.com/api/products/${id}`, {
       cache: 'no-store'
     })
     

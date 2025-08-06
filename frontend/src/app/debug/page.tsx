@@ -11,7 +11,7 @@ export default function DebugPage() {
 
   useEffect(() => {
     // Fetch all products to see their IDs
-    fetch("http://localhost:5000/api/products")
+    fetch("https://smartcoms.onrender.com/api/products")
       .then(res => res.json())
       .then(data => {
         console.log("All products:", data)
@@ -25,7 +25,7 @@ export default function DebugPage() {
     
     try {
       console.log(`Testing fetch for ID: ${testId}`)
-      const response = await fetch(`http://localhost:5000/api/products/${testId}`)
+      const response = await fetch(`https://smartcoms.onrender.com/api/products/${testId}`)
       console.log(`Response status: ${response.status}`)
       
       if (response.ok) {
@@ -97,7 +97,7 @@ export default function DebugPage() {
         <h2 className="text-xl font-semibold mb-4">Debug API</h2>
         <button
           onClick={() => {
-            fetch("http://localhost:5000/api/debug/products")
+            fetch("https://smartcoms.onrender.com/api/debug/products")
               .then(res => res.json())
               .then(data => console.log("Debug API response:", data))
               .catch(err => console.error("Debug API error:", err))

@@ -87,7 +87,7 @@ export default function AdminProductsPage() {
       if (selectedCategory !== "all") params.append("category", selectedCategory)
       if (searchTerm) params.append("search", searchTerm)
 
-      const res = await fetch(`http://localhost:5000/api/admin/products?adminEmail=admin@phonehub.com&${params}`)
+      const res = await fetch(`https://smartcoms.onrender.com/api/admin/products?adminEmail=admin@phonehub.com&${params}`)
       if (res.ok) {
         const data: ProductsResponse = await res.json()
         setProducts(data.products)
@@ -104,7 +104,7 @@ export default function AdminProductsPage() {
 
   const handleDelete = async (productId: string) => {
     try {
-      const res = await fetch(`http://localhost:5000/api/admin/product/${productId}?adminEmail=admin@phonehub.com`, {
+      const res = await fetch(`https://smartcoms.onrender.com/api/admin/product/${productId}?adminEmail=admin@phonehub.com`, {
         method: "DELETE"
       })
       
@@ -121,7 +121,7 @@ export default function AdminProductsPage() {
 
   const handleUpdatePrice = async (productId: string, newPrice: number) => {
     try {
-      const res = await fetch(`http://localhost:5000/api/admin/product/${productId}?adminEmail=admin@phonehub.com`, {
+      const res = await fetch(`https://smartcoms.onrender.com/api/admin/product/${productId}?adminEmail=admin@phonehub.com`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ price: newPrice })
@@ -140,7 +140,7 @@ export default function AdminProductsPage() {
 
   const toggleProductActive = async (productId: string, isActive: boolean) => {
     try {
-      const res = await fetch(`http://localhost:5000/api/admin/product/${productId}?adminEmail=admin@phonehub.com`, {
+      const res = await fetch(`https://smartcoms.onrender.com/api/admin/product/${productId}?adminEmail=admin@phonehub.com`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ isActive })

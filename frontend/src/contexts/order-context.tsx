@@ -75,7 +75,7 @@ export function OrderProvider({ children }: { children: ReactNode }) {
     
     try {
       setIsLoading(true)
-      const response = await fetch(`http://localhost:5000/api/orders/user/${encodeURIComponent(user.email)}`)
+      const response = await fetch(`https://smartcoms.onrender.com/api/orders/user/${encodeURIComponent(user.email)}`)
       
       if (response.ok) {
         const data = await response.json()
@@ -150,7 +150,7 @@ export function OrderProvider({ children }: { children: ReactNode }) {
       console.log('Sending order data to backend:', orderData)
 
       // Send order to backend
-      const response = await fetch('http://localhost:5000/api/orders', {
+      const response = await fetch('https://smartcoms.onrender.com/api/orders', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
