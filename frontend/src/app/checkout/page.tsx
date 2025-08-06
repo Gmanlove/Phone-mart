@@ -84,6 +84,23 @@ export default function CheckoutPage() {
     }
   }, [])
 
+  // Helper function to prepare customer info
+  const prepareCustomerInfo = () => {
+    const fullAddress = [
+      deliveryInfo.address,
+      deliveryInfo.city,
+      deliveryInfo.state,
+      deliveryInfo.zipCode
+    ].filter(Boolean).join(', ')
+
+    return {
+      name: `${billingInfo.firstName} ${billingInfo.lastName}`.trim() || 'Guest Customer',
+      email: billingInfo.email || '',
+      phone: billingInfo.phone || '',
+      address: fullAddress || 'No address provided'
+    }
+  }
+
   // Now handle conditional rendering after all hooks are called
   if (isLoading) {
     return (
@@ -184,28 +201,31 @@ export default function CheckoutPage() {
     setDeliveryInfo({ ...deliveryInfo, [e.target.name]: e.target.value })
   }
 
-  const handleMockPayment = () => {
+  const handleMockPayment = async () => {
     setIsProcessing(true)
     setPaymentError("")
     
-    // Simulate payment processing
-    setTimeout(() => {
-      const order = {
-        id: `MOCK_ORDER_${Date.now()}`,
-        items,
-        total,
-        billingInfo,
-        deliveryInfo,
-        paymentMethod: "mock",
-        status: "confirmed",
-        date: new Date().toISOString(),
-      }
+    try {
+      // Simulate payment processing
+      await new Promise(resolve => setTimeout(resolve, 2000))
       
-      placeOrder(items, total)
+      // Prepare customer info with all required fields
+      const customerInfo = prepareCustomerInfo()
+      
+      console.log('Placing order with customer info:', customerInfo)
+      console.log('Order items:', items)
+      console.log('Order total:', total)
+      
+      // Place order in backend
+      await placeOrder(items, total, customerInfo)
       clearCart()
       setCurrentStep(4)
+    } catch (error) {
+      console.error('Error processing order:', error)
+      setPaymentError("Failed to process order. Please try again.")
+    } finally {
       setIsProcessing(false)
-    }, 2000)
+    }
   }
 
   const handlePaystackPayment = () => {
@@ -234,24 +254,25 @@ export default function CheckoutPage() {
           customer_name: `${billingInfo.firstName} ${billingInfo.lastName}`,
           phone: billingInfo.phone,
         },
-        callback: (response: { status: string; reference: string }) => {
+        callback: async (response: { status: string; reference: string }) => {
           console.log("Payment successful:", response)
           
-          const order = {
-            id: response.reference,
-            items,
-            total,
-            billingInfo,
-            deliveryInfo,
-            paymentMethod,
-            status: "confirmed",
-            date: new Date().toISOString(),
+          try {
+            // Prepare customer info with all required fields
+            const customerInfo = prepareCustomerInfo()
+            
+            console.log('Placing order after payment with customer info:', customerInfo)
+            
+            // Place order in backend
+            await placeOrder(items, total, customerInfo)
+            clearCart()
+            setCurrentStep(4)
+          } catch (error) {
+            console.error('Error processing order after payment:', error)
+            setPaymentError("Payment successful but failed to save order. Please contact support.")
+          } finally {
+            setIsProcessing(false)
           }
-          
-          placeOrder(items, total)
-          clearCart()
-          setCurrentStep(4)
-          setIsProcessing(false)
         },
         onClose: () => {
           setIsProcessing(false)

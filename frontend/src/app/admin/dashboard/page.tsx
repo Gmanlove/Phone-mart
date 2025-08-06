@@ -13,9 +13,11 @@ import {
   Clock,
   Star,
   ArrowUpRight,
-  ArrowDownRight
+  ArrowDownRight,
+  RefreshCw
 } from "lucide-react"
 import Link from "next/link"
+import { fetchAdminDashboardStats } from "@/lib/api"
 
 interface DashboardStats {
   totalProducts: number
@@ -44,6 +46,7 @@ interface DashboardStats {
 export default function AdminDashboard() {
   const [stats, setStats] = useState<DashboardStats | null>(null)
   const [loading, setLoading] = useState(true)
+  const [refreshing, setRefreshing] = useState(false)
   const [error, setError] = useState("")
 
   useEffect(() => {
@@ -52,18 +55,22 @@ export default function AdminDashboard() {
 
   const fetchDashboardStats = async () => {
     try {
-      const response = await fetch("http://localhost:5000/api/admin/dashboard-stats?adminEmail=admin@phonehub.com")
-      if (response.ok) {
-        const data = await response.json()
-        setStats(data)
-      } else {
-        setError("Failed to fetch dashboard stats")
-      }
+      setError("")
+      const data = await fetchAdminDashboardStats("admin@phonehub.com")
+      setStats(data)
+      console.log("Dashboard stats loaded:", data)
     } catch (err) {
-      setError("Network error occurred")
+      console.error("Error fetching dashboard stats:", err)
+      setError("Failed to load dashboard data")
     } finally {
       setLoading(false)
     }
+  }
+
+  const handleRefresh = async () => {
+    setRefreshing(true)
+    await fetchDashboardStats()
+    setRefreshing(false)
   }
 
   const formatCurrency = (amount: number) => {
@@ -90,6 +97,8 @@ export default function AdminDashboard() {
         return 'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400'
       case 'delivered':
         return 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400'
+      case 'confirmed':
+        return 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400'
       case 'cancelled':
         return 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400'
       default:
@@ -100,7 +109,10 @@ export default function AdminDashboard() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-96">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading dashboard...</p>
+        </div>
       </div>
     )
   }
@@ -108,10 +120,10 @@ export default function AdminDashboard() {
   if (error) {
     return (
       <div className="text-center py-12">
-        <div className="text-red-600 text-lg font-medium">{error}</div>
+        <div className="text-red-600 text-lg font-medium mb-4">{error}</div>
         <button 
           onClick={fetchDashboardStats}
-          className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
         >
           Retry
         </button>
@@ -128,6 +140,14 @@ export default function AdminDashboard() {
           <p className="text-gray-600 dark:text-gray-400 mt-1">Welcome to Smart Communications Admin Panel</p>
         </div>
         <div className="flex items-center space-x-3">
+          <button
+            onClick={handleRefresh}
+            disabled={refreshing}
+            className="bg-white dark:bg-gray-800 rounded-lg px-4 py-2 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors flex items-center gap-2"
+          >
+            <RefreshCw className={`h-4 w-4 ${refreshing ? 'animate-spin' : ''}`} />
+            <span className="text-sm">Refresh</span>
+          </button>
           <div className="bg-white dark:bg-gray-800 rounded-lg px-4 py-2 border border-gray-200 dark:border-gray-700">
             <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
               <Calendar className="h-4 w-4 mr-2" />
@@ -172,7 +192,9 @@ export default function AdminDashboard() {
           </div>
           <div className="flex items-center mt-4 text-sm">
             <TrendingUp className="h-4 w-4 text-green-500 mr-1" />
-            <span className="text-green-600 font-medium">+12% this month</span>
+            <span className="text-green-600 font-medium">
+              {stats?.totalOrders ? `${stats.totalOrders} total` : 'No orders yet'}
+            </span>
           </div>
         </div>
 
@@ -188,7 +210,7 @@ export default function AdminDashboard() {
           </div>
           <div className="flex items-center mt-4 text-sm">
             <TrendingUp className="h-4 w-4 text-green-500 mr-1" />
-            <span className="text-green-600 font-medium">+8% this month</span>
+            <span className="text-green-600 font-medium">Registered</span>
           </div>
         </div>
 
@@ -206,7 +228,9 @@ export default function AdminDashboard() {
           </div>
           <div className="flex items-center mt-4 text-sm">
             <TrendingUp className="h-4 w-4 text-green-500 mr-1" />
-            <span className="text-green-600 font-medium">+15% this month</span>
+            <span className="text-green-600 font-medium">
+              {stats?.totalEarnings ? 'From orders' : 'No earnings yet'}
+            </span>
           </div>
         </div>
       </div>
@@ -252,7 +276,9 @@ export default function AdminDashboard() {
               </div>
             ) : (
               <div className="text-center py-8 text-gray-500 dark:text-gray-400">
-                No recent orders found
+                <ShoppingCart className="h-12 w-12 mx-auto mb-3 text-gray-300" />
+                <p className="text-sm">No recent orders found</p>
+                <p className="text-xs mt-1">Orders will appear here once customers place them</p>
               </div>
             )}
           </div>
@@ -302,7 +328,9 @@ export default function AdminDashboard() {
               </div>
             ) : (
               <div className="text-center py-8 text-gray-500 dark:text-gray-400">
-                No sales data available
+                <Package className="h-12 w-12 mx-auto mb-3 text-gray-300" />
+                <p className="text-sm">No sales data available</p>
+                <p className="text-xs mt-1">Product sales will appear here once orders are placed</p>
               </div>
             )}
           </div>
