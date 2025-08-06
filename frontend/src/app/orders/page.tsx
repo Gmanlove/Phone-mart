@@ -1,34 +1,49 @@
 "use client"
 
-import { useState } from "react"
-import { Package, Truck, CheckCircle, Clock, Search, Filter, Eye, Download, Star, MessageCircle, RefreshCw, MapPin, Calendar, CreditCard } from "lucide-react"
+import { useState, useEffect } from "react"
+import { Package, Truck, CheckCircle, Clock, Search, Filter, Eye, Download, Star, MessageCircle, RefreshCw, MapPin, Calendar, CreditCard, AlertCircle, Loader2 } from "lucide-react"
 import { CldImage } from "next-cloudinary";
 import { extractCloudinaryPublicId } from "@/lib/utils";
 
 import { useOrders, Order } from "@/contexts/order-context"
+import { useAuth } from "@/contexts/auth-context"
 import { CartItem } from "@/contexts/cart-context"
+import Link from "next/link"
 
-const OrderCard = ({ order }: { order: Order }) => {
+const OrderCard = ({ order, onRefresh }: { order: Order, onRefresh: () => void }) => {
   const [isExpanded, setIsExpanded] = useState(false)
   
   const getStatusColor = (status: string) => {
-    switch (status) {
+    switch (status.toLowerCase()) {
       case 'delivered': return 'bg-green-100 text-green-800 border-green-200'
       case 'shipped': return 'bg-blue-100 text-blue-800 border-blue-200'
       case 'processing': return 'bg-yellow-100 text-yellow-800 border-yellow-200'
+      case 'confirmed': return 'bg-blue-100 text-blue-800 border-blue-200'
       case 'cancelled': return 'bg-red-100 text-red-800 border-red-200'
       default: return 'bg-gray-100 text-gray-800 border-gray-200'
     }
   }
 
   const getStatusIcon = (status: string) => {
-    switch (status) {
+    switch (status.toLowerCase()) {
       case 'delivered': return <CheckCircle className="w-4 h-4" />
       case 'shipped': return <Truck className="w-4 h-4" />
       case 'processing': return <Clock className="w-4 h-4" />
+      case 'confirmed': return <CheckCircle className="w-4 h-4" />
       case 'cancelled': return <RefreshCw className="w-4 h-4" />
       default: return <Package className="w-4 h-4" />
     }
+  }
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString)
+    return date.toLocaleDateString('en-NG', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    })
   }
 
   return (
@@ -41,11 +56,11 @@ const OrderCard = ({ order }: { order: Order }) => {
               <Package className="w-6 h-6 text-blue-600" />
             </div>
             <div>
-              <h3 className="text-lg font-bold text-gray-900">Order {order.id}</h3>
+              <h3 className="text-lg font-bold text-gray-900">Order #{order.id?.slice(-8) || 'N/A'}</h3>
               <div className="flex items-center gap-4 text-sm text-gray-600 mt-1">
                 <span className="flex items-center gap-1">
                   <Calendar className="w-4 h-4" />
-                  {new Date(order.date).toLocaleDateString('en-NG')}
+                  {formatDate(order.date)}
                 </span>
                 <span className="flex items-center gap-1">
                   <CreditCard className="w-4 h-4" />
@@ -112,6 +127,14 @@ const OrderCard = ({ order }: { order: Order }) => {
             {isExpanded ? 'Hide Details' : 'View Details'}
           </button>
           
+          <button
+            onClick={onRefresh}
+            className="bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-3 px-4 rounded-xl transition-colors duration-200 flex items-center justify-center gap-2"
+          >
+            <RefreshCw className="w-4 h-4" />
+            Refresh Status
+          </button>
+          
           {order.status === 'delivered' && (
             <button className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-3 px-4 rounded-xl transition-colors duration-200 flex items-center justify-center gap-2">
               <Star className="w-4 h-4" />
@@ -174,24 +197,51 @@ const OrderCard = ({ order }: { order: Order }) => {
                   <MapPin className="w-4 h-4" />
                   Order Details
                 </h4>
-                <div className="bg-white p-4 rounded-xl">
-                  <p className="text-sm text-gray-600 mb-2">Order Status:</p>
-                  <p className="font-medium text-gray-900 capitalize">{order.status}</p>
+                <div className="bg-white p-4 rounded-xl space-y-3">
+                  <div>
+                    <p className="text-sm text-gray-600 mb-1">Order Status:</p>
+                    <div className="flex items-center gap-2">
+                      <div className={`px-2 py-1 rounded-full text-xs font-medium border flex items-center gap-1 ${getStatusColor(order.status)}`}>
+                        {getStatusIcon(order.status)}
+                        <span className="capitalize">{order.status}</span>
+                      </div>
+                      <button
+                        onClick={onRefresh}
+                        className="text-blue-600 hover:text-blue-700 text-xs underline"
+                      >
+                        Check for updates
+                      </button>
+                    </div>
+                  </div>
                   
-                  <p className="text-sm text-gray-600 mt-3 mb-2">Order Date:</p>
-                  <p className="font-medium text-gray-900">
-                    {new Date(order.date).toLocaleDateString('en-NG')}
-                  </p>
+                  <div>
+                    <p className="text-sm text-gray-600 mb-1">Order Date:</p>
+                    <p className="font-medium text-gray-900">{formatDate(order.date)}</p>
+                  </div>
+
+                  {order.address && (
+                    <div>
+                      <p className="text-sm text-gray-600 mb-1">Delivery Address:</p>
+                      <p className="font-medium text-gray-900">{order.address}</p>
+                    </div>
+                  )}
+
+                  <div>
+                    <p className="text-sm text-gray-600 mb-1">Total Amount:</p>
+                    <p className="font-bold text-lg text-gray-900">₦{order.total.toLocaleString()}</p>
+                  </div>
                 </div>
               </div>
 
               {/* Contact Support */}
               <div className="bg-white p-4 rounded-xl">
                 <h5 className="font-medium text-gray-900 mb-3">Need Help?</h5>
-                <button className="w-full bg-blue-50 hover:bg-blue-100 text-blue-700 font-medium py-3 px-4 rounded-xl transition-colors duration-200 flex items-center justify-center gap-2">
-                  <MessageCircle className="w-4 h-4" />
-                  Contact Support
-                </button>
+                <Link href="/support">
+                  <button className="w-full bg-blue-50 hover:bg-blue-100 text-blue-700 font-medium py-3 px-4 rounded-xl transition-colors duration-200 flex items-center justify-center gap-2">
+                    <MessageCircle className="w-4 h-4" />
+                    Contact Support
+                  </button>
+                </Link>
               </div>
             </div>
           </div>
@@ -202,14 +252,18 @@ const OrderCard = ({ order }: { order: Order }) => {
 }
 
 export default function OrdersPage() {
-  const { orders } = useOrders()
+  const { orders, refreshOrders, isLoading } = useOrders()
+  const { user, isAuthenticated, isLoading: authLoading } = useAuth()
   const [searchTerm, setSearchTerm] = useState("")
   const [statusFilter, setStatusFilter] = useState("all")
   const [dateFilter, setDateFilter] = useState("all")
+  const [refreshing, setRefreshing] = useState(false)
+  const [lastRefresh, setLastRefresh] = useState<Date | null>(null)
 
   const statusOptions = [
     { value: "all", label: "All Orders" },
     { value: "processing", label: "Processing" },
+    { value: "confirmed", label: "Confirmed" },
     { value: "shipped", label: "Shipped" },
     { value: "delivered", label: "Delivered" },
     { value: "cancelled", label: "Cancelled" }
@@ -222,29 +276,115 @@ export default function OrdersPage() {
     { value: "year", label: "This Year" }
   ]
 
+  const handleRefresh = async () => {
+    setRefreshing(true)
+    await refreshOrders()
+    setLastRefresh(new Date())
+    setRefreshing(false)
+  }
+
   const filteredOrders = orders.filter(order => {
-    const matchesSearch = order.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    const matchesSearch = order.id?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       order.items.some((item: CartItem) => item.name.toLowerCase().includes(searchTerm.toLowerCase()))
     const matchesStatus = statusFilter === "all" || order.status === statusFilter
-    return matchesSearch && matchesStatus
+    
+    let matchesDate = true
+    if (dateFilter !== "all") {
+      const orderDate = new Date(order.date)
+      const now = new Date()
+      const diffInDays = Math.floor((now.getTime() - orderDate.getTime()) / (1000 * 60 * 60 * 24))
+      
+      switch (dateFilter) {
+        case "30days":
+          matchesDate = diffInDays <= 30
+          break
+        case "90days":
+          matchesDate = diffInDays <= 90
+          break
+        case "year":
+          matchesDate = orderDate.getFullYear() === now.getFullYear()
+          break
+      }
+    }
+    
+    return matchesSearch && matchesStatus && matchesDate
   })
 
   const totalSpent = orders.reduce((sum, order) => sum + (order.status !== 'cancelled' ? order.total : 0), 0)
   const totalOrders = orders.length
   const deliveredOrders = orders.filter(order => order.status === 'delivered').length
 
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="w-12 h-12 animate-spin text-blue-600 mx-auto mb-4" />
+          <p className="text-gray-600">Loading...</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-8 px-4">
+        <div className="container mx-auto max-w-md">
+          <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-8 text-center">
+            <div className="w-24 h-24 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
+              <AlertCircle className="h-12 w-12 text-red-500" />
+            </div>
+            <h1 className="text-2xl font-bold text-gray-900 mb-4">Sign In Required</h1>
+            <p className="text-gray-600 mb-8">
+              You need to be signed in to view your order history.
+            </p>
+            <Link href="/login">
+              <button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-xl transition-colors">
+                Sign In
+              </button>
+            </Link>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-4 sm:py-8">
       <div className="container mx-auto px-4 max-w-6xl">
         {/* Header */}
         <div className="mb-6 sm:mb-8">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="p-3 bg-blue-600 rounded-2xl">
-              <Package className="w-8 h-8 text-white" />
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-3">
+              <div className="p-3 bg-blue-600 rounded-2xl">
+                <Package className="w-8 h-8 text-white" />
+              </div>
+              <div>
+                <h1 className="text-3xl sm:text-4xl font-bold text-gray-900">My Orders</h1>
+                <p className="text-gray-600 text-base sm:text-lg">Track and manage your purchases</p>
+              </div>
             </div>
-            <div>
-              <h1 className="text-3xl sm:text-4xl font-bold text-gray-900">My Orders</h1>
-              <p className="text-gray-600 text-base sm:text-lg">Track and manage your purchases</p>
+            <div className="flex flex-col items-end gap-2">
+              <button
+                onClick={handleRefresh}
+                disabled={refreshing || isLoading}
+                className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors"
+              >
+                <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} />
+                <span className="hidden sm:inline">Refresh</span>
+              </button>
+              {lastRefresh && (
+                <p className="text-xs text-gray-500">
+                  Last updated: {lastRefresh.toLocaleTimeString()}
+                </p>
+              )}
+            </div>
+          </div>
+
+          {/* Auto-refresh notification */}
+          <div className="bg-blue-50 border border-blue-200 rounded-xl p-3 mb-4">
+            <div className="flex items-center gap-2 text-blue-700 text-sm">
+              <RefreshCw className="w-4 h-4" />
+              <span>Orders are automatically updated every 30 seconds. You can also refresh manually anytime.</span>
             </div>
           </div>
 
@@ -332,11 +472,37 @@ export default function OrdersPage() {
 
         {/* Orders List */}
         <div className="space-y-4 sm:space-y-6">
-          {filteredOrders.length > 0 ? (
+          {isLoading ? (
+            <div className="text-center py-12">
+              <Loader2 className="w-12 h-12 animate-spin text-blue-600 mx-auto mb-4" />
+              <p className="text-gray-600">Loading your orders...</p>
+            </div>
+          ) : filteredOrders.length > 0 ? (
             filteredOrders.map((order) => (
-              <OrderCard key={order.id} order={order} />
+              <OrderCard 
+                key={order.id || order._id} 
+                order={order} 
+                onRefresh={handleRefresh}
+              />
             ))
-          ) : null}
+          ) : orders.length === 0 ? (
+            <div className="text-center py-12 bg-white rounded-2xl border border-gray-100">
+              <Package className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">No Orders Yet</h3>
+              <p className="text-gray-600 mb-6">You haven't placed any orders yet.</p>
+              <Link href="/products">
+                <button className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-6 rounded-xl transition-colors">
+                  Start Shopping
+                </button>
+              </Link>
+            </div>
+          ) : (
+            <div className="text-center py-12 bg-white rounded-2xl border border-gray-100">
+              <Search className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">No Orders Found</h3>
+              <p className="text-gray-600">Try adjusting your search or filter criteria.</p>
+            </div>
+          )}
         </div>
       </div>
     </div>

@@ -54,6 +54,21 @@ export async function fetchOrders(params?: {
   return res.json()
 }
 
+export async function fetchUserOrders(email: string, params?: {
+  page?: number
+  limit?: number
+  status?: string
+}) {
+  const searchParams = new URLSearchParams()
+  if (params?.page) searchParams.set('page', params.page.toString())
+  if (params?.limit) searchParams.set('limit', params.limit.toString())
+  if (params?.status) searchParams.set('status', params.status)
+  
+  const res = await fetch(`http://localhost:5000/api/orders/user/${encodeURIComponent(email)}?${searchParams}`)
+  if (!res.ok) throw new Error("Failed to fetch user orders")
+  return res.json()
+}
+
 export async function updateOrderStatus(orderId: string, status: string) {
   const res = await fetch(`http://localhost:5000/api/orders/${orderId}`, {
     method: "PUT",
@@ -104,6 +119,13 @@ export async function fetchAdminEarnings(adminEmail: string, params?: {
   
   const res = await fetch(`http://localhost:5000/api/admin/earnings?${searchParams}`)
   if (!res.ok) throw new Error("Failed to fetch earnings")
+  return res.json()
+}
+
+// Product management
+export async function fetchProduct(productId: string) {
+  const res = await fetch(`http://localhost:5000/api/products/${productId}`)
+  if (!res.ok) throw new Error("Failed to fetch product")
   return res.json()
 }
 

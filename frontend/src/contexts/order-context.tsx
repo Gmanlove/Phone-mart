@@ -2,8 +2,10 @@
 
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react"
 import { CartItem } from "./cart-context"
+import { useAuth } from "./auth-context"
 
 export interface Order {
+  _id?: string
   id: string
   date: string
   items: CartItem[]
@@ -23,6 +25,8 @@ interface OrderContextType {
     phone: string
     address: string
   }) => Promise<void>
+  fetchUserOrders: () => Promise<void>
+  refreshOrders: () => Promise<void>
   isLoading: boolean
 }
 
@@ -31,7 +35,9 @@ const OrderContext = createContext<OrderContextType | null>(null)
 export function OrderProvider({ children }: { children: ReactNode }) {
   const [orders, setOrders] = useState<Order[]>([])
   const [isLoading, setIsLoading] = useState(false)
+  const { user, isAuthenticated } = useAuth()
 
+  // Load orders from localStorage initially
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const data = localStorage.getItem('orders')
@@ -39,11 +45,65 @@ export function OrderProvider({ children }: { children: ReactNode }) {
     }
   }, [])
 
+  // Fetch user orders from backend when user is authenticated
+  useEffect(() => {
+    if (isAuthenticated && user?.email) {
+      fetchUserOrders()
+    }
+  }, [isAuthenticated, user?.email])
+
+  // Auto-refresh orders every 30 seconds when authenticated
+  useEffect(() => {
+    if (!isAuthenticated || !user?.email) return
+
+    const interval = setInterval(() => {
+      fetchUserOrders()
+    }, 30000) // Refresh every 30 seconds
+
+    return () => clearInterval(interval)
+  }, [isAuthenticated, user?.email])
+
+  // Store orders in localStorage
   useEffect(() => {
     if (typeof window !== 'undefined') {
       localStorage.setItem('orders', JSON.stringify(orders))
     }
   }, [orders])
+
+  const fetchUserOrders = async () => {
+    if (!user?.email) return
+    
+    try {
+      setIsLoading(true)
+      const response = await fetch(`http://localhost:5000/api/orders/user/${encodeURIComponent(user.email)}`)
+      
+      if (response.ok) {
+        const data = await response.json()
+        const backendOrders = data.orders.map((order: any) => ({
+          ...order,
+          id: order._id,
+          date: order.date || order.createdAt
+        }))
+        
+        // Only update if there are actual changes
+        const ordersChanged = JSON.stringify(backendOrders) !== JSON.stringify(orders)
+        if (ordersChanged) {
+          setOrders(backendOrders)
+          console.log('Orders updated from backend:', backendOrders)
+        }
+      } else {
+        console.error('Failed to fetch user orders')
+      }
+    } catch (error) {
+      console.error('Error fetching user orders:', error)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const refreshOrders = async () => {
+    await fetchUserOrders()
+  }
 
   const placeOrder = async (items: CartItem[], total: number, customerInfo?: {
     name: string
@@ -111,8 +171,9 @@ export function OrderProvider({ children }: { children: ReactNode }) {
       
       // Create local order for immediate UI update
       const newOrder: Order = {
+        _id: result.order._id,
         id: result.order._id || 'PH-' + Date.now(),
-        date: new Date().toISOString().slice(0, 10),
+        date: result.order.date || new Date().toISOString(),
         items,
         total,
         status: result.order.status || 'processing',
@@ -124,13 +185,19 @@ export function OrderProvider({ children }: { children: ReactNode }) {
       
       setOrders([newOrder, ...orders])
       console.log('Order placed successfully:', result.order)
+      
+      // Refresh orders from backend to get updated data
+      setTimeout(() => {
+        fetchUserOrders()
+      }, 1000)
+      
     } catch (error) {
       console.error('Error placing order:', error)
       
       // Fallback to local storage if backend fails
       const fallbackOrder: Order = {
         id: 'PH-' + Date.now(),
-        date: new Date().toISOString().slice(0, 10),
+        date: new Date().toISOString(),
         items,
         total,
         status: 'processing',
@@ -149,7 +216,7 @@ export function OrderProvider({ children }: { children: ReactNode }) {
   }
 
   return (
-    <OrderContext.Provider value={{ orders, placeOrder, isLoading }}>
+    <OrderContext.Provider value={{ orders, placeOrder, fetchUserOrders, refreshOrders, isLoading }}>
       {children}
     </OrderContext.Provider>
   )
