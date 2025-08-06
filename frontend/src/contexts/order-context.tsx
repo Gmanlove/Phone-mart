@@ -79,7 +79,7 @@ export function OrderProvider({ children }: { children: ReactNode }) {
       
       if (response.ok) {
         const data = await response.json()
-        const backendOrders = data.orders.map((order: any) => ({
+        const backendOrders = data.orders.map((order: { _id: string; date?: string; createdAt?: string; [key: string]: unknown }) => ({
           ...order,
           id: order._id,
           date: order.date || order.createdAt

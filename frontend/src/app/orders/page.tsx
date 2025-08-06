@@ -489,7 +489,7 @@ export default function OrdersPage() {
             <div className="text-center py-12 bg-white rounded-2xl border border-gray-100">
               <Package className="w-16 h-16 text-gray-300 mx-auto mb-4" />
               <h3 className="text-xl font-semibold text-gray-900 mb-2">No Orders Yet</h3>
-              <p className="text-gray-600 mb-6">You haven't placed any orders yet.</p>
+              <p className="text-gray-600 mb-6">You haven&apos;t placed any orders yet.</p>
               <Link href="/products">
                 <button className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-6 rounded-xl transition-colors">
                   Start Shopping

@@ -254,7 +254,7 @@ export default function CheckoutPage() {
           customer_name: `${billingInfo.firstName} ${billingInfo.lastName}`,
           phone: billingInfo.phone,
         },
-        callback: function(response) {
+        callback: function(response: { reference: string; status: string; [key: string]: unknown }) {
           console.log("Payment successful:", response)
           
           // Handle successful payment - use regular function, not async
