@@ -142,18 +142,18 @@ export default function Header() {
       </div>
 
       {/* Main Header */}
-      <header className="sticky top-0 z-50 bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm border-b border-gray-200 dark:border-gray-700 shadow-sm">
+      <header className="sticky top-0 z-50 bg-gray-50/95 dark:bg-slate-800/95 backdrop-blur-sm border-b border-gray-200 dark:border-gray-600 shadow-sm">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
-          <div className="flex items-center justify-between h-16 lg:h-20">
+          <div className="flex items-center justify-between h-20 lg:h-24">
             {/* Logo */}
             <Link href="/" className="flex items-center space-x-3 group">
-              <div className="relative">
+              <div className="relative p-2 bg-black dark:bg-gray-900 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 group-hover:shadow-md transition-all duration-200">
                 <Image
                   src="/smart.png"
                   alt="Smart Communications Logo"
                   width={40}
                   height={40}
-                  className="w-8 h-8 lg:w-10 lg:h-10 object-contain group-hover:scale-110 transition-transform duration-200"
+                  className="w-10 h-10 lg:w-12 lg:h-12 object-contain group-hover:scale-110 transition-transform duration-200"
                 />
               </div>
               <div className="hidden sm:block">

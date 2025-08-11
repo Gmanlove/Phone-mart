@@ -11,25 +11,25 @@ import { Button } from "@/components/ui/button"
 
 export default function Footer() {
   return (
-    <footer className="bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700 relative">
+    <footer className="bg-gray-50 dark:bg-slate-800 border-t border-gray-200 dark:border-gray-600 relative">
       {/* Main Footer Content */}
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
-        <div className="py-16 md:py-20">
+        <div className="py-20 md:py-24">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
             {/* Company Info */}
             <div className="lg:col-span-1 space-y-6">
               {/* Brand */}
               <div className="space-y-4">
                 <div className="flex items-center space-x-3">
-                    <div className="relative">
+                  <div className="relative p-3 bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 hover:shadow-md transition-all duration-200">
                     <Image
                       src="/smart.png"
                       alt="Smart Communications Logo"
                       width={80}
                       height={80}
-                      className="w-16 h-16 lg:w-20 lg:h-20 object-contain"
+                      className="w-20 h-20 lg:w-24 lg:w-24 object-contain"
                     />
-                    </div>
+                  </div>
                   <div>
                     <span className="text-2xl lg:text-3xl font-bold text-blue-600 dark:text-blue-400">
                       Smart Communications

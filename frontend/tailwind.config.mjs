@@ -4,6 +4,7 @@ export default {
     "./src/**/*.{js,ts,jsx,tsx}",
     "./public/**/*.{svg,png,jpg,jpeg,ico}"
   ],
+  darkMode: 'class', // This is the key change
   theme: {
     extend: {
       colors: {

@@ -1,44 +1,8 @@
 @import "tailwindcss";
 
-/* Smart Communications Design System - Blue & White Theme */
+/* Smart Communications Design System - Permanent Dark Theme */
 :root {
-  /* Light Mode - Blue & White Color Scheme */
-  --background: #ffffff;
-  --foreground: #1e293b;
-  --primary: #2563eb;
-  --primary-light: #3b82f6;
-  --primary-dark: #1d4ed8;
-  --primary-hover: #1e40af;
-  --secondary: #64748b;
-  --secondary-light: #94a3b8;
-  --accent: #0ea5e9;
-  --accent-light: #38bdf8;
-  --success: #10b981;
-  --warning: #f59e0b;
-  --error: #ef4444;
-  --border: #e2e8f0;
-  --border-light: #f1f5f9;
-  --muted: #f8fafc;
-  --card: #ffffff;
-  --card-hover: #f8fafc;
-  --shadow: 0 4px 6px -1px rgb(37 99 235 / 0.1), 0 2px 4px -2px rgb(37 99 235 / 0.05);
-  --shadow-lg: 0 25px 50px -12px rgb(37 99 235 / 0.2);
-  --shadow-xl: 0 35px 60px -12px rgb(37 99 235 / 0.25);
-  
-  /* Enhanced Gradients */
-  --gradient-primary: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
-  --gradient-accent: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
-  --gradient-light: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-  --gradient-hero: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 50%, #93c5fd 100%);
-  
-  /* WiFi Icon Colors */
-  --wifi-primary: #2563eb;
-  --wifi-secondary: #3b82f6;
-  --wifi-gradient: linear-gradient(45deg, #2563eb, #3b82f6);
-}
-
-/* Dark Mode Theme */
-[data-theme="dark"] {
+  /* Dark Mode - Permanent Theme */
   --background: #0f172a;
   --foreground: #f1f5f9;
   --primary: #3b82f6;
@@ -73,40 +37,25 @@
   --wifi-gradient: linear-gradient(45deg, #3b82f6, #60a5fa);
 }
 
-/* Auto Dark Mode (respects system preference) */
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme]) {
-    --background: #0f172a;
-    --foreground: #f1f5f9;
-    --primary: #3b82f6;
-    --primary-light: #60a5fa;
-    --primary-dark: #2563eb;
-    --primary-hover: #3b82f6;
-    --secondary: #94a3b8;
-    --secondary-light: #cbd5e1;
-    --accent: #38bdf8;
-    --accent-light: #7dd3fc;
-    --success: #34d399;
-    --warning: #fbbf24;
-    --error: #f87171;
-    --border: #334155;
-    --border-light: #475569;
-    --muted: #1e293b;
-    --card: #1e293b;
-    --card-hover: #334155;
-    --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.3), 0 2px 4px -2px rgb(0 0 0 / 0.2);
-    --shadow-lg: 0 25px 50px -12px rgb(0 0 0 / 0.4);
-    --shadow-xl: 0 35px 60px -12px rgb(0 0 0 / 0.5);
-    
-    --gradient-primary: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-    --gradient-accent: linear-gradient(135deg, #38bdf8 0%, #0ea5e9 100%);
-    --gradient-light: linear-gradient(135deg, #1e293b 0%, #334155 100%);
-    --gradient-hero: linear-gradient(135deg, #1e293b 0%, #334155 50%, #475569 100%);
-    
-    --wifi-primary: #3b82f6;
-    --wifi-secondary: #60a5fa;
-    --wifi-gradient: linear-gradient(45deg, #3b82f6, #60a5fa);
-  }
+/* Remove the old light mode and system preference detection */
+/* This ensures permanent dark mode */
+
+/* Force dark mode styles regardless of media queries */
+html.dark {
+  color-scheme: dark;
+}
+
+/* Override any system preference media queries */
+html.dark * {
+  --background: #0f172a !important;
+  --foreground: #f1f5f9 !important;
+  /* Copy all your dark theme variables with !important */
+}
+
+/* Apply dark mode specific overrides */
+html.dark body {
+  background-color: var(--background) !important;
+  color: var(--foreground) !important;
 }
 
 /* Enhanced Animations */
@@ -188,16 +137,22 @@
     opacity: 1;
   }
   50% {
-    opacity: 0.8;
+    opacity: 0.7;
   }
 }
 
-@keyframes shimmer {
+@keyframes blob {
   0% {
-    background-position: -200px 0;
+    transform: translate(0px, 0px) scale(1);
+  }
+  33% {
+    transform: translate(30px, -50px) scale(1.1);
+  }
+  66% {
+    transform: translate(-20px, 20px) scale(0.9);
   }
   100% {
-    background-position: calc(200px + 100%) 0;
+    transform: translate(0px, 0px) scale(1);
   }
 }
 
@@ -206,30 +161,7 @@
     transform: translateY(0);
   }
   50% {
-    transform: translateY(-10px);
-  }
-}
-
-@keyframes wifi-pulse {
-  0%, 100% {
-    opacity: 1;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 0.8;
-    transform: scale(1.05);
-  }
-}
-
-/* Carousel/Slider Animations */
-@keyframes slideInFromLeft {
-  from {
-    opacity: 0;
-    transform: translateX(-100%);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
+    transform: translateY(-8px);
   }
 }
 
@@ -281,30 +213,24 @@
   background: linear-gradient(
     90deg,
     var(--muted) 0px,
-    var(--border) 40px,
-    var(--muted) 80px
+    var(--border) 50px,
+    var(--muted) 100px
   );
-  background-size: 200px;
+  background-size: 200px 100%;
   animation: shimmer 1.5s infinite linear;
+}
+
+.animate-blob {
+  animation: blob 7s infinite;
 }
 
 .animate-bounce-gentle {
   animation: bounce-gentle 2s ease-in-out infinite;
 }
 
-.animate-wifi-pulse {
-  animation: wifi-pulse 2s ease-in-out infinite;
-}
-
-.animate-slide-in-left {
-  animation: slideInFromLeft 0.5s ease-out forwards;
-}
-
-.animate-slide-out-left {
-  animation: slideOutToLeft 0.5s ease-out forwards;
-}
-
-/* Stagger Animation Delays */
+/* Animation delay classes */
+.animation-delay-2000 { animation-delay: 2s; }
+.animation-delay-4000 { animation-delay: 4s; }
 .animate-delay-100 { animation-delay: 0.1s; }
 .animate-delay-200 { animation-delay: 0.2s; }
 .animate-delay-300 { animation-delay: 0.3s; }
@@ -417,7 +343,7 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--muted);
+  background: var(--background);
 }
 
 ::-webkit-scrollbar-thumb {
@@ -429,17 +355,12 @@ body {
   background: var(--primary);
 }
 
-/* Dark mode scrollbar */
-[data-theme="dark"] ::-webkit-scrollbar-track {
-  background: var(--background);
-}
-
 /* Focus Styles */
 .focus-ring {
   @apply focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2;
 }
 
-[data-theme="dark"] .focus-ring {
+.focus-ring {
   @apply focus:ring-offset-slate-900;
 }
 
@@ -496,21 +417,7 @@ body {
   background-clip: text;
 }
 
-/* Dark Mode Toggle Styles */
-.dark-mode-toggle {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 50px;
-  padding: 8px;
-  transition: all 0.3s ease;
-  cursor: pointer;
-}
-
-.dark-mode-toggle:hover {
-  background: var(--card-hover);
-  border-color: var(--primary);
-  transform: scale(1.05);
-}
+/* Dark Mode Toggle Styles - Removed since we're permanent dark */
 
 /* Professional Section Styles */
 .section-professional {
@@ -599,7 +506,7 @@ body {
 /* High Contrast Mode Support */
 @media (prefers-contrast: high) {
   :root {
-    --border: #000000;
-    --primary: #0000ff;
+    --border: #ffffff;
+    --primary: #60a5fa;
   }
 }

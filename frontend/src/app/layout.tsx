@@ -9,6 +9,14 @@ import { OrderProvider } from "@/contexts/order-context"
 import { AuthProvider } from "@/contexts/auth-context"
 import { Toaster } from "@/components/ui/toaster"
 
+// Force dark mode with a simple script
+const forceDarkMode = `
+  (function() {
+    document.documentElement.classList.add('dark');
+    localStorage.setItem('theme', 'dark');
+  })()
+`
+
 const inter = Inter({ 
   subsets: ["latin"],
   display: 'swap',
@@ -29,8 +37,11 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${inter.variable} ${poppins.variable} scroll-smooth`}> 
-      <body className="min-h-screen flex flex-col bg-white font-sans antialiased">
+    <html lang="en" className={`${inter.variable} ${poppins.variable} scroll-smooth dark`}>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: forceDarkMode }} />
+      </head>
+      <body className="min-h-screen flex flex-col bg-gray-900 text-white font-sans antialiased">
         <AuthProvider>
           <OrderProvider>
             <CartProvider>
