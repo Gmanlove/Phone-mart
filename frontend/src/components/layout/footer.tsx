@@ -21,7 +21,7 @@ export default function Footer() {
               {/* Brand */}
               <div className="space-y-4">
                 <div className="flex items-center space-x-3">
-                  <div className="relative p-3 bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 hover:shadow-md transition-all duration-200">
+                  <div className="relative p-3 bg-black dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 hover:shadow-md transition-all duration-200">
                     <Image
                       src="/smart.png"
                       alt="Smart Communications Logo"
