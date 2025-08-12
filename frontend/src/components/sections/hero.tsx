@@ -6,239 +6,30 @@ import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
 import { ArrowRight, Star, Shield, Truck, Zap, Award, Clock, Heart, ShoppingCart, Eye, ChevronLeft, ChevronRight } from "lucide-react"
 import { useState, useEffect } from "react"
+import { fetchProducts } from "@/lib/api"
 
-// Expanded product data for multiple rows
-const smartphoneDeals = [
-  {
-    id: "1",
-    name: "iPhone 15 Pro Max",
-    brand: "Apple",
-    price: 1250000,
-    originalPrice: 1350000,
-    image: "/img1.jpeg",
-    rating: 4.9,
-    reviews: 234,
-    discount: 7
-  },
-  {
-    id: "2", 
-    name: "Samsung Galaxy S24 Ultra",
-    brand: "Samsung",
-    price: 980000,
-    originalPrice: 1100000,
-    image: "/img2.jpeg",
-    rating: 4.8,
-    reviews: 189,
-    discount: 11
-  },
-  {
-    id: "3",
-    name: "Google Pixel 8 Pro",
-    brand: "Google",
-    price: 750000,
-    originalPrice: 850000,
-    image: "/img3.jpeg",
-    rating: 4.7,
-    reviews: 156,
-    discount: 12
-  },
-  {
-    id: "4",
-    name: "OnePlus 12",
-    brand: "OnePlus",
-    price: 650000,
-    originalPrice: 750000,
-    image: "/img4.jpeg",
-    rating: 4.6,
-    reviews: 98,
-    discount: 13
-  },
-  {
-    id: "5",
-    name: "Xiaomi 14 Ultra",
-    brand: "Xiaomi",
-    price: 580000,
-    originalPrice: 680000,
-    image: "/img5.jpeg",
-    rating: 4.5,
-    reviews: 87,
-    discount: 15
-  }
-]
-
-const accessoriesDeals = [
-  {
-    id: "6",
-    name: "AirPods Pro 2nd Gen",
-    brand: "Apple",
-    price: 180000,
-    originalPrice: 220000,
-    image: "/img1.jpeg",
-    rating: 4.8,
-    reviews: 145,
-    discount: 18
-  },
-  {
-    id: "7",
-    name: "Samsung Galaxy Buds Pro",
-    brand: "Samsung",
-    price: 120000,
-    originalPrice: 150000,
-    image: "/img2.jpeg",
-    rating: 4.6,
-    reviews: 98,
-    discount: 20
-  },
-  {
-    id: "8",
-    name: "iPhone 15 Pro Case",
-    brand: "Apple",
-    price: 25000,
-    originalPrice: 35000,
-    image: "/img3.jpeg",
-    rating: 4.4,
-    reviews: 76,
-    discount: 29
-  },
-  {
-    id: "9",
-    name: "Wireless Charging Pad",
-    brand: "Generic",
-    price: 15000,
-    originalPrice: 22000,
-    image: "/img4.jpeg",
-    rating: 4.3,
-    reviews: 54,
-    discount: 32
-  },
-  {
-    id: "10",
-    name: "Phone Stand & Holder",
-    brand: "Generic",
-    price: 8000,
-    originalPrice: 12000,
-    image: "/img5.jpeg",
-    rating: 4.2,
-    reviews: 43,
-    discount: 33
-  }
-]
-
-const smartwatchDeals = [
-  {
-    id: "11",
-    name: "Apple Watch Series 9",
-    brand: "Apple",
-    price: 320000,
-    originalPrice: 380000,
-    image: "/img1.jpeg",
-    rating: 4.9,
-    reviews: 187,
-    discount: 16
-  },
-  {
-    id: "12",
-    name: "Samsung Galaxy Watch 6",
-    brand: "Samsung",
-    price: 250000,
-    originalPrice: 300000,
-    image: "/img2.jpeg",
-    rating: 4.7,
-    reviews: 134,
-    discount: 17
-  },
-  {
-    id: "13",
-    name: "Fitbit Versa 4",
-    brand: "Fitbit",
-    price: 180000,
-    originalPrice: 220000,
-    image: "/img3.jpeg",
-    rating: 4.5,
-    reviews: 89,
-    discount: 18
-  },
-  {
-    id: "14",
-    name: "Garmin Venu 3",
-    brand: "Garmin",
-    price: 290000,
-    originalPrice: 350000,
-    image: "/img4.jpeg",
-    rating: 4.6,
-    reviews: 67,
-    discount: 17
-  },
-  {
-    id: "15",
-    name: "Amazfit GTR 4",
-    brand: "Amazfit",
-    price: 120000,
-    originalPrice: 160000,
-    image: "/img5.jpeg",
-    rating: 4.4,
-    reviews: 78,
-    discount: 25
-  }
-]
-
-const tabletDeals = [
-  {
-    id: "16",
-    name: "iPad Pro 12.9-inch",
-    brand: "Apple",
-    price: 950000,
-    originalPrice: 1100000,
-    image: "/img1.jpeg",
-    rating: 4.9,
-    reviews: 156,
-    discount: 14
-  },
-  {
-    id: "17",
-    name: "Samsung Galaxy Tab S9",
-    brand: "Samsung",
-    price: 680000,
-    originalPrice: 800000,
-    image: "/img2.jpeg",
-    rating: 4.7,
-    reviews: 123,
-    discount: 15
-  },
-  {
-    id: "18",
-    name: "iPad Air 5th Gen",
-    brand: "Apple",
-    price: 520000,
-    originalPrice: 620000,
-    image: "/img3.jpeg",
-    rating: 4.8,
-    reviews: 98,
-    discount: 16
-  },
-  {
-    id: "19",
-    name: "Microsoft Surface Pro 9",
-    brand: "Microsoft",
-    price: 780000,
-    originalPrice: 920000,
-    image: "/img4.jpeg",
-    rating: 4.6,
-    reviews: 87,
-    discount: 15
-  },
-  {
-    id: "20",
-    name: "Lenovo Tab P12 Pro",
-    brand: "Lenovo",
-    price: 450000,
-    originalPrice: 550000,
-    image: "/img5.jpeg",
-    rating: 4.4,
-    reviews: 65,
-    discount: 18
-  }
-]
+// Product interface based on backend model
+interface Product {
+  _id: string
+  name: string
+  brand: string
+  price: number
+  originalPrice?: number
+  description: string
+  category: string
+  subcategory: string
+  specs: Record<string, any>
+  images: string[]
+  stock: number
+  isHotDeal: boolean
+  hotDealDiscount: number
+  isActive: boolean
+  tags: string[]
+  rating: number
+  reviewCount: number
+  createdAt: string
+  updatedAt: string
+}
 
 const formatPrice = (price: number) => {
   return new Intl.NumberFormat('en-NG', {
@@ -246,6 +37,11 @@ const formatPrice = (price: number) => {
     currency: 'NGN',
     minimumFractionDigits: 0
   }).format(price)
+}
+
+const calculateDiscount = (price: number, originalPrice?: number) => {
+  if (!originalPrice || originalPrice <= price) return 0
+  return Math.round(((originalPrice - price) / originalPrice) * 100)
 }
 
 function HeroBanner() {
@@ -303,17 +99,37 @@ function HeroBanner() {
   )
 }
 
-function ProductCard({ product }: { product: typeof smartphoneDeals[0] }) {
+function ProductCard({ product }: { product: Product }) {
   const [isWishlisted, setIsWishlisted] = useState(false)
+  
+  const discount = product.originalPrice 
+    ? calculateDiscount(product.price, product.originalPrice)
+    : product.hotDealDiscount || 0
+
+  const productImage = product.images && product.images.length > 0 
+    ? product.images[0] 
+    : '/img1.jpeg'
 
   return (
     <Card className="group relative overflow-hidden bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:shadow-lg transition-all duration-300 h-full">
       <CardContent className="p-3 md:p-4">
-        {/* Discount badge */}
-        <div className="absolute top-2 left-2 z-10">
-          <Badge className="bg-blue-500 hover:bg-blue-600 text-white text-xs font-bold">
-            {product.discount}% OFF
-          </Badge>
+        {/* Badges */}
+        <div className="absolute top-2 left-2 z-10 flex flex-col gap-1">
+          {product.isHotDeal && (
+            <Badge className="bg-red-500 hover:bg-red-600 text-white text-xs font-bold">
+              Hot Deal
+            </Badge>
+          )}
+          {discount > 0 && (
+            <Badge className="bg-blue-500 hover:bg-blue-600 text-white text-xs font-bold">
+              {discount}% OFF
+            </Badge>
+          )}
+          {product.stock < 5 && product.stock > 0 && (
+            <Badge className="bg-orange-500 hover:bg-orange-600 text-white text-xs font-bold">
+              Low Stock
+            </Badge>
+          )}
         </div>
 
         {/* Wishlist button */}
@@ -327,15 +143,32 @@ function ProductCard({ product }: { product: typeof smartphoneDeals[0] }) {
         {/* Product image */}
         <div className="relative aspect-square mb-2 md:mb-3 overflow-hidden rounded-lg bg-gray-100 dark:bg-gray-700">
           <Image
-            src={product.image}
+            src={productImage.startsWith('http') ? productImage : `/uploads/${productImage}`}
             alt={product.name}
             fill
             className="object-cover transition-transform duration-300 group-hover:scale-105"
+            onError={(e) => {
+              const target = e.target as HTMLImageElement
+              target.src = '/img1.jpeg'
+            }}
           />
+          
+          {/* Stock status overlay */}
+          {product.stock === 0 && (
+            <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+              <span className="text-white font-semibold text-sm">Out of Stock</span>
+            </div>
+          )}
         </div>
 
         {/* Product info */}
         <div className="space-y-1 md:space-y-2">
+          <div className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400">
+            <span>{product.brand}</span>
+            <span>•</span>
+            <span>{product.category}</span>
+          </div>
+          
           <h3 className="font-semibold text-xs md:text-sm text-gray-900 dark:text-white line-clamp-2 leading-tight">
             {product.name}
           </h3>
@@ -347,14 +180,16 @@ function ProductCard({ product }: { product: typeof smartphoneDeals[0] }) {
                 {formatPrice(product.price)}
               </span>
             </div>
-            <div className="flex flex-col md:flex-row md:items-center gap-1">
-              <span className="text-xs text-gray-500 line-through">
-                {formatPrice(product.originalPrice!)}
-              </span>
-              <span className="text-xs text-green-600 dark:text-green-400 font-medium">
-                Save {formatPrice(product.originalPrice! - product.price)}
-              </span>
-            </div>
+            {product.originalPrice && product.originalPrice > product.price && (
+              <div className="flex flex-col md:flex-row md:items-center gap-1">
+                <span className="text-xs text-gray-500 line-through">
+                  {formatPrice(product.originalPrice)}
+                </span>
+                <span className="text-xs text-green-600 dark:text-green-400 font-medium">
+                  Save {formatPrice(product.originalPrice - product.price)}
+                </span>
+              </div>
+            )}
           </div>
 
           {/* Rating */}
@@ -372,8 +207,21 @@ function ProductCard({ product }: { product: typeof smartphoneDeals[0] }) {
               ))}
             </div>
             <span className="text-xs text-gray-600 dark:text-gray-400">
-              ({product.reviews})
+              ({product.reviewCount || 0})
             </span>
+          </div>
+
+          {/* Stock indicator */}
+          <div className="text-xs">
+            {product.stock > 0 ? (
+              <span className="text-green-600 dark:text-green-400">
+                In Stock ({product.stock} available)
+              </span>
+            ) : (
+              <span className="text-red-600 dark:text-red-400">
+                Out of Stock
+              </span>
+            )}
           </div>
         </div>
       </CardContent>
@@ -381,11 +229,58 @@ function ProductCard({ product }: { product: typeof smartphoneDeals[0] }) {
   )
 }
 
-function ProductSection({ title, products, viewAllHref }: { 
-  title: string, 
-  products: typeof smartphoneDeals, 
-  viewAllHref: string 
+function ProductSection({ 
+  title, 
+  products, 
+  viewAllHref, 
+  isLoading 
+}: { 
+  title: string
+  products: Product[]
+  viewAllHref: string
+  isLoading: boolean
 }) {
+  if (isLoading) {
+    return (
+      <div className="mb-8 md:mb-12">
+        <div className="flex items-center justify-between mb-4 md:mb-6">
+          <h2 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white">
+            {title}
+          </h2>
+          <div className="h-6 w-20 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
+        </div>
+        
+        {/* Loading skeleton */}
+        <div className="grid grid-cols-2 md:hidden gap-3">
+          {[...Array(4)].map((_, i) => (
+            <div key={i} className="bg-gray-200 dark:bg-gray-700 rounded-lg h-64 animate-pulse"></div>
+          ))}
+        </div>
+        
+        <div className="hidden md:flex gap-4 overflow-x-auto pb-4">
+          {[...Array(5)].map((_, i) => (
+            <div key={i} className="min-w-[250px] bg-gray-200 dark:bg-gray-700 rounded-lg h-80 animate-pulse flex-shrink-0"></div>
+          ))}
+        </div>
+      </div>
+    )
+  }
+
+  if (products.length === 0) {
+    return (
+      <div className="mb-8 md:mb-12">
+        <div className="flex items-center justify-between mb-4 md:mb-6">
+          <h2 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white">
+            {title}
+          </h2>
+        </div>
+        <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+          No products available in this category
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="mb-8 md:mb-12">
       <div className="flex items-center justify-between mb-4 md:mb-6">
@@ -405,14 +300,14 @@ function ProductSection({ title, products, viewAllHref }: {
       {/* Mobile: 2x2 grid, Desktop: horizontal scroll */}
       <div className="grid grid-cols-2 md:hidden gap-3">
         {products.slice(0, 4).map((product) => (
-          <ProductCard key={product.id} product={product} />
+          <ProductCard key={product._id} product={product} />
         ))}
       </div>
 
       {/* Desktop: horizontal scroll */}
       <div className="hidden md:flex gap-4 overflow-x-auto pb-4 scrollbar-hide">
         {products.map((product) => (
-          <div key={product.id} className="min-w-[250px] flex-shrink-0">
+          <div key={product._id} className="min-w-[250px] flex-shrink-0">
             <ProductCard product={product} />
           </div>
         ))}
@@ -422,35 +317,84 @@ function ProductSection({ title, products, viewAllHref }: {
 }
 
 export default function Hero() {
+  const [allProducts, setAllProducts] = useState<Product[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    const loadProducts = async () => {
+      try {
+        setIsLoading(true)
+        const products = await fetchProducts()
+        setAllProducts(products || [])
+      } catch (err) {
+        console.error('Error fetching products:', err)
+        setError('Failed to load products')
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    loadProducts()
+  }, [])
+
+  // Categorize products
+  const smartphoneProducts = allProducts.filter(product => 
+    ['iPhone', 'Samsung', 'Android/Pixel'].includes(product.category)
+  ).slice(0, 8)
+
+  const accessoryProducts = allProducts.filter(product => 
+    product.category === 'Accessories'
+  ).slice(0, 8)
+
+  const hotDeals = allProducts.filter(product => 
+    product.isHotDeal || product.category === 'Hot Deals'
+  ).slice(0, 8)
+
+  const laptopProducts = allProducts.filter(product => 
+    product.category === 'Laptops'
+  ).slice(0, 8)
+
   return (
     <section className="bg-gray-50 dark:bg-gray-900 py-8">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         {/* Hero Banner */}
         <HeroBanner />
 
+        {/* Error handling */}
+        {error && (
+          <div className="mb-8 p-4 bg-red-100 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-lg text-red-700 dark:text-red-300 text-center">
+            {error}
+          </div>
+        )}
+
         {/* Products Sections */}
         <ProductSection 
           title="Grab the best deal on Smartphones"
-          products={smartphoneDeals}
+          products={smartphoneProducts}
           viewAllHref="/products?category=smartphones"
+          isLoading={isLoading}
         />
 
         <ProductSection 
-          title="Best Deals on Phone Accessories"
-          products={accessoriesDeals}
+          title="Hot Deals & Special Offers"
+          products={hotDeals}
+          viewAllHref="/deals"
+          isLoading={isLoading}
+        />
+
+        <ProductSection 
+          title="Phone Accessories & More"
+          products={accessoryProducts}
           viewAllHref="/accessories"
+          isLoading={isLoading}
         />
 
         <ProductSection 
-          title="Smart Watches & Wearables"
-          products={smartwatchDeals}
-          viewAllHref="/products?category=smartwatches"
-        />
-
-        <ProductSection 
-          title="Tablets & Computing"
-          products={tabletDeals}
-          viewAllHref="/products?category=tablets"
+          title="Laptops & Computing"
+          products={laptopProducts}
+          viewAllHref="/products?category=laptops"
+          isLoading={isLoading}
         />
 
         {/* Trust indicators */}
