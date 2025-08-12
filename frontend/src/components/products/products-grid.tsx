@@ -70,10 +70,15 @@ export default function ProductsGrid() {
     // Helper function to construct proper Cloudinary URL or validate existing URL
     const getValidImageUrl = (images: string[] | undefined): string => {
         if (!images || images.length === 0) {
-            return ""; // Return empty string for no image
+            return "/img1.jpeg"; // Return fallback image instead of empty string
         }
         
         const firstImage = images[0];
+        
+        // If the image is empty or null, return fallback
+        if (!firstImage || firstImage.trim() === "") {
+            return "/img1.jpeg";
+        }
         
         // If it's already a full URL, return it
         if (firstImage.startsWith("http")) {

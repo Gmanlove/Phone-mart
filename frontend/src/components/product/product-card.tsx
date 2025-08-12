@@ -91,16 +91,41 @@ export default function ProductCard({ product, layout = 'grid' }: ProductCardPro
             {/* Image Section */}
             <div className="relative md:w-1/3 h-64 md:h-auto overflow-hidden">
               <div className="absolute inset-0 bg-gradient-to-br from-gray-100 to-gray-200 animate-pulse"></div>
-              {product.image && (
-                <CldImage
-                  src={extractCloudinaryPublicId(product.image) ?? ""}
+              {product.image && product.image !== "" ? (
+                product.image.startsWith('http') ? (
+                  // Regular image for external URLs
+                  <img
+                    src={product.image}
+                    alt={product.name}
+                    className={`absolute inset-0 w-full h-full object-cover transition-all duration-500 group-hover:scale-110 ${
+                      imageLoaded ? 'opacity-100' : 'opacity-0'
+                    }`}
+                    onLoad={() => setImageLoaded(true)}
+                    onError={(e) => {
+                      const target = e.target as HTMLImageElement;
+                      target.src = '/img1.jpeg';
+                    }}
+                  />
+                ) : (
+                  // Cloudinary image for public IDs
+                  <CldImage
+                    src={extractCloudinaryPublicId(product.image) || "img1"}
+                    alt={product.name}
+                    fill
+                    className={`object-cover transition-all duration-500 group-hover:scale-110 ${
+                      imageLoaded ? 'opacity-100' : 'opacity-0'
+                    }`}
+                    onLoad={() => setImageLoaded(true)}
+                    sizes="(max-width: 768px) 100vw, 33vw"
+                  />
+                )
+              ) : (
+                // Fallback image
+                <img
+                  src="/img1.jpeg"
                   alt={product.name}
-                  fill
-                  className={`object-cover transition-all duration-500 group-hover:scale-110 ${
-                    imageLoaded ? 'opacity-100' : 'opacity-0'
-                  }`}
+                  className="absolute inset-0 w-full h-full object-cover"
                   onLoad={() => setImageLoaded(true)}
-                  sizes="(max-width: 768px) 100vw, 33vw"
                 />
               )}
               
@@ -218,16 +243,41 @@ export default function ProductCard({ product, layout = 'grid' }: ProductCardPro
             <div className="absolute inset-0 animate-shimmer bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200"></div>
           )}
           
-          {product.image && (
-            <CldImage
-              src={extractCloudinaryPublicId(product.image) ?? ""}
+          {product.image && product.image !== "" ? (
+            product.image.startsWith('http') ? (
+              // Regular image for external URLs
+              <img
+                src={product.image}
+                alt={product.name}
+                className={`absolute inset-0 w-full h-full object-cover transition-all duration-700 group-hover:scale-110 ${
+                  imageLoaded ? 'opacity-100' : 'opacity-0'
+                }`}
+                onLoad={() => setImageLoaded(true)}
+                onError={(e) => {
+                  const target = e.target as HTMLImageElement;
+                  target.src = '/img1.jpeg';
+                }}
+              />
+            ) : (
+              // Cloudinary image for public IDs
+              <CldImage
+                src={extractCloudinaryPublicId(product.image) || "img1"}
+                alt={product.name}
+                fill
+                className={`object-cover transition-all duration-700 group-hover:scale-110 ${
+                  imageLoaded ? 'opacity-100' : 'opacity-0'
+                }`}
+                onLoad={() => setImageLoaded(true)}
+                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+              />
+            )
+          ) : (
+            // Fallback image
+            <img
+              src="/img1.jpeg"
               alt={product.name}
-              fill
-              className={`object-cover transition-all duration-700 group-hover:scale-110 ${
-                imageLoaded ? 'opacity-100' : 'opacity-0'
-              }`}
+              className="absolute inset-0 w-full h-full object-cover"
               onLoad={() => setImageLoaded(true)}
-              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
             />
           )}
 

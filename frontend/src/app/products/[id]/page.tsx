@@ -25,8 +25,9 @@ interface Product {
 
 async function fetchProduct(id: string): Promise<Product | null> {
   try {
+    const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "https://smartcoms.onrender.com"
     console.log(`Fetching product with ID: ${id}`)
-    const res = await fetch(`https://smartcoms.onrender.com/api/products/${id}`, {
+    const res = await fetch(`${API_BASE_URL}/api/products/${id}`, {
       cache: 'no-store'
     })
     

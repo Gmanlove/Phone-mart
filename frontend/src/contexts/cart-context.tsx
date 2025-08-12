@@ -1,6 +1,6 @@
 "use client"
 
-import { createContext, useContext, useReducer, useEffect, type ReactNode } from "react"
+import { createContext, useContext, useReducer, useEffect, useState, type ReactNode } from "react"
 
 export interface CartItem {
   id: string
@@ -20,6 +20,7 @@ type CartAction =
   | { type: "REMOVE_ITEM"; payload: string }
   | { type: "UPDATE_QUANTITY"; payload: { id: string; quantity: number } }
   | { type: "CLEAR_CART" }
+  | { type: "LOAD_CART"; payload: CartState }
 
 const CartContext = createContext<{
   state: CartState
@@ -76,29 +77,42 @@ function cartReducer(state: CartState, action: CartAction): CartState {
     }
     case "CLEAR_CART":
       return { items: [], total: 0 }
+    case "LOAD_CART":
+      return action.payload
     default:
       return state
   }
 }
 
 export function CartProvider({ children }: { children: ReactNode }) {
-  // Load cart from localStorage
-  const getInitialCart = () => {
-    if (typeof window === 'undefined') return { items: [], total: 0 }
-    try {
-      const data = localStorage.getItem('cart')
-      if (data) return JSON.parse(data)
-    } catch {}
-    return { items: [], total: 0 }
-  }
-  const [state, dispatch] = useReducer(cartReducer, getInitialCart())
+  const [mounted, setMounted] = useState(false)
+  
+  // Initialize with empty cart and load from localStorage after mounting
+  const [state, dispatch] = useReducer(cartReducer, { items: [], total: 0 })
 
-  // Save cart to localStorage on change
+  // Load cart from localStorage after mounting
   useEffect(() => {
     if (typeof window !== 'undefined') {
+      try {
+        const data = localStorage.getItem('cart')
+        if (data) {
+          const savedCart = JSON.parse(data)
+          // Replace the entire state with saved cart
+          dispatch({ type: "LOAD_CART", payload: savedCart })
+        }
+      } catch (error) {
+        console.error('Failed to load cart from localStorage:', error)
+      }
+      setMounted(true)
+    }
+  }, [])
+
+  // Save cart to localStorage on change (only after mounting)
+  useEffect(() => {
+    if (mounted && typeof window !== 'undefined') {
       localStorage.setItem('cart', JSON.stringify(state))
     }
-  }, [state])
+  }, [state, mounted])
 
   const addItem = (item: Omit<CartItem, "quantity">) => {
     dispatch({ type: "ADD_ITEM", payload: item })

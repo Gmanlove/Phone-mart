@@ -58,6 +58,7 @@ export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState("")
   const [isProfileOpen, setIsProfileOpen] = useState(false)
+  const [mounted, setMounted] = useState(false)
 
   // Safe access to cart items with fallback
   const cartItems = cartContext?.items || []
@@ -65,6 +66,11 @@ export default function Header() {
   const logout = authContext?.logout
 
   const cartItemsCount = cartItems.reduce((total, item) => total + item.quantity, 0)
+
+  // Prevent hydration mismatch by only showing cart count after mounting
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   const handleSearch = useCallback((e: React.FormEvent) => {
     e.preventDefault()
@@ -253,7 +259,7 @@ export default function Header() {
               <Link href="/cart" className="relative">
                 <Button variant="ghost" className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400">
                   <ShoppingCart className="h-5 w-5" />
-                  {cartItemsCount > 0 && (
+                  {mounted && cartItemsCount > 0 && (
                     <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-bold">
                       {cartItemsCount}
                     </span>
@@ -267,7 +273,7 @@ export default function Header() {
               <Link href="/cart" className="relative">
                 <Button variant="ghost" size="icon" className="text-gray-700 dark:text-gray-300">
                   <ShoppingCart className="h-5 w-5" />
-                  {cartItemsCount > 0 && (
+                  {mounted && cartItemsCount > 0 && (
                     <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-bold">
                       {cartItemsCount}
                     </span>

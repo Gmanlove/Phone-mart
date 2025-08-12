@@ -1,36 +1,226 @@
 "use client"
 
 import Link from "next/link"
+import Image from "next/image"
 import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
+import { Card, CardContent } from "@/components/ui/card"
 import { useEffect, useState } from "react"
 import { fetchProducts } from "@/lib/api"
+import { Star, Heart, ShoppingCart, Eye, ArrowRight, Zap, TrendingUp } from "lucide-react"
 
 interface Product {
     _id: string
     name: string
     brand: string
     price: number
+    originalPrice?: number
     description: string
     category: string
+    subcategory: string
+    specs: Record<string, string | number | boolean>
     images: string[]
-    createdAt?: string
-    updatedAt?: string
+    stock: number
+    isHotDeal: boolean
+    hotDealDiscount: number
+    isActive: boolean
+    tags: string[]
+    rating: number
+    reviewCount: number
+    createdAt: string
+    updatedAt: string
+}
+
+const formatPrice = (price: number) => {
+  return new Intl.NumberFormat('en-NG', {
+    style: 'currency',
+    currency: 'NGN',
+    minimumFractionDigits: 0
+  }).format(price)
+}
+
+const calculateDiscount = (price: number, originalPrice?: number) => {
+  if (!originalPrice || originalPrice <= price) return 0
+  return Math.round(((originalPrice - price) / originalPrice) * 100)
+}
+
+function ProductCard({ product }: { product: Product }) {
+  const [isWishlisted, setIsWishlisted] = useState(false)
+  
+  const discount = product.originalPrice 
+    ? calculateDiscount(product.price, product.originalPrice)
+    : product.hotDealDiscount || 0
+
+  // Safe image handling with fallback
+  const productImage = product.images && product.images.length > 0 && product.images[0]
+    ? product.images[0] 
+    : '/img1.jpeg'
+
+  // Determine final image source
+  const imageSrc = productImage.startsWith('http') ? productImage : `/uploads/${productImage}`
+
+  return (
+    <Card className="group relative overflow-hidden bg-slate-800/60 backdrop-blur-sm border-slate-700 hover:border-blue-500/50 hover:shadow-xl transition-all duration-300 h-full">
+      <CardContent className="p-4">
+        {/* Badges */}
+        <div className="absolute top-3 left-3 z-10 flex flex-col gap-1">
+          {product.isHotDeal && (
+            <Badge className="bg-gradient-to-r from-red-500 to-orange-500 text-white text-xs font-bold border-0">
+              <Zap className="w-3 h-3 mr-1" />
+              Hot Deal
+            </Badge>
+          )}
+          {discount > 0 && (
+            <Badge className="bg-gradient-to-r from-green-500 to-emerald-500 text-white text-xs font-bold border-0">
+              {discount}% OFF
+            </Badge>
+          )}
+          {product.stock < 5 && product.stock > 0 && (
+            <Badge className="bg-gradient-to-r from-orange-500 to-yellow-500 text-white text-xs font-bold border-0">
+              Low Stock
+            </Badge>
+          )}
+        </div>
+
+        {/* Wishlist button */}
+        <button
+          onClick={() => setIsWishlisted(!isWishlisted)}
+          className="absolute top-3 right-3 z-10 p-2 rounded-full bg-slate-700/80 backdrop-blur-sm hover:bg-slate-600 transition-colors"
+        >
+          <Heart className={`h-4 w-4 ${isWishlisted ? 'fill-red-500 text-red-500' : 'text-slate-400'}`} />
+        </button>
+
+        {/* Product image */}
+        <div className="relative aspect-square mb-4 overflow-hidden rounded-xl bg-slate-700">
+          {imageSrc.startsWith('http') ? (
+            <img
+              src={imageSrc}
+              alt={product.name}
+              className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+              onError={(e) => {
+                const target = e.target as HTMLImageElement
+                target.src = '/img1.jpeg'
+              }}
+            />
+          ) : (
+            <Image
+              src={imageSrc}
+              alt={product.name}
+              fill
+              className="object-cover transition-transform duration-300 group-hover:scale-105"
+              onError={(e) => {
+                const target = e.target as HTMLImageElement
+                target.src = '/img1.jpeg'
+              }}
+            />
+          )}
+          
+          {/* Stock status overlay */}
+          {product.stock === 0 && (
+            <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
+              <span className="text-white font-semibold">Out of Stock</span>
+            </div>
+          )}
+
+          {/* Quick actions overlay */}
+          <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-2">
+            <Button className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 h-8 text-sm">
+              <Eye className="w-4 h-4 mr-1" />
+              View
+            </Button>
+            <Button className="bg-green-600 hover:bg-green-700 text-white px-3 py-2 h-8 text-sm">
+              <ShoppingCart className="w-4 h-4 mr-1" />
+              Add to Cart
+            </Button>
+          </div>
+        </div>
+
+        {/* Product info */}
+        <div className="space-y-3">
+          <div className="flex items-center gap-2 text-xs text-slate-400">
+            <span>{product.brand}</span>
+            <span>•</span>
+            <span>{product.category}</span>
+          </div>
+          
+          <h3 className="font-semibold text-white line-clamp-2 leading-tight group-hover:text-blue-400 transition-colors">
+            {product.name}
+          </h3>
+
+          {/* Price */}
+          <div className="space-y-1">
+            <div className="flex items-center gap-2">
+              <span className="font-bold text-white text-lg">
+                {formatPrice(product.price)}
+              </span>
+            </div>
+            {product.originalPrice && product.originalPrice > product.price && (
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-slate-400 line-through">
+                  {formatPrice(product.originalPrice)}
+                </span>
+                <span className="text-sm text-green-400 font-medium">
+                  Save {formatPrice(product.originalPrice - product.price)}
+                </span>
+              </div>
+            )}
+          </div>
+
+          {/* Rating */}
+          <div className="flex items-center gap-2">
+            <div className="flex">
+              {[...Array(5)].map((_, i) => (
+                <Star
+                  key={i}
+                  className={`h-3 w-3 ${
+                    i < Math.floor(product.rating)
+                      ? 'fill-yellow-400 text-yellow-400'
+                      : 'text-slate-600'
+                  }`}
+                />
+              ))}
+            </div>
+            <span className="text-xs text-slate-400">
+              ({product.reviewCount || 0})
+            </span>
+          </div>
+
+          {/* Stock indicator */}
+          <div className="text-xs">
+            {product.stock > 0 ? (
+              <span className="text-green-400">
+                In Stock ({product.stock} available)
+              </span>
+            ) : (
+              <span className="text-red-400">
+                Out of Stock
+              </span>
+            )}
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  )
 }
 
 export default function FeaturedProducts() {
     const [products, setProducts] = useState<Product[]>([])
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState("")
-    const [currentSlide, setCurrentSlide] = useState(0)
 
-    // Fetch ALL products from API
+    // Fetch products from API
     useEffect(() => {
         setLoading(true)
         fetchProducts()
             .then((data: Product[]) => {
                 console.log("Fetched products for featured section:", data)
-                // Show ALL products instead of limiting to 8
-                setProducts(data)
+                // Show featured/hot deal products first, then others
+                const sortedProducts = data.sort((a, b) => {
+                  if (a.isHotDeal && !b.isHotDeal) return -1
+                  if (!a.isHotDeal && b.isHotDeal) return 1
+                  return b.rating - a.rating
+                })
+                setProducts(sortedProducts.slice(0, 8)) // Show top 8 products
                 setLoading(false)
             })
             .catch((err) => {
@@ -40,241 +230,94 @@ export default function FeaturedProducts() {
             })
     }, [])
 
-    // Calculate how many products to show per slide based on screen size
-    const getProductsPerSlide = () => {
-        if (typeof window !== 'undefined') {
-            if (window.innerWidth >= 1280) return 4 // xl screens
-            if (window.innerWidth >= 1024) return 3 // lg screens
-            if (window.innerWidth >= 640) return 2  // sm screens
-            return 1 // mobile
-        }
-        return 4
-    }
-
-    const [productsPerSlide, setProductsPerSlide] = useState(4)
-
-    useEffect(() => {
-        const handleResize = () => {
-            setProductsPerSlide(getProductsPerSlide())
-        }
-
-        handleResize()
-        window.addEventListener('resize', handleResize)
-        return () => window.removeEventListener('resize', handleResize)
-    }, [])
-
-    const totalSlides = Math.ceil(products.length / productsPerSlide)
-
-    // Continuous auto-play functionality - slower sliding (6 seconds interval)
-    useEffect(() => {
-        if (totalSlides <= 1) return
-
-        const interval = setInterval(() => {
-            setCurrentSlide((prev) => (prev + 1) % totalSlides)
-        }, 6000) // Increased from 4000ms to 6000ms for slower sliding
-
-        return () => clearInterval(interval)
-    }, [totalSlides])
-
-    // Helper function to construct proper Cloudinary URL
-    const getValidImageUrl = (images: string[] | undefined): string => {
-        if (!images || images.length === 0) {
-            return ""; // Fallback placeholder
-        }
-        
-        const firstImage = images[0];
-        
-        // If it's already a full URL, return it
-        if (firstImage.startsWith("http")) {
-            return firstImage;
-        }
-        
-        // If it's a Cloudinary public ID (partial path), construct full URL
-        if (firstImage.includes("phone-mart-products/")) {
-            return `https://res.cloudinary.com/dn7zah8um/image/upload/${firstImage}.png`;
-        }
-        
-        // If it looks like a public ID without the folder prefix, add it
-        if (!firstImage.includes("phone-mart-products/") && !firstImage.startsWith("http")) {
-            return `https://res.cloudinary.com/dn7zah8um/image/upload/phone-mart-products/${firstImage}.png`;
-        }
-        
-        return firstImage;
-    }
-
-    // Loading state
     if (loading) {
         return (
-            <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
-                <div className="text-center mb-12">
-                    <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 text-gray-900 dark:text-white">
-                        Featured Products
-                    </h2>
-                    <p className="text-gray-600 dark:text-gray-300 text-lg max-w-2xl mx-auto">
-                        Discover our complete collection of premium mobile devices
-                    </p>
+            <section className="py-20 bg-slate-800/30">
+                <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="text-center mb-16">
+                        <div className="w-64 h-8 bg-slate-700 rounded-lg mx-auto mb-4 animate-pulse"></div>
+                        <div className="w-96 h-6 bg-slate-700 rounded-lg mx-auto animate-pulse"></div>
+                    </div>
+                    
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                        {[...Array(8)].map((_, i) => (
+                            <div key={i} className="bg-slate-800 rounded-xl p-4">
+                                <div className="aspect-square bg-slate-700 rounded-lg mb-4 animate-pulse"></div>
+                                <div className="space-y-2">
+                                    <div className="h-4 bg-slate-700 rounded animate-pulse"></div>
+                                    <div className="h-4 bg-slate-700 rounded w-3/4 animate-pulse"></div>
+                                    <div className="h-6 bg-slate-700 rounded w-1/2 animate-pulse"></div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                    {Array.from({ length: 8 }).map((_, i) => (
-                        <div key={i} className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg">
-                            <div className="animate-shimmer h-48 bg-gray-200 dark:bg-gray-700 rounded-xl mb-4"></div>
-                            <div className="animate-shimmer h-4 bg-gray-200 dark:bg-gray-700 rounded mb-2"></div>
-                            <div className="animate-shimmer h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mb-4"></div>
-                            <div className="animate-shimmer h-8 bg-gray-200 dark:bg-gray-700 rounded"></div>
-                        </div>
-                    ))}
-                </div>
-            </div>
+            </section>
         )
     }
 
-    // Error state
     if (error) {
         return (
-            <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
-                <div className="text-center py-12">
-                    <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 text-gray-900 dark:text-white">
-                        Featured Products
-                    </h2>
-                    <p className="text-red-500 dark:text-red-400 text-lg">
-                        {error}
-                    </p>
+            <section className="py-20 bg-slate-800/30">
+                <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="text-center">
+                        <div className="text-6xl mb-4">😕</div>
+                        <h2 className="text-2xl font-bold text-white mb-2">
+                            Oops! Something went wrong
+                        </h2>
+                        <p className="text-slate-400 mb-6">{error}</p>
+                        <Button 
+                            onClick={() => window.location.reload()}
+                            className="bg-blue-600 hover:bg-blue-700"
+                        >
+                            Try Again
+                        </Button>
+                    </div>
                 </div>
-            </div>
-        )
-    }
-
-    // No products state
-    if (products.length === 0) {
-        return (
-            <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
-                <div className="text-center py-12">
-                    <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 text-gray-900 dark:text-white">
-                        Featured Products
-                    </h2>
-                    <p className="text-gray-600 dark:text-gray-300 text-lg">
-                        No products available at the moment.
-                    </p>
-                </div>
-            </div>
+            </section>
         )
     }
 
     return (
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
-            {/* Header */}
-            <div className="text-center mb-12">
-                <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 text-gray-900 dark:text-white">
-                    Featured Products
-                </h2>
-                <p className="text-gray-600 dark:text-gray-300 text-lg max-w-2xl mx-auto">
-                    Discover our complete collection of premium mobile devices
-                </p>
-            </div>
-
-            {/* Carousel Container */}
-            <div className="relative">
-                {/* Products Grid - Auto-sliding without manual controls */}
-                <div className="overflow-hidden rounded-2xl">
-                    <div 
-                        className="flex transition-transform duration-1000 ease-in-out"
-                        style={{ 
-                            transform: `translateX(-${currentSlide * 100}%)`,
-                            width: `${totalSlides * 100}%`
-                        }}
-                    >
-                        {Array.from({ length: totalSlides }).map((_, slideIndex) => {
-                            const slideProducts = products.slice(
-                                slideIndex * productsPerSlide,
-                                (slideIndex + 1) * productsPerSlide
-                            )
-                            
-                            return (
-                                <div 
-                                    key={slideIndex}
-                                    className="flex gap-6"
-                                    style={{ width: `${100 / totalSlides}%` }}
-                                >
-                                    {slideProducts.map((product) => (
-                                        <div 
-                                            key={product._id} 
-                                            className="flex-1"
-                                            style={{ minWidth: `${100 / productsPerSlide}%` }}
-                                        >
-                                            <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 h-full">
-                                                <div className="aspect-square bg-gray-100 dark:bg-gray-700 rounded-xl mb-4 overflow-hidden">
-                                                    <img
-                                                        src={getValidImageUrl(product.images)}
-                                                        alt={product.name}
-                                                        className="w-full h-full object-cover"
-                                                        onError={(e) => {
-                                                            e.currentTarget.src = ""
-                                                        }}
-                                                    />
-                                                </div>
-                                                <div className="space-y-3">
-                                                    <div>
-                                                        <p className="text-sm text-gray-500 dark:text-gray-400">{product.brand}</p>
-                                                        <h3 className="font-semibold text-lg text-gray-900 dark:text-white line-clamp-2">
-                                                            {product.name}
-                                                        </h3>
-                                                    </div>
-                                                    <div className="flex items-center space-x-2">
-                                                        <span className="text-2xl font-bold text-blue-600 dark:text-blue-400">
-                                                            ₦{product.price.toLocaleString()}
-                                                        </span>
-                                                    </div>
-                                                    <p className="text-sm text-gray-600 dark:text-gray-300 line-clamp-2">
-                                                        {product.description}
-                                                    </p>
-                                                    <Button 
-                                                        className="w-full bg-blue-600 hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-700 text-white"
-                                                        asChild
-                                                    >
-                                                        <Link href={`/products/${product._id}`}>
-                                                            View Details
-                                                        </Link>
-                                                    </Button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            )
-                        })}
+        <section className="py-20 bg-slate-800/30">
+            <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="text-center mb-16 animate-fade-in-up">
+                    <div className="inline-flex items-center bg-blue-600/20 text-blue-400 px-4 py-2 rounded-full text-sm font-semibold mb-6">
+                        <TrendingUp className="w-4 h-4 mr-2" />
+                        Featured Products
                     </div>
+                    <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
+                        Trending <span className="text-gradient">Smartphones</span>
+                    </h2>
+                    <p className="text-xl text-slate-300 max-w-3xl mx-auto leading-relaxed">
+                        Discover the latest and most popular smartphones, handpicked for their innovation, 
+                        performance, and value for money.
+                    </p>
                 </div>
 
-                {/* Slide Indicators - Show current progress */}
-                {totalSlides > 1 && (
-                    <div className="flex justify-center space-x-2 mt-8">
-                        {Array.from({ length: totalSlides }).map((_, index) => (
-                            <div
-                                key={index}
-                                className={`w-3 h-3 rounded-full transition-all duration-300 ${
-                                    index === currentSlide 
-                                        ? 'bg-blue-600 dark:bg-blue-400' 
-                                        : 'bg-gray-300 dark:bg-gray-600'
-                                }`}
-                            />
-                        ))}
-                    </div>
-                )}
-            </div>
+                {/* Products Grid */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+                    {products.map((product, index) => (
+                        <div 
+                            key={product._id} 
+                            className="animate-fade-in-up"
+                            style={{ animationDelay: `${index * 100}ms` }}
+                        >
+                            <ProductCard product={product} />
+                        </div>
+                    ))}
+                </div>
 
-            {/* View All Button */}
-            <div className="text-center mt-12">
-                <Button 
-                    asChild 
-                    variant="outline" 
-                    size="lg"
-                    className="border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white dark:border-blue-400 dark:text-blue-400 dark:hover:bg-blue-600 dark:hover:text-white"
-                >
+                {/* View All Button */}
+                <div className="text-center animate-fade-in-up" style={{ animationDelay: '800ms' }}>
                     <Link href="/products">
-                        View All Products
+                        <Button className="btn-primary px-8 py-4 text-lg">
+                            View All Products
+                            <ArrowRight className="w-5 h-5 ml-2" />
+                        </Button>
                     </Link>
-                </Button>
+                </div>
             </div>
-        </div>
+        </section>
     )
 }

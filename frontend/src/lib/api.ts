@@ -1,12 +1,14 @@
 // Simple API utility for fetching data from backend
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "https://smartcoms.onrender.com"
+
 export async function fetchProducts() {
-  const res = await fetch("https://smartcoms.onrender.com/api/products")
+  const res = await fetch(`${API_BASE_URL}/api/products`)
   if (!res.ok) throw new Error("Failed to fetch products")
   return res.json()
 }
 
 export async function fetchCategories() {
-  const res = await fetch("https://smartcoms.onrender.com/api/categories")
+  const res = await fetch(`${API_BASE_URL}/api/categories`)
   if (!res.ok) throw new Error("Failed to fetch categories")
   return res.json()
 }
@@ -26,7 +28,7 @@ export async function createOrder(orderData: {
   }>
   total: number
 }) {
-  const res = await fetch("https://smartcoms.onrender.com/api/orders", {
+  const res = await fetch(`${API_BASE_URL}/api/orders`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -49,7 +51,7 @@ export async function fetchOrders(params?: {
   if (params?.status) searchParams.set('status', params.status)
   if (params?.search) searchParams.set('search', params.search)
   
-  const res = await fetch(`https://smartcoms.onrender.com/api/orders?${searchParams}`)
+  const res = await fetch(`${API_BASE_URL}/api/orders?${searchParams}`)
   if (!res.ok) throw new Error("Failed to fetch orders")
   return res.json()
 }
@@ -64,13 +66,13 @@ export async function fetchUserOrders(email: string, params?: {
   if (params?.limit) searchParams.set('limit', params.limit.toString())
   if (params?.status) searchParams.set('status', params.status)
   
-  const res = await fetch(`https://smartcoms.onrender.com/api/orders/user/${encodeURIComponent(email)}?${searchParams}`)
+  const res = await fetch(`${API_BASE_URL}/api/orders/user/${encodeURIComponent(email)}?${searchParams}`)
   if (!res.ok) throw new Error("Failed to fetch user orders")
   return res.json()
 }
 
 export async function updateOrderStatus(orderId: string, status: string) {
-  const res = await fetch(`https://smartcoms.onrender.com/api/orders/${orderId}`, {
+  const res = await fetch(`${API_BASE_URL}/api/orders/${orderId}`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
@@ -83,7 +85,7 @@ export async function updateOrderStatus(orderId: string, status: string) {
 
 // Admin functions
 export async function fetchAdminDashboardStats(adminEmail: string) {
-  const res = await fetch(`https://smartcoms.onrender.com/api/admin/dashboard-stats?adminEmail=${adminEmail}`)
+  const res = await fetch(`${API_BASE_URL}/api/admin/dashboard-stats?adminEmail=${adminEmail}`)
   if (!res.ok) throw new Error("Failed to fetch dashboard stats")
   return res.json()
 }
@@ -101,7 +103,7 @@ export async function fetchAdminOrders(adminEmail: string, params?: {
   if (params?.status) searchParams.set('status', params.status)
   if (params?.search) searchParams.set('search', params.search)
   
-  const res = await fetch(`https://smartcoms.onrender.com/api/admin/orders?${searchParams}`)
+  const res = await fetch(`${API_BASE_URL}/api/admin/orders?${searchParams}`)
   if (!res.ok) throw new Error("Failed to fetch admin orders")
   return res.json()
 }
@@ -117,14 +119,14 @@ export async function fetchAdminEarnings(adminEmail: string, params?: {
   if (params?.endDate) searchParams.set('endDate', params.endDate)
   if (params?.groupBy) searchParams.set('groupBy', params.groupBy)
   
-  const res = await fetch(`https://smartcoms.onrender.com/api/admin/earnings?${searchParams}`)
+  const res = await fetch(`${API_BASE_URL}/api/admin/earnings?${searchParams}`)
   if (!res.ok) throw new Error("Failed to fetch earnings")
   return res.json()
 }
 
 // Product management
 export async function fetchProduct(productId: string) {
-  const res = await fetch(`https://smartcoms.onrender.com/api/products/${productId}`)
+  const res = await fetch(`${API_BASE_URL}/api/products/${productId}`)
   if (!res.ok) throw new Error("Failed to fetch product")
   return res.json()
 }

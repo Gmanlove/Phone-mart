@@ -46,53 +46,97 @@ const calculateDiscount = (price: number, originalPrice?: number) => {
 
 function HeroBanner() {
   return (
-    <div className="relative bg-gradient-to-r from-blue-600 via-blue-700 to-blue-800 rounded-2xl overflow-hidden mb-8">
-      <div className="absolute inset-0 bg-[url('/smart.png')] bg-cover bg-center opacity-10"></div>
-      <div className="relative grid grid-cols-1 lg:grid-cols-2 gap-8 items-center p-8 lg:p-12 min-h-[400px]">
+    <div className="relative bg-gradient-to-br from-blue-600 via-purple-600 to-cyan-600 rounded-3xl overflow-hidden mb-12 min-h-[500px] md:min-h-[600px]">
+      {/* Animated Background Elements */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute top-10 left-10 w-32 h-32 bg-white/10 rounded-full animate-float"></div>
+        <div className="absolute top-40 right-20 w-20 h-20 bg-white/10 rounded-full animate-float animation-delay-2000"></div>
+        <div className="absolute bottom-20 left-1/3 w-24 h-24 bg-white/10 rounded-full animate-float animation-delay-4000"></div>
+      </div>
+
+      <div className="relative grid grid-cols-1 lg:grid-cols-2 gap-8 items-center p-8 lg:p-16 min-h-[500px] md:min-h-[600px]">
         {/* Left content */}
-        <div className="text-white space-y-6">
-          <div className="space-y-2">
-            <p className="text-blue-100 font-medium">Best Deal Online on smartphones</p>
-            <h1 className="text-4xl lg:text-5xl font-bold leading-tight">
+        <div className="text-white space-y-8 z-10">
+          <div className="space-y-4">
+            <div className="inline-flex items-center bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full text-sm font-semibold">
+              <Star className="w-4 h-4 mr-2" />
+              Nigeria&apos;s #1 Phone Store
+            </div>
+            <h1 className="text-5xl lg:text-6xl xl:text-7xl font-bold leading-tight">
               SMART PHONES.<br />
-              <span className="text-blue-200">SMART DEALS.</span>
+              <span className="text-yellow-300 animate-pulse-soft">SMART DEALS.</span>
             </h1>
-            <p className="text-xl text-blue-100">UP to 80% OFF</p>
+            <p className="text-2xl text-blue-100 font-medium">UP to 80% OFF</p>
+            <p className="text-lg text-blue-100 max-w-lg">
+              Discover the latest smartphones with unbeatable prices, authentic products, 
+              and professional service you can trust.
+            </p>
           </div>
           
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-3">
             {[...Array(5)].map((_, i) => (
-              <div key={i} className={`h-2 w-2 rounded-full ${i === 0 ? 'bg-white' : 'bg-blue-300'}`}></div>
+              <div key={i} className={`h-3 w-3 rounded-full transition-all duration-500 ${i === 0 ? 'bg-white scale-125' : 'bg-white/40 hover:bg-white/60'}`}></div>
             ))}
           </div>
 
-          <Button asChild size="lg" className="bg-white text-blue-600 hover:bg-blue-50 font-semibold px-8">
-            <Link href="/products">Shop Now</Link>
-          </Button>
+          <div className="flex flex-col sm:flex-row gap-4">
+            <Button asChild size="lg" className="bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white font-bold px-8 py-4 text-lg shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
+              <Link href="/products">
+                <ShoppingCart className="w-5 h-5 mr-2" />
+                Shop Now
+              </Link>
+            </Button>
+            <Button asChild variant="outline" size="lg" className="border-2 border-white text-white hover:bg-white hover:text-blue-600 font-semibold px-8 py-4 text-lg backdrop-blur-sm transition-all duration-300">
+              <Link href="/deals">
+                <Zap className="w-5 h-5 mr-2" />
+                View Deals
+              </Link>
+            </Button>
+          </div>
+
+          {/* Trust indicators */}
+          <div className="grid grid-cols-3 gap-4 pt-8 border-t border-white/20">
+            <div className="text-center">
+              <div className="text-2xl font-bold">10K+</div>
+              <div className="text-sm text-blue-100">Happy Customers</div>
+            </div>
+            <div className="text-center">
+              <div className="text-2xl font-bold">500+</div>
+              <div className="text-sm text-blue-100">Products</div>
+            </div>
+            <div className="text-center">
+              <div className="text-2xl font-bold">24/7</div>
+              <div className="text-sm text-blue-100">Support</div>
+            </div>
+          </div>
         </div>
 
         {/* Right content - Hero image */}
         <div className="relative flex justify-center lg:justify-end">
-          <div className="relative">
+          <div className="relative group">
+            <div className="absolute inset-0 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-3xl blur-xl opacity-50 group-hover:opacity-75 transition-opacity duration-300"></div>
             <Image
               src="/img1.jpeg"
               alt="Featured Smartphone"
-              width={300}
-              height={400}
-              className="rounded-2xl shadow-2xl transform rotate-3 hover:rotate-0 transition-transform duration-300"
+              width={400}
+              height={500}
+              className="relative rounded-3xl shadow-2xl transform rotate-3 hover:rotate-0 transition-transform duration-500 hover:scale-105"
             />
-            <div className="absolute -top-4 -right-4 bg-red-500 text-white px-3 py-1 rounded-full text-sm font-bold animate-pulse">
+            <div className="absolute -top-6 -right-6 bg-gradient-to-r from-red-500 to-orange-500 text-white px-6 py-3 rounded-2xl text-lg font-bold animate-bounce-gentle shadow-lg">
               50% OFF
+            </div>
+            <div className="absolute -bottom-6 -left-6 bg-gradient-to-r from-green-500 to-emerald-500 text-white px-6 py-3 rounded-2xl text-sm font-bold shadow-lg">
+              ✓ Genuine Products
             </div>
           </div>
         </div>
       </div>
       
       {/* Navigation arrows */}
-      <button className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white/20 hover:bg-white/30 rounded-full p-2 text-white transition-colors">
+      <button className="absolute left-6 top-1/2 transform -translate-y-1/2 bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-full p-3 text-white transition-all duration-300 hover:scale-110">
         <ChevronLeft className="h-6 w-6" />
       </button>
-      <button className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white/20 hover:bg-white/30 rounded-full p-2 text-white transition-colors">
+      <button className="absolute right-6 top-1/2 transform -translate-y-1/2 bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-full p-3 text-white transition-all duration-300 hover:scale-110">
         <ChevronRight className="h-6 w-6" />
       </button>
     </div>

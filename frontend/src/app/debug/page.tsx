@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from "react"
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "https://smartcoms.onrender.com"
+
 export default function DebugPage() {
   type Product = { _id: string; name: string }
   const [products, setProducts] = useState<Product[]>([])
@@ -10,14 +12,24 @@ export default function DebugPage() {
   const [testResult, setTestResult] = useState<TestResult>(null)
 
   useEffect(() => {
+    console.log('Debug: Using API_BASE_URL =', API_BASE_URL)
+    
     // Fetch all products to see their IDs
-    fetch("https://smartcoms.onrender.com/api/products")
-      .then(res => res.json())
+    fetch(`${API_BASE_URL}/api/products`)
+      .then(res => {
+        console.log('Debug: Response status =', res.status)
+        if (!res.ok) throw new Error(`HTTP ${res.status}`)
+        return res.json()
+      })
       .then(data => {
         console.log("All products:", data)
+        console.log("Product count:", data.length)
         setProducts(data)
       })
-      .catch(err => console.error("Error:", err))
+      .catch(err => {
+        console.error("Error:", err)
+        setProducts([])
+      })
   }, [])
 
   const testProductFetch = async () => {
@@ -25,7 +37,7 @@ export default function DebugPage() {
     
     try {
       console.log(`Testing fetch for ID: ${testId}`)
-      const response = await fetch(`https://smartcoms.onrender.com/api/products/${testId}`)
+      const response = await fetch(`${API_BASE_URL}/api/products/${testId}`)
       console.log(`Response status: ${response.status}`)
       
       if (response.ok) {
@@ -97,7 +109,7 @@ export default function DebugPage() {
         <h2 className="text-xl font-semibold mb-4">Debug API</h2>
         <button
           onClick={() => {
-            fetch("https://smartcoms.onrender.com/api/debug/products")
+            fetch(`${API_BASE_URL}/api/debug/products`)
               .then(res => res.json())
               .then(data => console.log("Debug API response:", data))
               .catch(err => console.error("Debug API error:", err))

@@ -73,7 +73,8 @@ export default function RegisterPage() {
     }
     
     try {
-      const res = await fetch("https://smartcoms.onrender.com/api/auth/signup", {
+      const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "https://smartcoms.onrender.com"
+      const res = await fetch(`${API_BASE_URL}/api/auth/signup`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
