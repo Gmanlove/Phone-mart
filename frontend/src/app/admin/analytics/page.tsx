@@ -1,24 +1,22 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { 
-  BarChart3, 
   TrendingUp, 
-  TrendingDown, 
   DollarSign, 
-  Package, 
-  ShoppingCart, 
-  Users, 
-  Calendar,
+  Users as UsersIcon, 
+  Package,
+  ShoppingBag,
+  BarChart3,
+  LineChart,
   Download,
   RefreshCw,
-  Filter,
+  ShoppingCart,
+  Users,
+  Star,
   ArrowUpRight,
   ArrowDownRight,
-  Star,
-  Eye,
-  Heart,
-  Zap
+  TrendingDown
 } from "lucide-react"
 
 interface AnalyticsData {
@@ -89,7 +87,7 @@ export default function AdminAnalytics() {
     }
   }
 
-  const fetchEarningsData = async () => {
+  const fetchEarningsData = useCallback(async () => {
     setEarningsLoading(true)
     try {
       const endDate = new Date()
@@ -112,7 +110,7 @@ export default function AdminAnalytics() {
     } finally {
       setEarningsLoading(false)
     }
-  }
+  }, [dateRange, groupBy])
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-NG', {

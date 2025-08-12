@@ -2,146 +2,155 @@
 
 import Link from "next/link"
 import Image from "next/image"
-import { Phone, Mail, MapPin, Facebook, Twitter, Instagram, Youtube } from "lucide-react"
+import { Phone, Mail, MapPin, Clock } from "lucide-react"
 
 export default function Footer() {
   return (
-    <footer className="bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Main Footer */}
-        <div className="py-12 lg:py-16">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+    <footer className="bg-gray-50 dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          
+          {/* Company Info */}
+          <div className="space-y-4">
+            <div className="flex items-center space-x-3">
+              <Image
+                src="/smart.png"
+                alt="Smart Communications"
+                width={40}
+                height={40}
+                className="w-10 h-10 object-contain"
+              />
+              <span className="text-xl font-bold text-gray-900 dark:text-white">
+                Smart Communications
+              </span>
+            </div>
+            <p className="text-gray-600 dark:text-gray-300 mb-6 max-w-md">
+              Nigeria&apos;s trusted mobile store. Authentic smartphones, competitive prices, and exceptional service since 2020.
+            </p>
             
-            {/* Company Info */}
-            <div className="lg:col-span-2">
-              <div className="flex items-center space-x-3 mb-4">
-                <Image
-                  src="/smart.png"
-                  alt="Smart Communications"
-                  width={40}
-                  height={40}
-                  className="w-10 h-10 object-contain"
-                />
-                <span className="text-xl font-bold text-gray-900 dark:text-white">
-                  Smart Communications
-                </span>
+            {/* Contact Info */}
+            <div className="space-y-3">
+              <div className="flex items-center space-x-3 text-sm text-gray-600 dark:text-gray-300">
+                <Phone className="h-4 w-4 text-blue-600" />
+                <a href="tel:08146452793" className="hover:text-blue-600 transition-colors">
+                  0814 645 2793
+                </a>
               </div>
-              <p className="text-gray-600 dark:text-gray-300 mb-6 max-w-md">
-                Nigeria's trusted mobile store. Authentic smartphones, competitive prices, and exceptional service since 2020.
-              </p>
               
-              {/* Contact Info */}
-              <div className="space-y-3">
-                <div className="flex items-center space-x-3 text-sm text-gray-600 dark:text-gray-300">
-                  <Phone className="h-4 w-4 text-blue-600" />
-                  <a href="tel:08146452793" className="hover:text-blue-600 transition-colors">
-                    0814 645 2793
-                  </a>
-                </div>
-                <div className="flex items-center space-x-3 text-sm text-gray-600 dark:text-gray-300">
-                  <Mail className="h-4 w-4 text-blue-600" />
-                  <a href="mailto:support@smartcommunications.ng" className="hover:text-blue-600 transition-colors">
-                    support@smartcommunications.ng
-                  </a>
-                </div>
-                <div className="flex items-start space-x-3 text-sm text-gray-600 dark:text-gray-300">
-                  <MapPin className="h-4 w-4 text-blue-600 mt-0.5" />
-                  <span>87 Ikot Ekpene - Uyo Rd, Uyo, Akwa Ibom State</span>
-                </div>
+              <div className="flex items-center space-x-3 text-sm text-gray-600 dark:text-gray-300">
+                <Mail className="h-4 w-4 text-blue-600" />
+                <a href="mailto:info@smartcomms.ng" className="hover:text-blue-600 transition-colors">
+                  info@smartcomms.ng
+                </a>
+              </div>
+              
+              <div className="flex items-center space-x-3 text-sm text-gray-600 dark:text-gray-300">
+                <MapPin className="h-4 w-4 text-blue-600" />
+                <span>Lagos, Nigeria</span>
+              </div>
+              
+              <div className="flex items-center space-x-3 text-sm text-gray-600 dark:text-gray-300">
+                <Clock className="h-4 w-4 text-blue-600" />
+                <span>Mon-Sat: 9AM-7PM</span>
               </div>
             </div>
+          </div>
 
-            {/* Quick Links */}
-            <div>
-              <h3 className="font-semibold text-gray-900 dark:text-white mb-4">Shop</h3>
-              <ul className="space-y-3">
-                {[
-                  { label: "All Products", href: "/products" },
-                  { label: "iPhones", href: "/products?brand=apple" },
-                  { label: "Samsung", href: "/products?brand=samsung" },
-                  { label: "Accessories", href: "/accessories" },
-                  { label: "Hot Deals", href: "/deals" }
-                ].map((link, index) => (
-                  <li key={index}>
-                    <Link 
-                      href={link.href} 
-                      className="text-sm text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-                    >
-                      {link.label}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
+          {/* Quick Links */}
+          <div>
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+              Quick Links
+            </h3>
+            <ul className="space-y-2">
+              <li>
+                <a href="/products" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 transition-colors">
+                  All Products
+                </a>
+              </li>
+              <li>
+                <a href="/accessories" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 transition-colors">
+                  Accessories
+                </a>
+              </li>
+              <li>
+                <a href="/deals" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 transition-colors">
+                  Hot Deals
+                </a>
+              </li>
+              <li>
+                <a href="/track-order" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 transition-colors">
+                  Track Order
+                </a>
+              </li>
+            </ul>
+          </div>
 
-            {/* Support */}
-            <div>
-              <h3 className="font-semibold text-gray-900 dark:text-white mb-4">Support</h3>
-              <ul className="space-y-3">
-                {[
-                  { label: "Help Center", href: "/support" },
-                  { label: "Track Order", href: "/track-order" },
-                  { label: "Returns", href: "/returns" },
-                  { label: "Contact Us", href: "/contact" },
-                  { label: "Warranty", href: "/warranty" }
-                ].map((link, index) => (
-                  <li key={index}>
-                    <Link 
-                      href={link.href} 
-                      className="text-sm text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-                    >
-                      {link.label}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
+          {/* Customer Support */}
+          <div>
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+              Support
+            </h3>
+            <ul className="space-y-2">
+              <li>
+                <a href="/support" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 transition-colors">
+                  Help Center
+                </a>
+              </li>
+              <li>
+                <a href="/support" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 transition-colors">
+                  Contact Us
+                </a>
+              </li>
+              <li>
+                <a href="/support" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 transition-colors">
+                  Returns & Exchanges
+                </a>
+              </li>
+              <li>
+                <a href="/support" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 transition-colors">
+                  Warranty
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          {/* Newsletter */}
+          <div>
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+              Stay Updated
+            </h3>
+            <p className="text-gray-600 dark:text-gray-300 mb-4 text-sm">
+              Get the latest deals and product updates
+            </p>
+            <div className="flex flex-col space-y-2">
+              <input
+                type="email"
+                placeholder="Enter your email"
+                className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm">
+                Subscribe
+              </button>
             </div>
           </div>
         </div>
 
-        {/* Bottom Section */}
-        <div className="border-t border-gray-200 dark:border-gray-800 py-6">
-          <div className="flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
-            {/* Copyright */}
-            <div className="flex flex-col sm:flex-row items-center space-y-2 sm:space-y-0 sm:space-x-4">
-              <p className="text-sm text-gray-600 dark:text-gray-400">
-                © 2024 Smart Communications. All rights reserved.
-              </p>
-              <div className="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-500">
-                <span className="flex items-center gap-1">
-                  <span>🇳🇬</span>
-                  <span>Proudly Nigerian</span>
-                </span>
-              </div>
-            </div>
-
-            {/* Social Links */}
-            <div className="flex items-center space-x-4">
-              {[
-                { icon: Facebook, href: "#", label: "Facebook" },
-                { icon: Twitter, href: "#", label: "Twitter" },
-                { icon: Instagram, href: "#", label: "Instagram" },
-                { icon: Youtube, href: "#", label: "YouTube" }
-              ].map(({ icon: Icon, href, label }, index) => (
-                <Link
-                  key={index}
-                  href={href}
-                  className="text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-                  aria-label={label}
-                >
-                  <Icon className="h-5 w-5" />
-                </Link>
-              ))}
-            </div>
-
-            {/* Legal Links */}
-            <div className="flex items-center space-x-4 text-sm">
-              <Link href="/privacy" className="text-gray-600 dark:text-gray-400 hover:text-blue-600 transition-colors">
-                Privacy
-              </Link>
-              <Link href="/terms" className="text-gray-600 dark:text-gray-400 hover:text-blue-600 transition-colors">
-                Terms
-              </Link>
+        {/* Bottom Bar */}
+        <div className="mt-12 pt-8 border-t border-gray-200 dark:border-gray-700">
+          <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
+            <p className="text-gray-600 dark:text-gray-300 text-sm">
+              © 2024 Smart Communications. All rights reserved.
+            </p>
+            <div className="flex space-x-6 text-sm">
+              <a href="#" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 transition-colors">
+                Privacy Policy
+              </a>
+              <a href="#" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 transition-colors">
+                Terms of Service
+              </a>
+              <a href="#" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 transition-colors">
+                Cookie Policy
+              </a>
             </div>
           </div>
         </div>

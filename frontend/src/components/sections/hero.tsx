@@ -18,7 +18,7 @@ interface Product {
   description: string
   category: string
   subcategory: string
-  specs: Record<string, any>
+  specs: Record<string, string | number | boolean>
   images: string[]
   stock: number
   isHotDeal: boolean
