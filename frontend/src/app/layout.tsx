@@ -31,8 +31,13 @@ const poppins = Poppins({
 })
 
 export const metadata: Metadata = {
-  title: "Phone-mart | Premium Mobile Experience",
+  title: "Smart Communications | Premium Mobile Experience",
   description: "Shop the latest smartphones and accessories with unbeatable prices, fast delivery, and expert support.",
+  icons: {
+    icon: '/smart.png',
+    shortcut: '/smart.png',
+    apple: '/smart.png',
+  },
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
