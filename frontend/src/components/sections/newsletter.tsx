@@ -7,6 +7,9 @@ import { Badge } from "@/components/ui/badge"
 import { Mail, Gift, Star, Shield, Zap, Users, Package, Headphones, CheckCircle, Sparkles, ArrowRight } from "lucide-react"
 
 export default function Newsletter() {
+  // Temporarily disable the newsletter section
+  return null
+
   const [email, setEmail] = useState("")
   const [isSubscribed, setIsSubscribed] = useState(false)
   const [isLoading, setIsLoading] = useState(false)

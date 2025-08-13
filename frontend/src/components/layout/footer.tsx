@@ -13,13 +13,15 @@ export default function Footer() {
           {/* Company Info */}
           <div className="space-y-4">
             <div className="flex items-center space-x-3">
-              <Image
-                src="/smart.png"
-                alt="Smart Communications"
-                width={40}
-                height={40}
-                className="w-10 h-10 object-contain"
-              />
+              <div className="bg-black p-2 rounded-lg border border-gray-300 dark:border-gray-600">
+                <Image
+                  src="/smart.png"
+                  alt="Smart Communications"
+                  width={40}
+                  height={40}
+                  className="w-10 h-10 object-contain"
+                />
+              </div>
               <span className="text-xl font-bold text-gray-900 dark:text-white">
                 Smart Communications
               </span>
@@ -27,7 +29,7 @@ export default function Footer() {
             <p className="text-gray-600 dark:text-gray-300 mb-6 max-w-md">
               Nigeria&apos;s trusted mobile store. Authentic smartphones, competitive prices, and exceptional service since 2020.
             </p>
-            
+
             {/* Contact Info */}
             <div className="space-y-3">
               <div className="flex items-center space-x-3 text-sm text-gray-600 dark:text-gray-300">
@@ -78,27 +80,32 @@ export default function Footer() {
                 </a>
               </li>
               <li>
-                <a href="/track-order" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 transition-colors">
-                  Track Order
+                <a href="/support" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 transition-colors">
+                  Support
                 </a>
               </li>
             </ul>
           </div>
 
-          {/* Customer Support */}
+          {/* Customer Service */}
           <div>
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-              Support
+              Customer Service
             </h3>
             <ul className="space-y-2">
               <li>
                 <a href="/support" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 transition-colors">
-                  Help Center
+                  Contact Us
                 </a>
               </li>
               <li>
                 <a href="/support" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 transition-colors">
-                  Contact Us
+                  FAQ
+                </a>
+              </li>
+              <li>
+                <a href="/support" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 transition-colors">
+                  Shipping Info
                 </a>
               </li>
               <li>

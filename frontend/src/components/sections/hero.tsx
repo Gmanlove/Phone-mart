@@ -12,23 +12,26 @@ import { fetchProducts } from "@/lib/api"
 interface Product {
   _id: string
   name: string
-  brand: string
   price: number
   originalPrice?: number
-  description: string
-  category: string
-  subcategory: string
-  specs: Record<string, string | number | boolean>
   images: string[]
+  category: string
+  brand: string
   stock: number
-  isHotDeal: boolean
-  hotDealDiscount: number
-  isActive: boolean
-  tags: string[]
-  rating: number
-  reviewCount: number
-  createdAt: string
-  updatedAt: string
+  description: string
+  specifications: {
+    display?: string
+    processor?: string
+    ram?: string
+    storage?: string
+    camera?: string
+    battery?: string
+    os?: string
+  }
+  warranty: string
+  colors: string[]
+  rating?: number
+  reviews?: number
 }
 
 const formatPrice = (price: number) => {
@@ -46,7 +49,7 @@ const calculateDiscount = (price: number, originalPrice?: number) => {
 
 function HeroBanner() {
   return (
-    <div className="relative bg-gradient-to-br from-blue-600 via-purple-600 to-cyan-600 rounded-3xl overflow-hidden mb-12 min-h-[500px] md:min-h-[600px]">
+    <div className="relative rounded-3xl overflow-hidden mb-12 min-h-[500px] md:min-h-[600px]" style={{ background: `var(--color-blue-700)` }}>
       {/* Animated Background Elements */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute top-10 left-10 w-32 h-32 bg-white/10 rounded-full animate-float"></div>
@@ -72,7 +75,8 @@ function HeroBanner() {
               and professional service you can trust.
             </p>
           </div>
-          
+
+          {/* Carousel dots */}
           <div className="flex items-center space-x-3">
             {[...Array(5)].map((_, i) => (
               <div key={i} className={`h-3 w-3 rounded-full transition-all duration-500 ${i === 0 ? 'bg-white scale-125' : 'bg-white/40 hover:bg-white/60'}`}></div>
@@ -122,6 +126,8 @@ function HeroBanner() {
               height={500}
               className="relative rounded-3xl shadow-2xl transform rotate-3 hover:rotate-0 transition-transform duration-500 hover:scale-105"
             />
+            
+            {/* Price badge */}
             <div className="absolute -top-6 -right-6 bg-gradient-to-r from-red-500 to-orange-500 text-white px-6 py-3 rounded-2xl text-lg font-bold animate-bounce-gentle shadow-lg">
               50% OFF
             </div>
