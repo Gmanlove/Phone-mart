@@ -8,6 +8,24 @@ import { ArrowRight, Star, Shield, Truck, Zap, Award, Clock, Heart, ShoppingCart
 import { useState, useEffect } from "react"
 import { fetchProducts } from "@/lib/api"
 
+// StarRating component
+function StarRating({ rating }: { rating: number }) {
+  return (
+    <div className="flex">
+      {[1, 2, 3, 4, 5].map((star) => (
+        <Star
+          key={star}
+          className={`h-3 w-3 ${
+            star <= rating
+              ? 'fill-yellow-400 text-yellow-400'
+              : 'fill-gray-200 text-gray-200 dark:fill-gray-600 dark:text-gray-600'
+          }`}
+        />
+      ))}
+    </div>
+  )
+}
+
 // Product interface based on backend model
 interface Product {
   _id: string
@@ -32,6 +50,9 @@ interface Product {
   colors: string[]
   rating?: number
   reviews?: number
+  reviewCount?: number // Add this for the review count display
+  hotDealDiscount?: number // Add this for hot deal discounts
+  isHotDeal?: boolean // Add this for hot deal flag
 }
 
 const formatPrice = (price: number) => {
@@ -245,19 +266,11 @@ function ProductCard({ product }: { product: Product }) {
           {/* Rating */}
           <div className="flex items-center gap-1">
             <div className="flex">
-              {[...Array(5)].map((_, i) => (
-                <Star
-                  key={i}
-                  className={`h-2.5 w-2.5 md:h-3 md:w-3 ${
-                    i < Math.floor(product.rating)
-                      ? 'fill-yellow-400 text-yellow-400'
-                      : 'text-gray-300 dark:text-gray-600'
-                  }`}
-                />
-              ))}
+              {/* Use nullish coalescing to provide default rating of 0 */}
+              <StarRating rating={product.rating ?? 0} />
             </div>
             <span className="text-xs text-gray-600 dark:text-gray-400">
-              ({product.reviewCount || 0})
+              ({product.reviewCount ?? 0})
             </span>
           </div>
 
