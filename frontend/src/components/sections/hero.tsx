@@ -111,7 +111,7 @@ function HeroBanner() {
                 Shop Now
               </Link>
             </Button>
-            <Button asChild variant="outline" size="lg" className="border-2 border-white text-white hover:bg-white hover:text-blue-600 font-semibold px-8 py-4 text-lg backdrop-blur-sm transition-all duration-300">
+            <Button asChild variant="outline" size="lg" className="border-2 border-white/80 text-white bg-white/10 hover:bg-white hover:text-blue-700 font-semibold px-8 py-4 text-lg backdrop-blur-sm transition-all duration-300">
               <Link href="/deals">
                 <Zap className="w-5 h-5 mr-2" />
                 View Deals

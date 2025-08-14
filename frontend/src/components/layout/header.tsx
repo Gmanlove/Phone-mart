@@ -1,32 +1,33 @@
 "use client"
 
-import { useState, useCallback, useEffect, SetStateAction } from "react"
-import { Search, ShoppingCart, User, Menu, X, Phone, ChevronDown, MapPin, Clock, Heart, Truck, LogOut } from "lucide-react"
-import { useCart } from "@/contexts/cart-context"
-import { useAuth } from "@/contexts/auth-context"
+import { useState, useCallback, useEffect } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
+import { 
+  Search, ShoppingCart, User, Menu, X, ChevronDown, 
+  Heart, Phone, MapPin, Clock, Truck
+} from "lucide-react"
+import { useCart } from "@/contexts/cart-context"
+import { useAuth } from "@/contexts/auth-context"
 
-// Mock components for demonstration
-import { ReactNode, ButtonHTMLAttributes } from "react"
-
-type ButtonProps = {
-  variant?: "default" | "ghost" | "outline" | "secondary" | "destructive"
-  size?: "default" | "sm" | "lg" | "icon"
-  className?: string
-  children?: ReactNode
-} & ButtonHTMLAttributes<HTMLButtonElement>
-
-const Button = ({ variant = "default", size = "default", className = "", children, ...props }: ButtonProps) => {
-  const baseClasses = "inline-flex items-center justify-center font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
+// Simple components (since they're defined at bottom of file)
+const Button = ({ children, variant = "default", size = "default", className = "", onClick, ...props }: {
+  children: React.ReactNode;
+  variant?: "default" | "ghost" | "outline";
+  size?: "default" | "sm" | "lg" | "icon";
+  className?: string;
+  onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
+  [key: string]: any;
+}) => {
+  const baseClasses = "inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
+  
   const variants = {
-    default: "bg-blue-600 text-white hover:bg-blue-700 focus-visible:ring-blue-500",
-    ghost: "hover:bg-gray-100 hover:text-gray-900 focus-visible:ring-gray-500 dark:hover:bg-gray-800 dark:hover:text-gray-100",
-    outline: "border border-gray-300 bg-white hover:bg-gray-50 focus-visible:ring-gray-500 dark:border-gray-600 dark:bg-gray-800 dark:hover:bg-gray-700",
-    secondary: "bg-gray-100 text-gray-900 hover:bg-gray-200 focus-visible:ring-gray-500 dark:bg-gray-700 dark:text-gray-100 dark:hover:bg-gray-600",
-    destructive: "bg-red-600 text-white hover:bg-red-700 focus-visible:ring-red-500",
+    default: "bg-blue-600 text-white hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-700",
+    ghost: "hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-gray-800 dark:hover:text-gray-100",
+    outline: "border border-gray-300 bg-white hover:bg-gray-50 hover:text-gray-900 dark:border-gray-600 dark:bg-gray-800 dark:hover:bg-gray-700"
   }
+  
   const sizes = {
     default: "h-10 px-4 py-2",
     sm: "h-9 rounded-md px-3",
@@ -37,6 +38,7 @@ const Button = ({ variant = "default", size = "default", className = "", childre
   return (
     <button
       className={`${baseClasses} ${variants[variant]} ${sizes[size]} ${className}`}
+      onClick={onClick}
       {...props}
     >
       {children}
@@ -169,7 +171,7 @@ export default function Header() {
               </div>
             </Link>
 
-            {/* Desktop Search - Redesigned */}
+            {/* Desktop Search - Fixed to remove duplicate search icon */}
             <div className="hidden lg:block flex-1 max-w-2xl mx-8">
               <form onSubmit={handleSearch} className="relative group">
                 <div className="relative">
@@ -178,9 +180,8 @@ export default function Header() {
                     placeholder="Search smartphones, accessories, brands..."
                     value={searchQuery}
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)}
-                    className="w-full pl-12 pr-14 py-3 rounded-full border-2 border-gray-200 dark:border-gray-600 focus:border-blue-500 dark:focus:border-blue-400 transition-all duration-300 bg-gray-50 dark:bg-gray-800 hover:bg-white dark:hover:bg-gray-700 group-hover:shadow-md"
+                    className="w-full pl-4 pr-14 py-3 rounded-full border-2 border-gray-200 dark:border-gray-600 focus:border-blue-500 dark:focus:border-blue-400 transition-all duration-300 bg-gray-50 dark:bg-gray-800 hover:bg-white dark:hover:bg-gray-700 group-hover:shadow-md"
                   />
-                  <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400 group-hover:text-blue-500 transition-colors duration-200" />
                   <button
                     type="submit"
                     className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-blue-600 hover:bg-blue-700 text-white p-2 rounded-full transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
@@ -226,21 +227,21 @@ export default function Header() {
                           onClick={closeProfile}
                         >
                           <User className="h-4 w-4 mr-2" />
-                          Profile Settings
+                          Profile
                         </Link>
                         <Link
                           href="/orders"
                           className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
                           onClick={closeProfile}
                         >
-                          <Truck className="h-4 w-4 mr-2" />
-                          My Orders
+                          <ShoppingCart className="h-4 w-4 mr-2" />
+                          Orders
                         </Link>
                         <button
                           onClick={handleLogout}
-                          className="flex items-center w-full text-left px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700"
+                          className="flex w-full items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
                         >
-                          <LogOut className="h-4 w-4 mr-2" />
+                          <X className="h-4 w-4 mr-2" />
                           Sign Out
                         </button>
                       </div>
@@ -256,20 +257,6 @@ export default function Header() {
                 </Link>
               )}
 
-              <Link href="/cart" className="relative">
-                <Button variant="ghost" className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400">
-                  <ShoppingCart className="h-5 w-5" />
-                  {mounted && cartItemsCount > 0 && (
-                    <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-bold">
-                      {cartItemsCount}
-                    </span>
-                  )}
-                </Button>
-              </Link>
-            </div>
-
-            {/* Mobile Actions */}
-            <div className="lg:hidden flex items-center space-x-2">
               <Link href="/cart" className="relative">
                 <Button variant="ghost" size="icon" className="text-gray-700 dark:text-gray-300">
                   <ShoppingCart className="h-5 w-5" />
@@ -292,7 +279,7 @@ export default function Header() {
             </div>
           </div>
 
-          {/* Mobile Search - Redesigned */}
+          {/* Mobile Search - Fixed to remove duplicate search icon */}
           <div className="lg:hidden pb-4">
             <form onSubmit={handleSearch} className="relative group">
               <div className="relative">
@@ -301,9 +288,8 @@ export default function Header() {
                   placeholder="Search smartphones, accessories..."
                   value={searchQuery}
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)}
-                  className="w-full pl-12 pr-14 py-3 rounded-full border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 hover:bg-white dark:hover:bg-gray-700 transition-all duration-200"
+                  className="w-full pl-4 pr-14 py-3 rounded-full border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 hover:bg-white dark:hover:bg-gray-700 transition-all duration-200"
                 />
-                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
                 <button
                   type="submit"
                   className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-blue-600 hover:bg-blue-700 text-white p-2 rounded-full transition-all duration-200"
@@ -314,6 +300,7 @@ export default function Header() {
               </div>
             </form>
           </div>
+
         </div>
 
         {/* Mobile Menu */}
@@ -384,14 +371,25 @@ export default function Header() {
                       className="flex items-center py-2 text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400"
                       onClick={closeMenu}
                     >
-                      <Truck className="h-4 w-4 mr-2" />
-                      My Orders
+                      <ShoppingCart className="h-4 w-4 mr-2" />
+                      Orders
+                    </Link>
+                    <Link
+                      href="/cart"
+                      className="flex items-center py-2 text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400"
+                      onClick={closeMenu}
+                    >
+                      <ShoppingCart className="h-4 w-4 mr-2" />
+                      Cart ({cartItemsCount})
                     </Link>
                     <button
-                      onClick={handleLogout}
-                      className="flex items-center py-2 text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300"
+                      onClick={() => {
+                        handleLogout()
+                        closeMenu()
+                      }}
+                      className="flex items-center py-2 text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 w-full text-left"
                     >
-                      <LogOut className="h-4 w-4 mr-2" />
+                      <X className="h-4 w-4 mr-2" />
                       Sign Out
                     </button>
                   </>

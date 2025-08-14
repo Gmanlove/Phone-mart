@@ -12,7 +12,7 @@ import { CldImage } from "next-cloudinary"
 import { extractCloudinaryPublicId } from "@/lib/utils"
 
 export interface Product {
-  specs: Record<string, unknown>
+  specs?: Record<string, unknown>
   _id: string
   id: string
   name: string
@@ -22,7 +22,8 @@ export interface Product {
   image: string
   images?: string[]
   rating: number
-  reviews: number
+  reviews: number | any[] // Accept both number and array
+  reviewCount?: number // Add this for review count
   features: string[]
   inStock: boolean
   isNew?: boolean

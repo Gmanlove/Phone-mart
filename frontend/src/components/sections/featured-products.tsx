@@ -1,12 +1,14 @@
 "use client"
 
-import Link from "next/link"
+import { useState, useEffect } from "react"
 import Image from "next/image"
+import Link from "next/link"
+import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Card, CardContent } from "@/components/ui/card"
-import { useEffect, useState } from "react"
 import { fetchProducts } from "@/lib/api"
+import { useCart } from "@/contexts/cart-context"
+import { useToast } from "@/hooks/use-toast"
 import { Star, Heart, ShoppingCart, Eye, ArrowRight, Zap, TrendingUp } from "lucide-react"
 
 interface Product {
@@ -17,52 +19,84 @@ interface Product {
     originalPrice?: number
     description: string
     category: string
-    subcategory: string
-    specs: Record<string, string | number | boolean>
+    subcategory?: string
     images: string[]
     stock: number
-    isHotDeal: boolean
-    hotDealDiscount: number
-    isActive: boolean
-    tags: string[]
     rating: number
-    reviewCount: number
-    createdAt: string
-    updatedAt: string
+    isHotDeal?: boolean
+    hotDealDiscount?: number
+    tags: string[]
 }
 
-const formatPrice = (price: number) => {
-  return new Intl.NumberFormat('en-NG', {
-    style: 'currency',
-    currency: 'NGN',
-    minimumFractionDigits: 0
-  }).format(price)
-}
-
-const calculateDiscount = (price: number, originalPrice?: number) => {
-  if (!originalPrice || originalPrice <= price) return 0
-  return Math.round(((originalPrice - price) / originalPrice) * 100)
+const StarRating = ({ rating }: { rating: number }) => {
+    return (
+        <div className="flex gap-1">
+            {[1, 2, 3, 4, 5].map((star) => (
+                <Star
+                    key={star}
+                    className={`w-4 h-4 ${
+                        star <= rating
+                            ? "fill-yellow-400 text-yellow-400"
+                            : "fill-gray-300 text-gray-300"
+                    }`}
+                />
+            ))}
+        </div>
+    )
 }
 
 function ProductCard({ product }: { product: Product }) {
+  const { addItem } = useCart()
+  const { toast } = useToast()
   const [isWishlisted, setIsWishlisted] = useState(false)
-  
-  const discount = product.originalPrice 
-    ? calculateDiscount(product.price, product.originalPrice)
-    : product.hotDealDiscount || 0
 
-  // Safe image handling with fallback
-  const productImage = product.images && product.images.length > 0 && product.images[0]
-    ? product.images[0] 
-    : '/img1.jpeg'
+  const handleAddToCart = () => {
+    if (product.stock <= 0) {
+      toast({
+        title: "Out of Stock",
+        description: "This product is currently out of stock.",
+      })
+      return
+    }
 
-  // Determine final image source
-  const imageSrc = productImage.startsWith('http') ? productImage : `/uploads/${productImage}`
+    addItem({
+      id: product._id,
+      name: product.name,
+      price: product.price,
+      image: getImageUrl(product),
+    })
+
+    toast({
+      title: "Added to Cart",
+      description: `${product.name} has been added to your cart.`,
+    })
+  }
+
+  const getImageUrl = (product: Product) => {
+    if (!product.images || product.images.length === 0) {
+      return "/img1.jpeg"
+    }
+    
+    const firstImage = product.images[0]
+    
+    if (firstImage.startsWith("http")) {
+      return firstImage
+    }
+    
+    if (!firstImage.includes("phone-mart-products/") && !firstImage.startsWith("http")) {
+      return `https://res.cloudinary.com/dn7zah8um/image/upload/phone-mart-products/${firstImage}.png`
+    }
+    
+    return firstImage
+  }
+
+  const discount = product.originalPrice ? 
+    Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100) : 0
 
   return (
-    <Card className="group relative overflow-hidden bg-slate-800/60 backdrop-blur-sm border-slate-700 hover:border-blue-500/50 hover:shadow-xl transition-all duration-300 h-full">
-      <CardContent className="p-4">
-        {/* Badges */}
+    <Card className="group relative overflow-hidden hover:shadow-xl transition-all duration-300 border-0 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+      <CardContent className="p-0">
+        {/* Badge overlay */}
         <div className="absolute top-3 left-3 z-10 flex flex-col gap-1">
           {product.isHotDeal && (
             <Badge className="bg-gradient-to-r from-red-500 to-orange-500 text-white text-xs font-bold border-0">
@@ -85,26 +119,16 @@ function ProductCard({ product }: { product: Product }) {
         {/* Wishlist button */}
         <button
           onClick={() => setIsWishlisted(!isWishlisted)}
-          className="absolute top-3 right-3 z-10 p-2 rounded-full bg-slate-700/80 backdrop-blur-sm hover:bg-slate-600 transition-colors"
+          className="absolute top-3 right-3 z-10 p-2 rounded-full bg-white/10 backdrop-blur-sm hover:bg-white/20 transition-colors"
         >
-          <Heart className={`h-4 w-4 ${isWishlisted ? 'fill-red-500 text-red-500' : 'text-slate-400'}`} />
+          <Heart className={`w-4 h-4 ${isWishlisted ? 'fill-red-500 text-red-500' : 'text-white'}`} />
         </button>
 
         {/* Product image */}
-        <div className="relative aspect-square mb-4 overflow-hidden rounded-xl bg-slate-700">
-          {imageSrc.startsWith('http') ? (
-            <img
-              src={imageSrc}
-              alt={product.name}
-              className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-              onError={(e) => {
-                const target = e.target as HTMLImageElement
-                target.src = '/img1.jpeg'
-              }}
-            />
-          ) : (
+        <div className="relative aspect-square overflow-hidden">
+          {getImageUrl(product) && (
             <Image
-              src={imageSrc}
+              src={getImageUrl(product)}
               alt={product.name}
               fill
               className="object-cover transition-transform duration-300 group-hover:scale-105"
@@ -128,61 +152,41 @@ function ProductCard({ product }: { product: Product }) {
               <Eye className="w-4 h-4 mr-1" />
               View
             </Button>
-            <Button className="bg-green-600 hover:bg-green-700 text-white px-3 py-2 h-8 text-sm">
+            <Button onClick={handleAddToCart} className="bg-green-600 hover:bg-green-700 text-white px-3 py-2 h-8 text-sm">
               <ShoppingCart className="w-4 h-4 mr-1" />
-              Add to Cart
+              Add
             </Button>
           </div>
         </div>
 
-        {/* Product info */}
-        <div className="space-y-3">
-          <div className="flex items-center gap-2 text-xs text-slate-400">
+        {/* Product details */}
+        <div className="p-4 bg-white">
+          <div className="flex items-center gap-1 text-xs text-gray-500 mb-1">
             <span>{product.brand}</span>
             <span>•</span>
             <span>{product.category}</span>
           </div>
           
-          <h3 className="font-semibold text-white line-clamp-2 leading-tight group-hover:text-blue-400 transition-colors">
+          <h3 className="font-semibold text-gray-900 line-clamp-2 leading-tight group-hover:text-blue-600 transition-colors">
             {product.name}
           </h3>
 
-          {/* Price */}
-          <div className="space-y-1">
+          <div className="mt-2 space-y-2">
             <div className="flex items-center gap-2">
-              <span className="font-bold text-white text-lg">
-                {formatPrice(product.price)}
+              <span className="font-bold text-gray-900 text-lg">
+                ₦{product.price.toLocaleString()}
               </span>
+              {product.originalPrice && product.originalPrice > product.price && (
+                <span className="text-sm text-gray-400 line-through">
+                  ₦{product.originalPrice.toLocaleString()}
+                </span>
+              )}
             </div>
-            {product.originalPrice && product.originalPrice > product.price && (
-              <div className="flex items-center gap-2">
-                <span className="text-sm text-slate-400 line-through">
-                  {formatPrice(product.originalPrice)}
-                </span>
-                <span className="text-sm text-green-400 font-medium">
-                  Save {formatPrice(product.originalPrice - product.price)}
-                </span>
-              </div>
-            )}
-          </div>
 
-          {/* Rating */}
-          <div className="flex items-center gap-2">
-            <div className="flex">
-              {[...Array(5)].map((_, i) => (
-                <Star
-                  key={i}
-                  className={`h-3 w-3 ${
-                    i < Math.floor(product.rating)
-                      ? 'fill-yellow-400 text-yellow-400'
-                      : 'text-slate-600'
-                  }`}
-                />
-              ))}
+            <div className="flex items-center gap-2">
+              <StarRating rating={product.rating} />
+              <span className="text-xs text-gray-400">({product.rating})</span>
             </div>
-            <span className="text-xs text-slate-400">
-              ({product.reviewCount || 0})
-            </span>
           </div>
 
           {/* Stock indicator */}
@@ -235,20 +239,19 @@ export default function FeaturedProducts() {
             <section className="py-20 bg-slate-800/30">
                 <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="text-center mb-16">
-                        <div className="w-64 h-8 bg-slate-700 rounded-lg mx-auto mb-4 animate-pulse"></div>
-                        <div className="w-96 h-6 bg-slate-700 rounded-lg mx-auto animate-pulse"></div>
+                        <div className="inline-flex items-center bg-blue-600/20 text-blue-400 px-4 py-2 rounded-full text-sm font-semibold mb-6">
+                            <TrendingUp className="w-4 h-4 mr-2" />
+                            Featured Products
+                        </div>
+                        <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
+                            Trending <span className="text-gradient">Smartphones</span>
+                        </h2>
                     </div>
                     
+                    {/* Loading skeletons */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                         {[...Array(8)].map((_, i) => (
-                            <div key={i} className="bg-slate-800 rounded-xl p-4">
-                                <div className="aspect-square bg-slate-700 rounded-lg mb-4 animate-pulse"></div>
-                                <div className="space-y-2">
-                                    <div className="h-4 bg-slate-700 rounded animate-pulse"></div>
-                                    <div className="h-4 bg-slate-700 rounded w-3/4 animate-pulse"></div>
-                                    <div className="h-6 bg-slate-700 rounded w-1/2 animate-pulse"></div>
-                                </div>
-                            </div>
+                            <div key={i} className="bg-gray-200 dark:bg-gray-700 rounded-lg h-96 animate-pulse"></div>
                         ))}
                     </div>
                 </div>
@@ -261,14 +264,13 @@ export default function FeaturedProducts() {
             <section className="py-20 bg-slate-800/30">
                 <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="text-center">
-                        <div className="text-6xl mb-4">😕</div>
                         <h2 className="text-2xl font-bold text-white mb-2">
-                            Oops! Something went wrong
+                            Something went wrong
                         </h2>
-                        <p className="text-slate-400 mb-6">{error}</p>
+                        <p className="text-slate-300 mb-4">{error}</p>
                         <Button 
                             onClick={() => window.location.reload()}
-                            className="bg-blue-600 hover:bg-blue-700"
+                            className="btn-primary"
                         >
                             Try Again
                         </Button>
