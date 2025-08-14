@@ -4,7 +4,7 @@ import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
-import { ArrowRight, Star, Shield, Truck, Zap, Award, Clock, Heart, ShoppingCart, Eye, ChevronLeft, ChevronRight } from "lucide-react"
+import { ArrowRight, Star, Shield, Truck, Zap, Award, Heart, ShoppingCart, ChevronLeft, ChevronRight } from "lucide-react"
 import { useState, useEffect } from "react"
 import { fetchProducts } from "@/lib/api"
 

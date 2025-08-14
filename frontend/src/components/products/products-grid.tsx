@@ -2,26 +2,29 @@
 
 import { useState, useEffect } from "react"
 import { useSearchParams } from 'next/navigation'
+
 import ProductCard from "@/components/product/product-card"
+import type { Review } from "@/components/product/product-card"
 
 export interface Product {
-  specs?: Record<string, unknown>
-  _id: string
-  id: string
-  name: string
-  brand: string
-  price: number
-  originalPrice?: number
-  image: string
-  images?: string[]
-  rating: number
-  reviews?: number | any[] // Make optional
-  features?: string[] // Make optional
-  inStock?: boolean // Make optional
-  isNew?: boolean
-  isFeatured?: boolean
-  fastDelivery?: boolean
-  warranty?: string
+    specs?: Record<string, unknown>
+    _id: string
+    id: string
+    name: string
+    brand: string
+    price: number
+    originalPrice?: number
+    image: string
+    images?: string[]
+    rating: number
+    reviews: number | Review[]
+    reviewCount?: number
+    features: string[]
+    inStock: boolean
+    isNew?: boolean
+    isFeatured?: boolean
+    fastDelivery?: boolean
+    warranty?: string
 }
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "https://smartcoms.onrender.com"
@@ -30,7 +33,7 @@ export default function ProductsGrid() {
     const searchParams = useSearchParams()
     const [sortBy, setSortBy] = useState("featured")
     const [currentPage, setCurrentPage] = useState(1)
-    const [products, setProducts] = useState<Product[]>([])
+    const [, setProducts] = useState<Product[]>([])
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState("")
     const [filteredProducts, setFilteredProducts] = useState<Product[]>([])
@@ -133,12 +136,12 @@ export default function ProductsGrid() {
                 <div>
                     <p className="text-gray-600">
                         {searchQuery ? (
-                            <>Showing results for "<span className="font-semibold text-gray-900">{searchQuery}</span>" - </>
+                            <>Showing results for &quot;<span className="font-semibold text-gray-900">{searchQuery}</span>&quot; - </>
                         ) : ''}
                         {startIndex + 1}-{Math.min(startIndex + productsPerPage, sortedProducts.length)} of {sortedProducts.length} products
                     </p>
                     {searchQuery && sortedProducts.length === 0 && (
-                        <p className="text-red-500 mt-2">No products found for "{searchQuery}". Try different keywords or browse all products.</p>
+                        <p className="text-red-500 mt-2">No products found for &quot;{searchQuery}&quot;. Try different keywords or browse all products.</p>
                     )}
                 </div>
 
@@ -165,10 +168,12 @@ export default function ProductsGrid() {
                             id: product._id || product.id || '',
                             image: getImageUrl(product),
                             rating: product.rating || 4.5,
-                            reviews: product.reviews || 0, // Provide default value for undefined
+                                                        reviews: typeof product.reviews === 'number' || Array.isArray(product.reviews)
+                                                            ? product.reviews
+                                                            : 0,
                             specs: product.specs || {}, // Also fix specs if needed
                             features: product.features || [], // Provide default for features
-                            inStock: product.stock > 0, // Convert stock to boolean
+                            inStock: product.inStock ?? false, // Ensure boolean value
                             warranty: product.warranty || "1 Year", // Provide default warranty
                             fastDelivery: true, // Default value
                             isFeatured: false, // Default value
@@ -184,7 +189,7 @@ export default function ProductsGrid() {
                     <h3 className="text-lg font-semibold text-gray-900 mb-2">No products found</h3>
                     {searchQuery ? (
                         <p className="text-gray-600">
-                            No products match your search for "{searchQuery}". Try:
+                            No products match your search for &quot;{searchQuery}&quot;. Try:
                             <br />
                             • Checking your spelling
                             <br />

@@ -212,9 +212,11 @@ export default function AccessoriesPage() {
                       {/* Product Image */}
                       <div className="relative">
                         <div className="aspect-square bg-gray-100 dark:bg-gray-700 rounded-t-xl overflow-hidden">
-                          <img
+                          <Image
                             src={getValidImageUrl(accessory.images)}
                             alt={accessory.name}
+                            width={300}
+                            height={300}
                             className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                             onError={(e) => {
                               e.currentTarget.src = "/api/placeholder/300/300"

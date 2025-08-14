@@ -2,7 +2,7 @@
 
 import { useState, useEffect, Suspense } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
-import { Eye, EyeOff, Phone, Mail, Lock, User, Shield, ArrowRight, CheckCircle, AlertCircle, Loader2, Award, Star } from "lucide-react"
+import { Eye, EyeOff, Mail, Lock, Shield, ArrowRight, CheckCircle, AlertCircle, Loader2, Award, Star } from "lucide-react"
 import { useAuth } from "@/contexts/auth-context"
 import Link from "next/link"
 import Image from "next/image"
@@ -51,7 +51,7 @@ function LoginForm() {
         setMessage("Invalid credentials. Please check your email and password.")
         setMessageType("error")
       }
-    } catch (error) {
+  } catch {
       setMessage("Network error. Please check your connection and try again.")
       setMessageType("error")
     } finally {

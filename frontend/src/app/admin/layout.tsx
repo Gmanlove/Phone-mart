@@ -8,17 +8,13 @@ import {
   LayoutDashboard,
   Package,
   ShoppingCart,
-  Users,
   BarChart3,
-  Settings,
   Upload,
   LogOut,
   Menu,
   X,
   DollarSign,
-  TrendingUp,
-  Eye,
-  Bell
+  Eye
 } from "lucide-react"
 
 export default function AdminLayout({

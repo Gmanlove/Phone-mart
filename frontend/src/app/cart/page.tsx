@@ -1,6 +1,6 @@
 "use client"
 
-import { ShoppingBag, ArrowLeft, Minus, Plus, X, Shield, Lock, LogIn } from "lucide-react"
+import { ShoppingBag, ArrowLeft, Shield, Lock, LogIn } from "lucide-react"
 import Link from "next/link"
 import { useCart } from "@/contexts/cart-context"
 import { useAuth } from "@/contexts/auth-context"

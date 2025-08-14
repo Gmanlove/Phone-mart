@@ -102,7 +102,7 @@ export default function RegisterPage() {
           description: data.error || "Signup failed"
         })
       }
-    } catch (error) {
+  } catch {
       setIsLoading(false)
       setMessage("Network error. Please try again.")
     }

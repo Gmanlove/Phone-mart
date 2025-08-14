@@ -1,25 +1,21 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { 
   DollarSign, 
   TrendingUp, 
-  TrendingDown, 
   Calendar, 
   Download,
   RefreshCw,
-  Filter,
   ArrowUpRight,
   ArrowDownRight,
   CreditCard,
   Wallet,
-  PieChart,
   BarChart3,
   Target,
   Award,
   Clock,
   ShoppingBag,
-  Users,
   Package
 } from "lucide-react"
 
@@ -70,32 +66,8 @@ export default function AdminEarningsPage() {
   const [error, setError] = useState("")
   const [dateRange, setDateRange] = useState("30")
   const [groupBy, setGroupBy] = useState("day")
-  const [selectedPeriod, setSelectedPeriod] = useState("monthly")
 
-  useEffect(() => {
-    fetchAllData()
-  }, [])
-
-  useEffect(() => {
-    fetchEarningsData()
-  }, [dateRange, groupBy])
-
-  const fetchAllData = async () => {
-    setLoading(true)
-    try {
-      await Promise.all([
-        fetchEarningsData(),
-        fetchRecentOrders(),
-        fetchSummaryData()
-      ])
-    } catch (err) {
-      setError("Failed to fetch earnings data")
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const fetchEarningsData = async () => {
+  const fetchEarningsData = useCallback(async () => {
     try {
       const endDate = new Date()
       const startDate = new Date()
@@ -115,9 +87,9 @@ export default function AdminEarningsPage() {
     } catch (err) {
       console.error("Failed to fetch earnings data:", err)
     }
-  }
+  }, [dateRange, groupBy])
 
-  const fetchRecentOrders = async () => {
+  const fetchRecentOrders = useCallback(async () => {
     try {
       const response = await fetch("https://smartcoms.onrender.com/api/admin/orders?adminEmail=admin@phonehub.com&limit=10&status=delivered")
       if (response.ok) {
@@ -127,9 +99,9 @@ export default function AdminEarningsPage() {
     } catch (err) {
       console.error("Failed to fetch recent orders:", err)
     }
-  }
+  }, [])
 
-  const fetchSummaryData = async () => {
+  const fetchSummaryData = useCallback(async () => {
     try {
       const response = await fetch("https://smartcoms.onrender.com/api/admin/dashboard-stats?adminEmail=admin@phonehub.com")
       if (response.ok) {
@@ -147,7 +119,30 @@ export default function AdminEarningsPage() {
     } catch (err) {
       console.error("Failed to fetch summary data:", err)
     }
-  }
+  }, [])
+
+  const fetchAllData = useCallback(async () => {
+    setLoading(true)
+    try {
+      await Promise.all([
+        fetchEarningsData(),
+        fetchRecentOrders(),
+        fetchSummaryData()
+      ])
+    } catch {
+      setError("Failed to fetch earnings data")
+    } finally {
+      setLoading(false)
+    }
+  }, [fetchEarningsData, fetchRecentOrders, fetchSummaryData])
+
+  useEffect(() => {
+    fetchAllData()
+  }, [fetchAllData])
+
+  useEffect(() => {
+    fetchEarningsData()
+  }, [fetchEarningsData])
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-NG', {
@@ -190,12 +185,6 @@ export default function AdminEarningsPage() {
 
   const getTotalOrders = () => {
     return earningsData.reduce((sum, item) => sum + item.count, 0)
-  }
-
-  const getAverageOrderValue = () => {
-    const total = getTotalEarnings()
-    const orders = getTotalOrders()
-    return orders > 0 ? total / orders : 0
   }
 
   if (loading) {

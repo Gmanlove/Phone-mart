@@ -85,7 +85,7 @@ export default function ProductActions({ product }: ProductActionsProps) {
           text: `Check out ${product.name} on Smart Communications`,
           url: window.location.href,
         })
-      } catch (error) {
+      } catch {
         // Fallback to copying URL
         navigator.clipboard.writeText(window.location.href)
         toast({

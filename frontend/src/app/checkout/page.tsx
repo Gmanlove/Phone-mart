@@ -1,12 +1,13 @@
 "use client"
 
+import Image from "next/image"
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { useCart } from "@/contexts/cart-context"
 import { useOrders } from "@/contexts/order-context"
 import { useAuth } from "@/contexts/auth-context"
-import { MapPin, CreditCard, Package, Shield, CheckCircle, User, Phone, Mail, Home, Truck, Lock, LogIn, AlertTriangle } from "lucide-react"
+import { MapPin, CreditCard, Package, Shield, CheckCircle, User, Phone, Mail, Home, Lock, LogIn, AlertTriangle } from "lucide-react"
 import Link from "next/link"
 
 // Replace with your actual Paystack public key
@@ -756,9 +757,11 @@ export default function CheckoutPage() {
                     <div key={item.id} className="flex items-center gap-3">
                       <div className="w-12 h-12 bg-gray-100 rounded-lg flex-shrink-0">
                         {item.image && (
-                          <img 
-                            src={item.image} 
+                          <Image
+                            src={item.image}
                             alt={item.name}
+                            width={48}
+                            height={48}
                             className="w-full h-full object-cover rounded-lg"
                           />
                         )}

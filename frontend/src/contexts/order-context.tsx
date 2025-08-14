@@ -1,6 +1,6 @@
 "use client"
 
-import { createContext, useContext, useEffect, useState, type ReactNode } from "react"
+import { createContext, useContext, useEffect, useState, useCallback, type ReactNode } from "react"
 import { CartItem } from "./cart-context"
 import { useAuth } from "./auth-context"
 
@@ -45,12 +45,42 @@ export function OrderProvider({ children }: { children: ReactNode }) {
     }
   }, [])
 
+  const fetchUserOrders = useCallback(async () => {
+    if (!user?.email) return
+    try {
+      setIsLoading(true)
+      const response = await fetch(`https://smartcoms.onrender.com/api/orders/user/${encodeURIComponent(user.email)}`)
+      if (response.ok) {
+        const data = await response.json()
+        const backendOrders = data.orders.map((order: { _id: string; date?: string; createdAt?: string; [key: string]: unknown }) => ({
+          ...order,
+          id: order._id,
+          date: order.date || order.createdAt
+        }))
+        setOrders(prevOrders => {
+          const ordersChanged = JSON.stringify(backendOrders) !== JSON.stringify(prevOrders)
+          if (ordersChanged) {
+            console.log('Orders updated from backend:', backendOrders)
+            return backendOrders
+          }
+          return prevOrders
+        })
+      } else {
+        console.error('Failed to fetch user orders')
+      }
+    } catch (error) {
+      console.error('Error fetching user orders:', error)
+    } finally {
+      setIsLoading(false)
+    }
+  }, [user?.email])
+
   // Fetch user orders from backend when user is authenticated
   useEffect(() => {
     if (isAuthenticated && user?.email) {
       fetchUserOrders()
     }
-  }, [isAuthenticated, user?.email])
+  }, [isAuthenticated, user?.email, fetchUserOrders])
 
   // Auto-refresh orders every 30 seconds when authenticated
   useEffect(() => {
@@ -61,7 +91,7 @@ export function OrderProvider({ children }: { children: ReactNode }) {
     }, 30000) // Refresh every 30 seconds
 
     return () => clearInterval(interval)
-  }, [isAuthenticated, user?.email])
+  }, [isAuthenticated, user?.email, fetchUserOrders])
 
   // Store orders in localStorage
   useEffect(() => {
@@ -69,37 +99,6 @@ export function OrderProvider({ children }: { children: ReactNode }) {
       localStorage.setItem('orders', JSON.stringify(orders))
     }
   }, [orders])
-
-  const fetchUserOrders = async () => {
-    if (!user?.email) return
-    
-    try {
-      setIsLoading(true)
-      const response = await fetch(`https://smartcoms.onrender.com/api/orders/user/${encodeURIComponent(user.email)}`)
-      
-      if (response.ok) {
-        const data = await response.json()
-        const backendOrders = data.orders.map((order: { _id: string; date?: string; createdAt?: string; [key: string]: unknown }) => ({
-          ...order,
-          id: order._id,
-          date: order.date || order.createdAt
-        }))
-        
-        // Only update if there are actual changes
-        const ordersChanged = JSON.stringify(backendOrders) !== JSON.stringify(orders)
-        if (ordersChanged) {
-          setOrders(backendOrders)
-          console.log('Orders updated from backend:', backendOrders)
-        }
-      } else {
-        console.error('Failed to fetch user orders')
-      }
-    } catch (error) {
-      console.error('Error fetching user orders:', error)
-    } finally {
-      setIsLoading(false)
-    }
-  }
 
   const refreshOrders = async () => {
     await fetchUserOrders()

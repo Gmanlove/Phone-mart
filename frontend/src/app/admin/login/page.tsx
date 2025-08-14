@@ -75,7 +75,7 @@ export default function AdminLoginPage() {
       } else {
         setMessage(data.error || "Invalid credentials or insufficient privileges")
       }
-    } catch (error) {
+  } catch {
       setMessage("Network error. Please check your connection and try again.")
     } finally {
       setLoading(false)

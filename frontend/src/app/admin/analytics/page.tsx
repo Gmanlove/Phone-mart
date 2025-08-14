@@ -3,20 +3,17 @@
 import { useState, useEffect, useCallback } from "react"
 import { 
   TrendingUp, 
+  TrendingDown,
   DollarSign, 
-  Users as UsersIcon, 
   Package,
-  ShoppingBag,
   BarChart3,
-  LineChart,
   Download,
   RefreshCw,
   ShoppingCart,
   Users,
   Star,
   ArrowUpRight,
-  ArrowDownRight,
-  TrendingDown
+  ArrowDownRight
 } from "lucide-react"
 
 interface AnalyticsData {
@@ -54,6 +51,7 @@ interface EarningsData {
   count: number
 }
 
+
 export default function AdminAnalytics() {
   const [analytics, setAnalytics] = useState<AnalyticsData | null>(null)
   const [earningsData, setEarningsData] = useState<EarningsData[]>([])
@@ -62,30 +60,6 @@ export default function AdminAnalytics() {
   const [error, setError] = useState("")
   const [dateRange, setDateRange] = useState("30")
   const [groupBy, setGroupBy] = useState("day")
-
-  useEffect(() => {
-    fetchAnalytics()
-  }, [])
-
-  useEffect(() => {
-    fetchEarningsData()
-  }, [dateRange, groupBy])
-
-  const fetchAnalytics = async () => {
-    try {
-      const response = await fetch("https://smartcoms.onrender.com/api/admin/dashboard-stats?adminEmail=admin@phonehub.com")
-      if (response.ok) {
-        const data = await response.json()
-        setAnalytics(data)
-      } else {
-        setError("Failed to fetch analytics data")
-      }
-    } catch (err) {
-      setError("Network error occurred")
-    } finally {
-      setLoading(false)
-    }
-  }
 
   const fetchEarningsData = useCallback(async () => {
     setEarningsLoading(true)
@@ -105,12 +79,36 @@ export default function AdminAnalytics() {
         const data = await response.json()
         setEarningsData(data)
       }
-    } catch (err) {
-      console.error("Failed to fetch earnings data:", err)
+  } catch {
+  console.error("Failed to fetch earnings data")
     } finally {
       setEarningsLoading(false)
     }
   }, [dateRange, groupBy])
+
+  useEffect(() => {
+    fetchAnalytics()
+  }, [])
+
+  useEffect(() => {
+    fetchEarningsData()
+  }, [dateRange, groupBy, fetchEarningsData])
+
+  const fetchAnalytics = async () => {
+    try {
+      const response = await fetch("https://smartcoms.onrender.com/api/admin/dashboard-stats?adminEmail=admin@phonehub.com")
+      if (response.ok) {
+        const data = await response.json()
+        setAnalytics(data)
+      } else {
+        setError("Failed to fetch analytics data")
+      }
+  } catch {
+      setError("Network error occurred")
+    } finally {
+      setLoading(false)
+    }
+  }
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-NG', {
@@ -119,12 +117,7 @@ export default function AdminAnalytics() {
     }).format(amount)
   }
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric'
-    })
-  }
+  // Removed unused formatDate function
 
   const getGrowthRate = (current: number, previous: number) => {
     if (previous === 0) return current > 0 ? 100 : 0

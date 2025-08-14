@@ -1,4 +1,5 @@
-"use client"
+"use client";
+import Image from "next/image";
 
 import { useState } from "react"
 import { 
@@ -14,7 +15,6 @@ import {
   X,
   Plus,
   Image as ImageIcon,
-  Star,
   Zap,
   Laptop,
   Headphones
@@ -99,7 +99,7 @@ export default function AdminUploadProduct() {
       const discount = name === "hotDealDiscount" ? parseFloat(value) : parseFloat(form.hotDealDiscount)
       
       if (price && discount) {
-        const discountedPrice = price - (price * discount / 100)
+  // Removed unused variable discountedPrice
         setForm(prev => ({ ...prev, originalPrice: price.toString() }))
       }
     }
@@ -642,9 +642,11 @@ export default function AdminUploadProduct() {
                 <div className="grid grid-cols-2 gap-4 mt-6">
                   {imagePreviewUrls.map((url, index) => (
                     <div key={index} className="relative group">
-                      <img
+                      <Image
                         src={url}
                         alt={`Preview ${index + 1}`}
+                        width={400}
+                        height={128}
                         className="w-full h-32 object-cover rounded-lg border border-gray-200 dark:border-gray-600"
                       />
                       <button

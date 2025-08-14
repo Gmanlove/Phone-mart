@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { ShoppingCart, Heart, Share2, Minus, Plus } from "lucide-react"
+import { ShoppingCart, Minus, Plus } from "lucide-react"
 import { useCart } from "@/contexts/cart-context"
 import { useToast } from "@/hooks/use-toast"
 

@@ -7,13 +7,9 @@ import {
   Users, 
   DollarSign, 
   TrendingUp, 
-  TrendingDown,
-  Eye,
   Calendar,
   Clock,
-  Star,
   ArrowUpRight,
-  ArrowDownRight,
   RefreshCw
 } from "lucide-react"
 import Link from "next/link"

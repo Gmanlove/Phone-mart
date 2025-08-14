@@ -1,12 +1,11 @@
 "use client"
-
 import { useState, useCallback, useEffect } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { 
   Search, ShoppingCart, User, Menu, X, ChevronDown, 
-  Heart, Phone, MapPin, Clock, Truck
+  Phone, MapPin, Clock, Truck
 } from "lucide-react"
 import { useCart } from "@/contexts/cart-context"
 import { useAuth } from "@/contexts/auth-context"
@@ -18,8 +17,7 @@ const Button = ({ children, variant = "default", size = "default", className = "
   size?: "default" | "sm" | "lg" | "icon";
   className?: string;
   onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
-  [key: string]: any;
-}) => {
+} & React.ButtonHTMLAttributes<HTMLButtonElement>) => {
   const baseClasses = "inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
   
   const variants = {
@@ -46,7 +44,7 @@ const Button = ({ children, variant = "default", size = "default", className = "
   )
 }
 
-const Input = ({ className = "", ...props }) => (
+const Input = ({ className = "", ...props }: { className?: string } & React.InputHTMLAttributes<HTMLInputElement>) => (
   <input
     className={`flex h-10 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm ring-offset-white file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-gray-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:placeholder:text-gray-400 dark:focus-visible:ring-blue-400 ${className}`}
     {...props}

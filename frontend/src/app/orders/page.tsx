@@ -1,48 +1,76 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { Package, Truck, CheckCircle, Clock, Search, Filter, Eye, Download, Star, MessageCircle, RefreshCw, MapPin, Calendar, CreditCard, AlertCircle, Loader2 } from "lucide-react"
-import { CldImage } from "next-cloudinary";
-import { extractCloudinaryPublicId } from "@/lib/utils";
+import { useState } from "react"
+import {
+  Package,
+  Truck,
+  CheckCircle,
+  Clock,
+  Search,
+  Eye,
+  Download,
+  Star,
+  MessageCircle,
+  RefreshCw,
+  MapPin,
+  Calendar,
+  CreditCard,
+  AlertCircle,
+  Loader2,
+} from "lucide-react"
+import { CldImage } from "next-cloudinary"
+import { extractCloudinaryPublicId } from "@/lib/utils"
 
-import { useOrders, Order } from "@/contexts/order-context"
+import { useOrders, type Order } from "@/contexts/order-context"
 import { useAuth } from "@/contexts/auth-context"
-import { CartItem } from "@/contexts/cart-context"
+import type { CartItem } from "@/contexts/cart-context"
 import Link from "next/link"
 
-const OrderCard = ({ order, onRefresh }: { order: Order, onRefresh: () => void }) => {
+const OrderCard = ({ order, onRefresh }: { order: Order; onRefresh: () => void }) => {
   const [isExpanded, setIsExpanded] = useState(false)
-  
+
   const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
-      case 'delivered': return 'bg-green-100 text-green-800 border-green-200'
-      case 'shipped': return 'bg-blue-100 text-blue-800 border-blue-200'
-      case 'processing': return 'bg-yellow-100 text-yellow-800 border-yellow-200'
-      case 'confirmed': return 'bg-blue-100 text-blue-800 border-blue-200'
-      case 'cancelled': return 'bg-red-100 text-red-800 border-red-200'
-      default: return 'bg-gray-100 text-gray-800 border-gray-200'
+      case "delivered":
+        return "bg-green-100 text-green-800 border-green-200"
+      case "shipped":
+        return "bg-blue-100 text-blue-800 border-blue-200"
+      case "processing":
+        return "bg-yellow-100 text-yellow-800 border-yellow-200"
+      case "confirmed":
+        return "bg-blue-100 text-blue-800 border-blue-200"
+      case "cancelled":
+        return "bg-red-100 text-red-800 border-red-200"
+      default:
+        return "bg-gray-100 text-gray-800 border-gray-200"
     }
   }
 
   const getStatusIcon = (status: string) => {
     switch (status.toLowerCase()) {
-      case 'delivered': return <CheckCircle className="w-4 h-4" />
-      case 'shipped': return <Truck className="w-4 h-4" />
-      case 'processing': return <Clock className="w-4 h-4" />
-      case 'confirmed': return <CheckCircle className="w-4 h-4" />
-      case 'cancelled': return <RefreshCw className="w-4 h-4" />
-      default: return <Package className="w-4 h-4" />
+      case "delivered":
+        return <CheckCircle className="w-4 h-4" />
+      case "shipped":
+        return <Truck className="w-4 h-4" />
+      case "processing":
+        return <Clock className="w-4 h-4" />
+      case "confirmed":
+        return <CheckCircle className="w-4 h-4" />
+      case "cancelled":
+        return <RefreshCw className="w-4 h-4" />
+      default:
+        return <Package className="w-4 h-4" />
     }
   }
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString)
-    return date.toLocaleDateString('en-NG', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
+    return date.toLocaleDateString("en-NG", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
     })
   }
 
@@ -56,7 +84,7 @@ const OrderCard = ({ order, onRefresh }: { order: Order, onRefresh: () => void }
               <Package className="w-6 h-6 text-blue-600" />
             </div>
             <div>
-              <h3 className="text-lg font-bold text-gray-900">Order #{order.id?.slice(-8) || 'N/A'}</h3>
+              <h3 className="text-lg font-bold text-gray-900">Order #{order.id?.slice(-8) || "N/A"}</h3>
               <div className="flex items-center gap-4 text-sm text-gray-600 mt-1">
                 <span className="flex items-center gap-1">
                   <Calendar className="w-4 h-4" />
@@ -69,18 +97,18 @@ const OrderCard = ({ order, onRefresh }: { order: Order, onRefresh: () => void }
               </div>
             </div>
           </div>
-          
+
           <div className="flex items-center justify-between sm:justify-end gap-4">
             <div className="text-right">
-              <div className="text-2xl font-bold text-gray-900">
-                ₦{order.total.toLocaleString()}
-              </div>
+              <div className="text-2xl font-bold text-gray-900">₦{order.total.toLocaleString()}</div>
               <div className="text-sm text-gray-500">
-                {order.items.length} item{order.items.length > 1 ? 's' : ''}
+                {order.items.length} item{order.items.length > 1 ? "s" : ""}
               </div>
             </div>
-            
-            <div className={`px-3 py-2 rounded-full text-sm font-medium border flex items-center gap-2 ${getStatusColor(order.status)}`}>
+
+            <div
+              className={`px-3 py-2 rounded-full text-sm font-medium border flex items-center gap-2 ${getStatusColor(order.status)}`}
+            >
               {getStatusIcon(order.status)}
               <span className="capitalize">{order.status}</span>
             </div>
@@ -100,13 +128,9 @@ const OrderCard = ({ order, onRefresh }: { order: Order, onRefresh: () => void }
                 alt={item.name}
                 className="w-8 h-8 rounded-lg object-cover"
               />
-              <span className="text-sm font-medium text-gray-900 truncate max-w-32">
-                {item.name}
-              </span>
+              <span className="text-sm font-medium text-gray-900 truncate max-w-32">{item.name}</span>
               {item.quantity > 1 && (
-                <span className="text-xs bg-gray-200 text-gray-700 px-2 py-1 rounded-full">
-                  x{item.quantity}
-                </span>
+                <span className="text-xs bg-gray-200 text-gray-700 px-2 py-1 rounded-full">x{item.quantity}</span>
               )}
             </div>
           ))}
@@ -124,9 +148,9 @@ const OrderCard = ({ order, onRefresh }: { order: Order, onRefresh: () => void }
             className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-xl transition-colors duration-200 flex items-center justify-center gap-2"
           >
             <Eye className="w-4 h-4" />
-            {isExpanded ? 'Hide Details' : 'View Details'}
+            {isExpanded ? "Hide Details" : "View Details"}
           </button>
-          
+
           <button
             onClick={onRefresh}
             className="bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-3 px-4 rounded-xl transition-colors duration-200 flex items-center justify-center gap-2"
@@ -134,22 +158,22 @@ const OrderCard = ({ order, onRefresh }: { order: Order, onRefresh: () => void }
             <RefreshCw className="w-4 h-4" />
             Refresh Status
           </button>
-          
-          {order.status === 'delivered' && (
+
+          {order.status === "delivered" && (
             <button className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-3 px-4 rounded-xl transition-colors duration-200 flex items-center justify-center gap-2">
               <Star className="w-4 h-4" />
               Rate & Review
             </button>
           )}
-          
-          {(order.status === 'shipped' || order.status === 'delivered') && (
+
+          {(order.status === "shipped" || order.status === "delivered") && (
             <button className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-3 px-4 rounded-xl transition-colors duration-200 flex items-center justify-center gap-2">
               <Download className="w-4 h-4" />
               Invoice
             </button>
           )}
-          
-          {order.status === 'processing' && (
+
+          {order.status === "processing" && (
             <button className="flex-1 bg-red-100 hover:bg-red-200 text-red-700 font-medium py-3 px-4 rounded-xl transition-colors duration-200 flex items-center justify-center gap-2">
               <RefreshCw className="w-4 h-4" />
               Cancel Order
@@ -201,19 +225,18 @@ const OrderCard = ({ order, onRefresh }: { order: Order, onRefresh: () => void }
                   <div>
                     <p className="text-sm text-gray-600 mb-1">Order Status:</p>
                     <div className="flex items-center gap-2">
-                      <div className={`px-2 py-1 rounded-full text-xs font-medium border flex items-center gap-1 ${getStatusColor(order.status)}`}>
+                      <div
+                        className={`px-2 py-1 rounded-full text-xs font-medium border flex items-center gap-1 ${getStatusColor(order.status)}`}
+                      >
                         {getStatusIcon(order.status)}
                         <span className="capitalize">{order.status}</span>
                       </div>
-                      <button
-                        onClick={onRefresh}
-                        className="text-blue-600 hover:text-blue-700 text-xs underline"
-                      >
+                      <button onClick={onRefresh} className="text-blue-600 hover:text-blue-700 text-xs underline">
                         Check for updates
                       </button>
                     </div>
                   </div>
-                  
+
                   <div>
                     <p className="text-sm text-gray-600 mb-1">Order Date:</p>
                     <p className="font-medium text-gray-900">{formatDate(order.date)}</p>
@@ -253,7 +276,7 @@ const OrderCard = ({ order, onRefresh }: { order: Order, onRefresh: () => void }
 
 export default function OrdersPage() {
   const { orders, refreshOrders, isLoading } = useOrders()
-  const { user, isAuthenticated, isLoading: authLoading } = useAuth()
+  const { isAuthenticated, isLoading: authLoading } = useAuth()
   const [searchTerm, setSearchTerm] = useState("")
   const [statusFilter, setStatusFilter] = useState("all")
   const [dateFilter, setDateFilter] = useState("all")
@@ -266,14 +289,14 @@ export default function OrdersPage() {
     { value: "confirmed", label: "Confirmed" },
     { value: "shipped", label: "Shipped" },
     { value: "delivered", label: "Delivered" },
-    { value: "cancelled", label: "Cancelled" }
+    { value: "cancelled", label: "Cancelled" },
   ]
 
   const dateOptions = [
     { value: "all", label: "All Time" },
     { value: "30days", label: "Last 30 Days" },
     { value: "90days", label: "Last 3 Months" },
-    { value: "year", label: "This Year" }
+    { value: "year", label: "This Year" },
   ]
 
   const handleRefresh = async () => {
@@ -283,17 +306,18 @@ export default function OrdersPage() {
     setRefreshing(false)
   }
 
-  const filteredOrders = orders.filter(order => {
-    const matchesSearch = order.id?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+  const filteredOrders = orders.filter((order) => {
+    const matchesSearch =
+      order.id?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       order.items.some((item: CartItem) => item.name.toLowerCase().includes(searchTerm.toLowerCase()))
     const matchesStatus = statusFilter === "all" || order.status === statusFilter
-    
+
     let matchesDate = true
     if (dateFilter !== "all") {
       const orderDate = new Date(order.date)
       const now = new Date()
       const diffInDays = Math.floor((now.getTime() - orderDate.getTime()) / (1000 * 60 * 60 * 24))
-      
+
       switch (dateFilter) {
         case "30days":
           matchesDate = diffInDays <= 30
@@ -306,13 +330,13 @@ export default function OrdersPage() {
           break
       }
     }
-    
+
     return matchesSearch && matchesStatus && matchesDate
   })
 
-  const totalSpent = orders.reduce((sum, order) => sum + (order.status !== 'cancelled' ? order.total : 0), 0)
+  const totalSpent = orders.reduce((sum, order) => sum + (order.status !== "cancelled" ? order.total : 0), 0)
   const totalOrders = orders.length
-  const deliveredOrders = orders.filter(order => order.status === 'delivered').length
+  const deliveredOrders = orders.filter((order) => order.status === "delivered").length
 
   if (authLoading) {
     return (
@@ -334,9 +358,7 @@ export default function OrdersPage() {
               <AlertCircle className="h-12 w-12 text-red-500" />
             </div>
             <h1 className="text-2xl font-bold text-gray-900 mb-4">Sign In Required</h1>
-            <p className="text-gray-600 mb-8">
-              You need to be signed in to view your order history.
-            </p>
+            <p className="text-gray-600 mb-8">You need to be signed in to view your order history.</p>
             <Link href="/login">
               <button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-xl transition-colors">
                 Sign In
@@ -369,14 +391,10 @@ export default function OrdersPage() {
                 disabled={refreshing || isLoading}
                 className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors"
               >
-                <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} />
+                <RefreshCw className={`w-4 h-4 ${refreshing ? "animate-spin" : ""}`} />
                 <span className="hidden sm:inline">Refresh</span>
               </button>
-              {lastRefresh && (
-                <p className="text-xs text-gray-500">
-                  Last updated: {lastRefresh.toLocaleTimeString()}
-                </p>
-              )}
+              {lastRefresh && <p className="text-xs text-gray-500">Last updated: {lastRefresh.toLocaleTimeString()}</p>}
             </div>
           </div>
 
@@ -451,8 +469,10 @@ export default function OrdersPage() {
                   onChange={(e) => setStatusFilter(e.target.value)}
                   className="px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
-                  {statusOptions.map(option => (
-                    <option key={option.value} value={option.value}>{option.label}</option>
+                  {statusOptions.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
                   ))}
                 </select>
 
@@ -461,8 +481,10 @@ export default function OrdersPage() {
                   onChange={(e) => setDateFilter(e.target.value)}
                   className="px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
-                  {dateOptions.map(option => (
-                    <option key={option.value} value={option.value}>{option.label}</option>
+                  {dateOptions.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
                   ))}
                 </select>
               </div>
@@ -479,11 +501,7 @@ export default function OrdersPage() {
             </div>
           ) : filteredOrders.length > 0 ? (
             filteredOrders.map((order) => (
-              <OrderCard 
-                key={order.id || order._id} 
-                order={order} 
-                onRefresh={handleRefresh}
-              />
+              <OrderCard key={order.id || order._id} order={order} onRefresh={handleRefresh} />
             ))
           ) : orders.length === 0 ? (
             <div className="text-center py-12 bg-white rounded-2xl border border-gray-100">

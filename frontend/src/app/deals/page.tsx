@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { fetchProducts } from "@/lib/api"
-import { Flame, Clock, Star, Heart, ArrowRight, Zap, Gift, Percent, Timer } from "lucide-react"
+import { Flame, Clock, ArrowRight, Zap, Gift, Timer } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 
@@ -195,9 +195,11 @@ export default function DealsPage() {
                   {/* Deal Badge */}
                   <div className="relative">
                     <div className="aspect-square bg-gray-100 dark:bg-gray-700 rounded-t-xl overflow-hidden">
-                      <img
+                      <Image
                         src={getValidImageUrl(deal.images)}
                         alt={deal.name}
+                        width={400}
+                        height={192}
                         className="w-full h-full object-cover"
                         onError={(e) => {
                           e.currentTarget.src = "/api/placeholder/300/300"
