@@ -1,5 +1,5 @@
 "use client"
-import { useState, useCallback, useEffect } from "react"
+import { useState, useCallback, useEffect, useRef } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
@@ -71,6 +71,17 @@ export default function Header() {
   useEffect(() => {
     setMounted(true)
   }, [])
+
+  // Mobile search state and ref for expanding input
+  const [mobileSearchOpen, setMobileSearchOpen] = useState(false)
+  const mobileInputRef = useRef<HTMLInputElement | null>(null)
+
+  useEffect(() => {
+    if (mobileSearchOpen) {
+      // focus the input when opened
+      setTimeout(() => mobileInputRef.current?.focus(), 50)
+    }
+  }, [mobileSearchOpen])
 
   const handleSearch = useCallback((e: React.FormEvent) => {
     e.preventDefault()
@@ -153,21 +164,77 @@ export default function Header() {
           <div className="flex items-center justify-between h-20 lg:h-24">
             {/* Logo */}
             <Link href="/" className="flex items-center space-x-3 group">
-              <div className="relative p-2 bg-black dark:bg-gray-900 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 group-hover:shadow-md transition-all duration-200">
+              <div className="relative">
+                {/* Light mode logo */}
                 <Image
-                  src="/smart.png"
-                  alt="Smart Communications Logo"
-                  width={40}
-                  height={40}
-                  className="w-10 h-10 lg:w-12 lg:h-12 object-contain group-hover:scale-110 transition-transform duration-200"
+                  src="/smartfullB.png"
+                  alt="Smart Communications logo"
+                  width={200}
+                  height={60}
+                  className="w-40 h-12 md:w-44 md:h-14 lg:w-56 lg:h-16 object-contain dark:hidden transition-transform duration-200"
+                />
+
+                {/* Dark mode logo */}
+                <Image
+                  src="/smartfull.png"
+                  alt="Smart Communications logo"
+                  width={200}
+                  height={60}
+                  className="hidden dark:block w-40 h-12 md:w-44 md:h-14 lg:w-56 lg:h-16 object-contain transition-transform duration-200"
                 />
               </div>
-              <div className="hidden sm:block">
-                <span className="text-xl lg:text-2xl font-bold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-200">
-                  Smart Communications
-                </span>
-              </div>
+              {/* Removed text label to give logo more presence */}
             </Link>
+
+            {/* Mobile: compact search icon that expands when active */}
+            <div className="lg:hidden flex items-center space-x-2">
+              <div className="relative">
+                <button
+                  onClick={() => setMobileSearchOpen((s) => !s)}
+                  aria-label="Open search"
+                  className="p-2 rounded-full text-gray-700 dark:text-gray-300 bg-white/0 hover:bg-white/5 transition"
+                >
+                  <Search className="h-5 w-5" />
+                </button>
+
+                <form onSubmit={(e) => { e.preventDefault(); handleSearch(e); setMobileSearchOpen(false) }} className={`absolute right-0 top-0 transform transition-all duration-200 ${mobileSearchOpen ? 'translate-y-0 opacity-100' : 'translate-y-0 opacity-0 pointer-events-none'}`}>
+                  <div className="flex items-center bg-white dark:bg-gray-800 rounded-full shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden" style={{ width: mobileSearchOpen ? '220px' : '0px', transition: 'width 220ms ease' }}>
+                    <input
+                      ref={mobileInputRef}
+                      type="text"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      placeholder="Search products..."
+                      className="w-full px-3 py-2 text-sm bg-transparent border-0 outline-none"
+                    />
+                    <button type="submit" className="px-3 py-2 bg-blue-600 text-white rounded-full mr-1 ml-1">Search</button>
+                  </div>
+                </form>
+              </div>
+
+            {/* Mobile Actions: cart + hamburger */}
+            <div className="lg:hidden flex items-center space-x-2">
+              <Link href="/cart" className="relative">
+                <Button variant="ghost" size="icon" className="text-gray-700 dark:text-gray-300">
+                  <ShoppingCart className="h-5 w-5" />
+                  {mounted && cartItemsCount > 0 && (
+                    <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-bold">
+                      {cartItemsCount}
+                    </span>
+                  )}
+                </Button>
+              </Link>
+
+              <button
+                onClick={() => setIsMenuOpen(!isMenuOpen)}
+                className="text-gray-700 dark:text-gray-300 p-2 rounded-md"
+                aria-label="Toggle menu"
+              >
+                {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+              </button>
+            </div>
+
+          </div>
 
             {/* Desktop Search - Fixed to remove duplicate search icon */}
             <div className="hidden lg:block flex-1 max-w-2xl mx-8">
@@ -277,27 +344,7 @@ export default function Header() {
             </div>
           </div>
 
-          {/* Mobile Search - Fixed to remove duplicate search icon */}
-          <div className="lg:hidden pb-4">
-            <form onSubmit={handleSearch} className="relative group">
-              <div className="relative">
-                <Input
-                  type="text"
-                  placeholder="Search smartphones, accessories..."
-                  value={searchQuery}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)}
-                  className="w-full pl-4 pr-14 py-3 rounded-full border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 hover:bg-white dark:hover:bg-gray-700 transition-all duration-200"
-                />
-                <button
-                  type="submit"
-                  className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-blue-600 hover:bg-blue-700 text-white p-2 rounded-full transition-all duration-200"
-                  aria-label="Search products"
-                >
-                  <Search className="h-4 w-4" />
-                </button>
-              </div>
-            </form>
-          </div>
+          {/* mobile search moved inline with logo */}
 
         </div>
 

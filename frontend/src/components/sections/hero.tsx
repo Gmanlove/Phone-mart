@@ -1,11 +1,12 @@
 "use client"
 import Link from "next/link"
 import Image from "next/image"
-import { Button } from "@/components/ui/button"
+// ...existing code imports...
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
-import { ArrowRight, Star, Shield, Truck, Zap, Award, Heart, ShoppingCart, ChevronLeft, ChevronRight } from "lucide-react"
+import { ArrowRight, Star, Shield, Truck, Award, Heart, ShoppingCart as ShoppingCartIcon } from "lucide-react"
 import { useState, useEffect } from "react"
+import { useCart } from "@/contexts/cart-context"
 import { fetchProducts } from "@/lib/api"
 
 // StarRating component
@@ -68,110 +69,18 @@ const calculateDiscount = (price: number, originalPrice?: number) => {
   return Math.round(((originalPrice - price) / originalPrice) * 100)
 }
 
-function HeroBanner() {
-  return (
-    <div className="relative rounded-3xl overflow-hidden mb-12 min-h-[500px] md:min-h-[600px]" style={{ background: `var(--color-blue-700)` }}>
-      {/* Animated Background Elements */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute top-10 left-10 w-32 h-32 bg-white/10 rounded-full animate-float"></div>
-        <div className="absolute top-40 right-20 w-20 h-20 bg-white/10 rounded-full animate-float animation-delay-2000"></div>
-        <div className="absolute bottom-20 left-1/3 w-24 h-24 bg-white/10 rounded-full animate-float animation-delay-4000"></div>
-      </div>
-
-      <div className="relative grid grid-cols-1 lg:grid-cols-2 gap-8 items-center p-8 lg:p-16 min-h-[500px] md:min-h-[600px]">
-        {/* Left content */}
-        <div className="text-white space-y-8 z-10">
-          <div className="space-y-4">
-            <div className="inline-flex items-center bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full text-sm font-semibold">
-              <Star className="w-4 h-4 mr-2" />
-              Nigeria&apos;s #1 Phone Store
-            </div>
-            <h1 className="text-5xl lg:text-6xl xl:text-7xl font-bold leading-tight">
-              SMART PHONES.<br />
-              <span className="text-yellow-300 animate-pulse-soft">SMART DEALS.</span>
-            </h1>
-            <p className="text-2xl text-blue-100 font-medium">UP to 80% OFF</p>
-            <p className="text-lg text-blue-100 max-w-lg">
-              Discover the latest smartphones with unbeatable prices, authentic products, 
-              and professional service you can trust.
-            </p>
-          </div>
-
-          {/* Carousel dots */}
-          <div className="flex items-center space-x-3">
-            {[...Array(5)].map((_, i) => (
-              <div key={i} className={`h-3 w-3 rounded-full transition-all duration-500 ${i === 0 ? 'bg-white scale-125' : 'bg-white/40 hover:bg-white/60'}`}></div>
-            ))}
-          </div>
-
-          <div className="flex flex-col sm:flex-row gap-4">
-            <Button asChild size="lg" className="bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white font-bold px-8 py-4 text-lg shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
-              <Link href="/products">
-                <ShoppingCart className="w-5 h-5 mr-2" />
-                Shop Now
-              </Link>
-            </Button>
-            <Button asChild variant="outline" size="lg" className="border-2 border-white/80 text-white bg-white/10 hover:bg-white hover:text-blue-700 font-semibold px-8 py-4 text-lg backdrop-blur-sm transition-all duration-300">
-              <Link href="/deals">
-                <Zap className="w-5 h-5 mr-2" />
-                View Deals
-              </Link>
-            </Button>
-          </div>
-
-          {/* Trust indicators */}
-          <div className="grid grid-cols-3 gap-4 pt-8 border-t border-white/20">
-            <div className="text-center">
-              <div className="text-2xl font-bold">10K+</div>
-              <div className="text-sm text-blue-100">Happy Customers</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold">500+</div>
-              <div className="text-sm text-blue-100">Products</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold">24/7</div>
-              <div className="text-sm text-blue-100">Support</div>
-            </div>
-          </div>
-        </div>
-
-        {/* Right content - Hero image */}
-        <div className="relative flex justify-center lg:justify-end">
-          <div className="relative group">
-            <div className="absolute inset-0 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-3xl blur-xl opacity-50 group-hover:opacity-75 transition-opacity duration-300"></div>
-            <Image
-              src="/img1.jpeg"
-              alt="Featured Smartphone"
-              width={400}
-              height={500}
-              className="relative rounded-3xl shadow-2xl transform rotate-3 hover:rotate-0 transition-transform duration-500 hover:scale-105"
-            />
-            
-            {/* Price badge */}
-            <div className="absolute -top-6 -right-6 bg-gradient-to-r from-red-500 to-orange-500 text-white px-6 py-3 rounded-2xl text-lg font-bold animate-bounce-gentle shadow-lg">
-              50% OFF
-            </div>
-            <div className="absolute -bottom-6 -left-6 bg-gradient-to-r from-green-500 to-emerald-500 text-white px-6 py-3 rounded-2xl text-sm font-bold shadow-lg">
-              ✓ Genuine Products
-            </div>
-          </div>
-        </div>
-      </div>
-      
-      {/* Navigation arrows */}
-      <button className="absolute left-6 top-1/2 transform -translate-y-1/2 bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-full p-3 text-white transition-all duration-300 hover:scale-110">
-        <ChevronLeft className="h-6 w-6" />
-      </button>
-      <button className="absolute right-6 top-1/2 transform -translate-y-1/2 bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-full p-3 text-white transition-all duration-300 hover:scale-110">
-        <ChevronRight className="h-6 w-6" />
-      </button>
-    </div>
-  )
-}
+// HeroBanner removed per request - hero banner is no longer rendered
 
 function ProductCard({ product }: { product: Product }) {
   const [isWishlisted, setIsWishlisted] = useState(false)
+  const [justAdded, setJustAdded] = useState(false)
+  const { addItem } = (() => {
+    try {
+      return useCart()
+    } catch (e) {
+      return { addItem: () => {} }
+    }
+  })()
   
   const discount = product.originalPrice 
     ? calculateDiscount(product.price, product.originalPrice)
@@ -205,32 +114,52 @@ function ProductCard({ product }: { product: Product }) {
 
         {/* Wishlist button */}
         <button
-          onClick={() => setIsWishlisted(!isWishlisted)}
+          onClick={(e) => { e.stopPropagation(); setIsWishlisted(!isWishlisted) }}
           className="absolute top-2 right-2 z-10 p-1.5 rounded-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm hover:bg-white dark:hover:bg-gray-700 transition-colors"
+          aria-label="Toggle wishlist"
         >
           <Heart className={`h-3 w-3 md:h-4 md:w-4 ${isWishlisted ? 'fill-red-500 text-red-500' : 'text-gray-600 dark:text-gray-400'}`} />
         </button>
 
-        {/* Product image */}
-        <div className="relative aspect-square mb-2 md:mb-3 overflow-hidden rounded-lg bg-gray-100 dark:bg-gray-700">
-          <Image
-            src={productImage.startsWith('http') ? productImage : `/uploads/${productImage}`}
-            alt={product.name}
-            fill
-            className="object-cover transition-transform duration-300 group-hover:scale-105"
-            onError={(e) => {
-              const target = e.target as HTMLImageElement
-              target.src = '/img1.jpeg'
+        {/* Add to cart button */}
+        {product.stock > 0 && (
+          <button
+            onClick={(e) => {
+              e.stopPropagation()
+              const img = productImage.startsWith('http') ? productImage : `/uploads/${productImage}`
+              addItem({ id: product._id, name: product.name, price: product.price, image: img })
+              setJustAdded(true)
+              setTimeout(() => setJustAdded(false), 1200)
             }}
-          />
-          
-          {/* Stock status overlay */}
-          {product.stock === 0 && (
-            <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-              <span className="text-white font-semibold text-sm">Out of Stock</span>
-            </div>
-          )}
-        </div>
+            className="absolute top-12 right-2 z-10 p-2 rounded-full bg-blue-600 text-white shadow-md hover:bg-blue-700 transition-all duration-200 flex items-center justify-center"
+            aria-label="Add to cart"
+          >
+            <ShoppingCartIcon className={`h-4 w-4 ${justAdded ? 'animate-bounce' : ''}`} />
+          </button>
+        )}
+
+        {/* Product image */}
+        <Link href={`/products/${product._id}`} className="relative block">
+          <div className="relative aspect-square mb-2 md:mb-3 overflow-hidden rounded-lg bg-gray-100 dark:bg-gray-700">
+            <Image
+              src={productImage.startsWith('http') ? productImage : `/uploads/${productImage}`}
+              alt={product.name}
+              fill
+              className="object-cover transition-transform duration-300 group-hover:scale-105"
+              onError={(e) => {
+                const target = e.target as HTMLImageElement
+                target.src = '/img1.jpeg'
+              }}
+            />
+            
+            {/* Stock status overlay */}
+            {product.stock === 0 && (
+              <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+                <span className="text-white font-semibold text-sm">Out of Stock</span>
+              </div>
+            )}
+          </div>
+        </Link>
 
         {/* Product info */}
         <div className="space-y-1 md:space-y-2">
@@ -241,7 +170,9 @@ function ProductCard({ product }: { product: Product }) {
           </div>
           
           <h3 className="font-semibold text-xs md:text-sm text-gray-900 dark:text-white line-clamp-2 leading-tight">
-            {product.name}
+            <Link href={`/products/${product._id}`} className="hover:underline block">
+              {product.name}
+            </Link>
           </h3>
 
           {/* Price */}
@@ -421,8 +352,7 @@ export default function Hero() {
   return (
     <section className="bg-gray-50 dark:bg-gray-900 py-8">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Hero Banner */}
-        <HeroBanner />
+  {/* Hero Banner removed per request */}
 
         {/* Error handling */}
         {error && (
@@ -432,12 +362,12 @@ export default function Hero() {
         )}
 
         {/* Products Sections */}
-        <ProductSection 
+        {/* <ProductSection 
           title="Grab the best deal on Smartphones"
           products={smartphoneProducts}
           viewAllHref="/products?category=smartphones"
           isLoading={isLoading}
-        />
+        /> */}
 
         <ProductSection 
           title="Hot Deals & Special Offers"
