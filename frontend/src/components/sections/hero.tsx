@@ -74,13 +74,8 @@ const calculateDiscount = (price: number, originalPrice?: number) => {
 function ProductCard({ product }: { product: Product }) {
   const [isWishlisted, setIsWishlisted] = useState(false)
   const [justAdded, setJustAdded] = useState(false)
-  const { addItem } = (() => {
-    try {
-      return useCart()
-    } catch (e) {
-      return { addItem: () => {} }
-    }
-  })()
+  // Call hook at top-level of component (rules-of-hooks)
+  const { addItem } = useCart()
   
   const discount = product.originalPrice 
     ? calculateDiscount(product.price, product.originalPrice)
@@ -333,9 +328,7 @@ export default function Hero() {
   }, [])
 
   // Categorize products
-  const smartphoneProducts = allProducts.filter(product => 
-    ['iPhone', 'Samsung', 'Android/Pixel'].includes(product.category)
-  ).slice(0, 8)
+  // (smartphoneProducts intentionally omitted to reduce unused variable warnings)
 
   const accessoryProducts = allProducts.filter(product => 
     product.category === 'Accessories'
