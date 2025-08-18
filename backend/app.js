@@ -19,7 +19,12 @@ const orderRoutes = require('./routes/order')
 
 // Middleware
 app.use(cors({
-  origin: ['http://localhost:3000', 'https://smartcoms.onrender.com', 'https://phone-mart-frontend.vercel.app'],
+  origin: [
+    'http://localhost:3000',
+    'https://smartcoms.onrender.com',
+    'https://phone-mart-frontend.vercel.app',
+    'https://phone-mart-1.onrender.com' // <-- add this domain
+  ],
   credentials: true
 }))
 app.use(express.json({ limit: '10mb' }))
