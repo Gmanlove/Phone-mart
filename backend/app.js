@@ -23,7 +23,9 @@ app.use(cors({
     'http://localhost:3000',
     'https://smartcoms.onrender.com',
     'https://phone-mart-frontend.vercel.app',
-    'https://phone-mart-1.onrender.com' // <-- add this domain
+    'https://phone-mart-1.onrender.com', // <-- add this domain
+    'https://www.smartcommunicationsltd.ng/',
+    'https://smartcommunicationsltd.ng/'
   ],
   credentials: true
 }))
