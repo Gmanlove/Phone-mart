@@ -132,31 +132,7 @@ export default function Header() {
 
   return (
     <>
-      {/* Top Bar */}
-      <div className="bg-blue-600 dark:bg-blue-700 text-white py-2 px-4 text-sm">
-        <div className="container mx-auto max-w-7xl flex flex-col sm:flex-row justify-between items-center space-y-1 sm:space-y-0">
-          <div className="flex items-center space-x-4">
-            <span className="flex items-center">
-              <Phone className="h-4 w-4 text-blue-300 mr-1" />
-              <strong>0814 645 2793</strong>
-            </span>
-            <span className="hidden md:flex items-center">
-              <MapPin className="h-4 w-4 text-blue-300 mr-1" />
-              Uyo, Akwa Ibom State
-            </span>
-          </div>
-          <div className="flex items-center space-x-4 text-xs sm:text-sm">
-            <span className="flex items-center">
-              <Clock className="h-4 w-4 text-blue-300 mr-1" />
-              Mon-Sat: 9AM-8PM WAT
-            </span>
-            <span className="flex items-center">
-              <Truck className="h-4 w-4 text-blue-300 mr-1" />
-              Free delivery on orders over ₦50,000
-            </span>
-          </div>
-        </div>
-      </div>
+  {/* Top Bar removed per request */}
 
       {/* Main Header */}
       <header className="sticky top-0 z-50 bg-gray-50/95 dark:bg-slate-800/95 backdrop-blur-sm border-b border-gray-200 dark:border-gray-600 shadow-sm">
