@@ -130,21 +130,21 @@ export default function AdminDashboard() {
   return (
     <div className="space-y-6">
       {/* Page Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Dashboard</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">Dashboard</h1>
           <p className="text-gray-600 dark:text-gray-400 mt-1">Welcome to Smart Communications Admin Panel</p>
         </div>
-        <div className="flex items-center space-x-3">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-3 space-y-2 sm:space-y-0">
           <button
             onClick={handleRefresh}
             disabled={refreshing}
-            className="bg-white dark:bg-gray-800 rounded-lg px-4 py-2 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors flex items-center gap-2"
+            className="bg-white dark:bg-gray-800 rounded-lg px-3 sm:px-4 py-2 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors flex items-center gap-2"
           >
             <RefreshCw className={`h-4 w-4 ${refreshing ? 'animate-spin' : ''}`} />
             <span className="text-sm">Refresh</span>
           </button>
-          <div className="bg-white dark:bg-gray-800 rounded-lg px-4 py-2 border border-gray-200 dark:border-gray-700">
+          <div className="bg-white dark:bg-gray-800 rounded-lg px-3 sm:px-4 py-2 border border-gray-200 dark:border-gray-700">
             <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
               <Calendar className="h-4 w-4 mr-2" />
               {new Date().toLocaleDateString('en-US', { 
@@ -159,8 +159,8 @@ export default function AdminDashboard() {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4 sm:p-6">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Total Products</p>
@@ -176,7 +176,7 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+  <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4 sm:p-6">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Total Orders</p>
@@ -194,7 +194,7 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+  <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4 sm:p-6">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Total Users</p>
@@ -210,7 +210,7 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+  <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4 sm:p-6">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Total Earnings</p>
@@ -232,7 +232,7 @@ export default function AdminDashboard() {
       </div>
 
       {/* Recent Orders and Top Products */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
         {/* Recent Orders */}
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
           <div className="p-6 border-b border-gray-200 dark:border-gray-700">
@@ -247,11 +247,11 @@ export default function AdminDashboard() {
               </Link>
             </div>
           </div>
-          <div className="p-6">
+          <div className="p-4 sm:p-6">
             {stats?.recentOrders && stats.recentOrders.length > 0 ? (
               <div className="space-y-4">
                 {stats.recentOrders.map((order) => (
-                  <div key={order._id} className="flex items-center justify-between py-3 border-b border-gray-100 dark:border-gray-700 last:border-0">
+                  <div key={order._id} className="flex flex-col sm:flex-row sm:items-center justify-between py-3 border-b border-gray-100 dark:border-gray-700 last:border-0">
                     <div className="flex-1">
                       <p className="font-medium text-gray-900 dark:text-white">{order.name}</p>
                       <p className="text-sm text-gray-500 dark:text-gray-400">
@@ -259,7 +259,7 @@ export default function AdminDashboard() {
                         {formatDate(order.date)}
                       </p>
                     </div>
-                    <div className="text-right">
+                    <div className="mt-2 sm:mt-0 text-right">
                       <p className="font-semibold text-gray-900 dark:text-white">
                         {formatCurrency(order.total)}
                       </p>
@@ -294,12 +294,12 @@ export default function AdminDashboard() {
               </Link>
             </div>
           </div>
-          <div className="p-6">
+          <div className="p-4 sm:p-6">
             {stats?.topProducts && stats.topProducts.length > 0 ? (
               <div className="space-y-4">
                 {stats.topProducts.map((product, index) => (
-                  <div key={product._id} className="flex items-center justify-between py-3 border-b border-gray-100 dark:border-gray-700 last:border-0">
-                    <div className="flex items-center">
+                  <div key={product._id} className="flex flex-col sm:flex-row sm:items-center justify-between py-3 border-b border-gray-100 dark:border-gray-700 last:border-0">
+                    <div className="flex items-start sm:items-center">
                       <div className="bg-blue-100 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 rounded-full w-6 h-6 flex items-center justify-center text-sm font-medium mr-3">
                         {index + 1}
                       </div>
@@ -310,11 +310,11 @@ export default function AdminDashboard() {
                         </p>
                       </div>
                     </div>
-                    <div className="text-right">
+                    <div className="mt-2 sm:mt-0 text-right">
                       <p className="font-semibold text-gray-900 dark:text-white">
                         {formatCurrency(product.totalRevenue)}
                       </p>
-                      <div className="flex items-center text-sm text-green-600">
+                      <div className="flex items-center text-sm text-green-600 justify-end">
                         <TrendingUp className="h-3 w-3 mr-1" />
                         Revenue
                       </div>
@@ -334,9 +334,9 @@ export default function AdminDashboard() {
       </div>
 
       {/* Quick Actions */}
-      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4 sm:p-6">
         <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Quick Actions</h3>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4">
           <Link 
             href="/admin/upload-product"
             className="flex items-center p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors"

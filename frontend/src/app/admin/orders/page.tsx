@@ -323,7 +323,7 @@ export default function AdminEarningsPage() {
 
       {/* Earnings Chart */}
       <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
-        <div className="p-6 border-b border-gray-200 dark:border-gray-700">
+        <div className="p-4 sm:p-6 border-b border-gray-200 dark:border-gray-700">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
               <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Revenue Trends</h2>
@@ -353,7 +353,7 @@ export default function AdminEarningsPage() {
           </div>
         </div>
 
-        <div className="p-6">
+  <div className="p-4 sm:p-6">
           {earningsData.length > 0 ? (
             <div className="h-80 flex items-end justify-between space-x-2">
               {earningsData.slice(-15).map((item, index) => {
@@ -395,7 +395,7 @@ export default function AdminEarningsPage() {
       </div>
 
       {/* Top Earning Products and Recent High-Value Orders */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Top Earning Products */}
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
           <div className="p-6 border-b border-gray-200 dark:border-gray-700">
@@ -405,7 +405,7 @@ export default function AdminEarningsPage() {
             </div>
             <p className="text-gray-600 dark:text-gray-400 text-sm mt-1">Products generating the most revenue</p>
           </div>
-          <div className="p-6">
+          <div className="p-4 sm:p-6">
             {summary?.topEarningProducts && summary.topEarningProducts.length > 0 ? (
               <div className="space-y-4">
                 {summary.topEarningProducts.map((product, index) => (
@@ -450,7 +450,7 @@ export default function AdminEarningsPage() {
             </div>
             <p className="text-gray-600 dark:text-gray-400 text-sm mt-1">Latest completed orders</p>
           </div>
-          <div className="p-6">
+          <div className="p-4 sm:p-6">
             {recentOrders && recentOrders.length > 0 ? (
               <div className="space-y-4">
                 {recentOrders.slice(0, 5).map((order) => (
@@ -487,22 +487,21 @@ export default function AdminEarningsPage() {
 
       {/* Detailed Earnings Breakdown */}
       <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
-        <div className="p-6 border-b border-gray-200 dark:border-gray-700">
+  <div className="p-4 sm:p-6 border-b border-gray-200 dark:border-gray-700">
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Earnings Breakdown</h3>
           <p className="text-gray-600 dark:text-gray-400 text-sm mt-1">
             Detailed revenue analysis for the selected period
           </p>
         </div>
-        <div className="p-6">
-          <div className="overflow-x-auto">
-            <table className="w-full">
+  <div className="p-4 sm:p-6">
+    <table className="w-full table-fixed">
               <thead>
                 <tr className="border-b border-gray-200 dark:border-gray-700">
-                  <th className="text-left py-3 text-sm font-medium text-gray-500 dark:text-gray-400">Date</th>
-                  <th className="text-right py-3 text-sm font-medium text-gray-500 dark:text-gray-400">Revenue</th>
-                  <th className="text-right py-3 text-sm font-medium text-gray-500 dark:text-gray-400">Orders</th>
-                  <th className="text-right py-3 text-sm font-medium text-gray-500 dark:text-gray-400">Avg Order</th>
-                  <th className="text-right py-3 text-sm font-medium text-gray-500 dark:text-gray-400">Growth</th>
+      <th className="text-left py-2 px-2 text-sm font-medium text-gray-500 dark:text-gray-400">Date</th>
+      <th className="text-right py-2 px-2 text-sm font-medium text-gray-500 dark:text-gray-400">Revenue</th>
+      <th className="text-right py-2 px-2 text-sm font-medium text-gray-500 dark:text-gray-400">Orders</th>
+      <th className="text-right py-2 px-2 text-sm font-medium text-gray-500 dark:text-gray-400">Avg Order</th>
+      <th className="text-right py-2 px-2 text-sm font-medium text-gray-500 dark:text-gray-400">Growth</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
@@ -515,13 +514,13 @@ export default function AdminEarningsPage() {
 
                   return (
                     <tr key={index} className="hover:bg-gray-50 dark:hover:bg-gray-700/50">
-                      <td className="py-4 text-gray-900 dark:text-white font-medium">{dateStr}</td>
-                      <td className="py-4 text-right text-gray-900 dark:text-white font-semibold">
+                      <td className="py-2 px-2 align-top text-gray-900 dark:text-white font-medium whitespace-normal break-words text-sm">{dateStr}</td>
+                      <td className="py-2 px-2 align-top text-right text-gray-900 dark:text-white font-semibold whitespace-normal break-words text-sm">
                         {formatCurrency(item.total)}
                       </td>
-                      <td className="py-4 text-right text-gray-900 dark:text-white">{item.count}</td>
-                      <td className="py-4 text-right text-gray-900 dark:text-white">{formatCurrency(avgOrder)}</td>
-                      <td className="py-4 text-right">
+                      <td className="py-2 px-2 align-top text-right text-gray-900 dark:text-white text-sm">{item.count}</td>
+                      <td className="py-2 px-2 align-top text-right text-gray-900 dark:text-white text-sm">{formatCurrency(avgOrder)}</td>
+                      <td className="py-2 px-2 align-top text-right">
                         <div
                           className={`flex items-center justify-end ${growth >= 0 ? "text-green-600" : "text-red-600"}`}
                         >
@@ -549,6 +548,5 @@ export default function AdminEarningsPage() {
           </div>
         </div>
       </div>
-    </div>
   )
 }

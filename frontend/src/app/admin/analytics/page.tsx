@@ -274,7 +274,7 @@ export default function AdminAnalytics() {
 
       {/* Earnings Chart */}
       <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
-        <div className="p-6 border-b border-gray-200 dark:border-gray-700">
+        <div className="p-4 sm:p-6 border-b border-gray-200 dark:border-gray-700">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
               <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Revenue Trends</h2>
@@ -302,9 +302,7 @@ export default function AdminAnalytics() {
               </select>
             </div>
           </div>
-        </div>
-        
-        <div className="p-6">
+        <div className="p-4 sm:p-6">
           {earningsLoading ? (
             <div className="flex items-center justify-center h-64">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
@@ -335,17 +333,17 @@ export default function AdminAnalytics() {
         </div>
       </div>
 
-      {/* Top Products and Recent Activity */}
+        {/* Top Products and Recent Activity */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Top Selling Products */}
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
-          <div className="p-6 border-b border-gray-200 dark:border-gray-700">
+          <div className="p-4 sm:p-6 border-b border-gray-200 dark:border-gray-700">
             <div className="flex items-center justify-between">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Top Selling Products</h3>
               <Star className="h-5 w-5 text-yellow-500" />
             </div>
           </div>
-          <div className="p-6">
+          <div className="p-4 sm:p-6">
             {analytics?.topProducts && analytics.topProducts.length > 0 ? (
               <div className="space-y-4">
                 {analytics.topProducts.map((product, index) => (
@@ -383,13 +381,13 @@ export default function AdminAnalytics() {
 
         {/* Performance Metrics */}
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
-          <div className="p-6 border-b border-gray-200 dark:border-gray-700">
+          <div className="p-4 sm:p-6 border-b border-gray-200 dark:border-gray-700">
             <div className="flex items-center justify-between">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Performance Metrics</h3>
               <BarChart3 className="h-5 w-5 text-blue-500" />
             </div>
           </div>
-          <div className="p-6 space-y-6">
+          <div className="p-4 sm:p-6 space-y-6">
             {/* Average Order Value */}
             <div className="flex items-center justify-between">
               <div>
@@ -458,20 +456,19 @@ export default function AdminAnalytics() {
 
       {/* Monthly Earnings Breakdown */}
       <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
-        <div className="p-6 border-b border-gray-200 dark:border-gray-700">
+        <div className="p-4 sm:p-6 border-b border-gray-200 dark:border-gray-700">
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Monthly Performance</h3>
           <p className="text-gray-600 dark:text-gray-400 text-sm">Revenue and order trends by month</p>
         </div>
-        <div className="p-6">
-          <div className="overflow-x-auto">
-            <table className="w-full">
+        <div className="p-4 sm:p-6">
+          <table className="w-full table-fixed">
               <thead>
                 <tr className="border-b border-gray-200 dark:border-gray-700">
-                  <th className="text-left py-3 text-sm font-medium text-gray-500 dark:text-gray-400">Month</th>
-                  <th className="text-right py-3 text-sm font-medium text-gray-500 dark:text-gray-400">Revenue</th>
-                  <th className="text-right py-3 text-sm font-medium text-gray-500 dark:text-gray-400">Orders</th>
-                  <th className="text-right py-3 text-sm font-medium text-gray-500 dark:text-gray-400">Avg Order</th>
-                  <th className="text-right py-3 text-sm font-medium text-gray-500 dark:text-gray-400">Growth</th>
+                  <th className="text-left py-2 px-2 text-sm font-medium text-gray-500 dark:text-gray-400">Month</th>
+                  <th className="text-right py-2 px-2 text-sm font-medium text-gray-500 dark:text-gray-400">Revenue</th>
+                  <th className="text-right py-2 px-2 text-sm font-medium text-gray-500 dark:text-gray-400">Orders</th>
+                  <th className="text-right py-2 px-2 text-sm font-medium text-gray-500 dark:text-gray-400">Avg Order</th>
+                  <th className="text-right py-2 px-2 text-sm font-medium text-gray-500 dark:text-gray-400">Growth</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
@@ -486,15 +483,15 @@ export default function AdminAnalytics() {
                   
                   return (
                     <tr key={`${month._id.year}-${month._id.month}`}>
-                      <td className="py-4 text-gray-900 dark:text-white font-medium">{monthName}</td>
-                      <td className="py-4 text-right text-gray-900 dark:text-white font-semibold">
+                      <td className="py-2 px-2 align-top text-gray-900 dark:text-white font-medium whitespace-normal break-words text-sm">{monthName}</td>
+                      <td className="py-2 px-2 align-top text-right text-gray-900 dark:text-white font-semibold whitespace-normal break-words text-sm">
                         {formatCurrency(month.total)}
                       </td>
-                      <td className="py-4 text-right text-gray-900 dark:text-white">{month.count}</td>
-                      <td className="py-4 text-right text-gray-900 dark:text-white">
+                      <td className="py-2 px-2 align-top text-right text-gray-900 dark:text-white text-sm">{month.count}</td>
+                      <td className="py-2 px-2 align-top text-right text-gray-900 dark:text-white text-sm">
                         {formatCurrency(avgOrder)}
                       </td>
-                      <td className="py-4 text-right">
+                      <td className="py-2 px-2 align-top text-right">
                         <div className={`flex items-center justify-end ${
                           growth >= 0 ? 'text-green-600' : 'text-red-600'
                         }`}>

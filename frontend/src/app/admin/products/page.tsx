@@ -286,115 +286,61 @@ export default function AdminProductsPage() {
       {viewMode === "table" ? (
         /* Table View */
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full">
+          <div>
+            <table className="w-full table-fixed">
               <thead className="bg-gray-50 dark:bg-gray-700">
                 <tr>
-                  <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                    Product
-                  </th>
-                  <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                    Category
-                  </th>
-                  <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                    Price
-                  </th>
-                  <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                    Stock
-                  </th>
-                  <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                    Status
-                  </th>
-                  <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                    Date
-                  </th>
-                  <th className="px-6 py-4 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                    Actions
-                  </th>
+                  <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Product</th>
+                  <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Category</th>
+                  <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Price</th>
+                  <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Stock</th>
+                  <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th>
+                  <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Date</th>
+                  <th className="px-2 py-2 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
                 {products.map((product) => (
                   <tr key={product._id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50">
-                    <td className="px-6 py-4">
+                    <td className="px-2 py-2">
                       <div className="flex items-center">
-                        <div className="h-16 w-16 flex-shrink-0">
+                        <div className="h-12 w-12 flex-shrink-0">
                           <Image
                             src={product.images[0] || "/placeholder-product.jpg"}
                             alt={product.name}
-                            width={64}
-                            height={64}
-                            className="h-16 w-16 rounded-lg object-cover"
+                            width={48}
+                            height={48}
+                            className="h-12 w-12 rounded-lg object-cover"
                           />
                         </div>
-                        <div className="ml-4">
+                        <div className="ml-3">
                           <div className="text-sm font-medium text-gray-900 dark:text-white">{product.name}</div>
                           <div className="text-sm text-gray-500 dark:text-gray-400">{product.brand}</div>
                           {product.isHotDeal && (
-                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400 mt-1">
-                              Hot Deal {product.hotDealDiscount}% OFF
-                            </span>
+                            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400 mt-1">Hot Deal {product.hotDealDiscount}% OFF</span>
                           )}
                         </div>
                       </div>
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="px-2 py-2">
                       <div className="text-sm text-gray-900 dark:text-white">{product.category}</div>
-                      {product.subcategory && (
-                        <div className="text-xs text-gray-500 dark:text-gray-400">{product.subcategory}</div>
-                      )}
+                      {product.subcategory && (<div className="text-xs text-gray-500 dark:text-gray-400">{product.subcategory}</div>)}
                     </td>
-                    <td className="px-6 py-4">
-                      <div className="text-sm font-medium text-gray-900 dark:text-white">
-                        {formatCurrency(product.price)}
-                      </div>
-                      {product.originalPrice && product.originalPrice > product.price && (
-                        <div className="text-xs text-gray-500 dark:text-gray-400 line-through">
-                          {formatCurrency(product.originalPrice)}
-                        </div>
-                      )}
+                    <td className="px-2 py-2">
+                      <div className="text-sm font-medium text-gray-900 dark:text-white">{formatCurrency(product.price)}</div>
+                      {product.originalPrice && product.originalPrice > product.price && (<div className="text-xs text-gray-500 dark:text-gray-400 line-through">{formatCurrency(product.originalPrice)}</div>)}
                     </td>
-                    <td className="px-6 py-4">
-                      <span
-                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                          product.stock > 10
-                            ? "bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400"
-                            : product.stock > 0
-                              ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400"
-                              : "bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400"
-                        }`}
-                      >
-                        {product.stock} in stock
-                      </span>
+                    <td className="px-2 py-2">
+                      <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${product.stock > 10 ? "bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400" : product.stock > 0 ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400" : "bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400"}`}>{product.stock} in stock</span>
                     </td>
-                    <td className="px-6 py-4">
-                      <button
-                        onClick={() => toggleProductActive(product._id, !product.isActive)}
-                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                          product.isActive
-                            ? "bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400"
-                            : "bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400"
-                        }`}
-                      >
-                        {product.isActive ? "Active" : "Inactive"}
-                      </button>
+                    <td className="px-2 py-2">
+                      <button onClick={() => toggleProductActive(product._id, !product.isActive)} className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${product.isActive ? "bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400" : "bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400"}`}>{product.isActive ? "Active" : "Inactive"}</button>
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
-                      {formatDate(product.createdAt)}
-                    </td>
-                    <td className="px-6 py-4 text-right">
+                    <td className="px-2 py-2 text-sm text-gray-500 dark:text-gray-400">{formatDate(product.createdAt)}</td>
+                    <td className="px-2 py-2 text-right">
                       <div className="flex items-center justify-end space-x-2">
-                        <QuickPriceEdit
-                          product={product}
-                          onUpdate={(newPrice) => handleUpdatePrice(product._id, newPrice)}
-                        />
-                        <button
-                          onClick={() => setDeleteConfirm(product._id)}
-                          className="p-2 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/20 rounded-lg transition-colors"
-                          title="Delete Product"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
+                        <QuickPriceEdit product={product} onUpdate={(newPrice) => handleUpdatePrice(product._id, newPrice)} />
+                        <button onClick={() => setDeleteConfirm(product._id)} className="p-2 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/20 rounded-lg transition-colors" title="Delete Product"><Trash2 className="w-4 h-4" /></button>
                       </div>
                     </td>
                   </tr>

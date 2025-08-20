@@ -83,11 +83,11 @@ export default function AdminLayout({
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      {/* Mobile sidebar overlay */}
+    <div className={`min-h-screen bg-gray-50 dark:bg-gray-900 overflow-x-hidden`}>
+      {/* Mobile sidebar overlay (lower z-index than sidebar so drawer remains interactive) */}
       {sidebarOpen && (
         <div 
-          className="fixed inset-0 bg-gray-600 bg-opacity-75 z-50 lg:hidden"
+          className="fixed inset-0 bg-gray-600 bg-opacity-40 z-30 lg:hidden"
           onClick={() => setSidebarOpen(false)}
         />
       )}
@@ -95,12 +95,12 @@ export default function AdminLayout({
       <div className="flex min-h-screen">
         {/* Sidebar - Fixed width */}
         <div className={`
-          fixed inset-y-0 left-0 z-40 w-64 bg-white dark:bg-gray-800 shadow-lg transform transition-transform duration-300 ease-in-out
+          fixed inset-y-0 left-0 z-50 w-64 bg-white dark:bg-gray-800 shadow-lg transform transition-transform duration-300 ease-in-out
           lg:relative lg:translate-x-0 lg:shadow-none lg:z-auto lg:flex lg:flex-col
           ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
         `}>
           {/* Sidebar Header */}
-          <div className="flex items-center justify-between h-16 px-6 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
+      <div className="flex items-center justify-between h-16 px-4 sm:px-6 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
             <div className="flex items-center space-x-2">
               <Image
                 src="/smart.png"
@@ -109,13 +109,14 @@ export default function AdminLayout({
                 height={32}
                 className="w-8 h-8 object-contain"
               />
-              <span className="text-xl font-bold text-gray-900 dark:text-white">Admin</span>
+        <span className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white">Admin</span>
             </div>
             <button
               onClick={() => setSidebarOpen(false)}
-              className="lg:hidden p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+              aria-label="Close menu"
+              className="lg:hidden p-3 rounded-md text-gray-600 hover:text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700 transition-colors"
             >
-              <X className="h-5 w-5" />
+              <X className="h-6 w-6" />
             </button>
           </div>
 
@@ -153,19 +154,21 @@ export default function AdminLayout({
           </div>
         </div>
 
-        {/* Main content area */}
-        <div className="flex-1 flex flex-col lg:ml-0">
+  {/* Main content area — translate right on small screens when sidebar opens so drawer pushes content */}
+  <div className={`flex-1 flex flex-col lg:ml-0 transition-transform duration-300 ${sidebarOpen ? 'lg:translate-x-64' : 'translate-x-0'}`}>
           {/* Top header - Fixed height */}
           <header className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700 flex-shrink-0 sticky top-0 z-30">
-            <div className="flex items-center justify-between h-16 px-6">
+            <div className="flex items-center justify-between h-16 px-4 sm:px-6">
               <div className="flex items-center">
                 <button
                   onClick={() => setSidebarOpen(true)}
-                  className="lg:hidden p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                  aria-label="Open menu"
+                  className="lg:hidden p-3 rounded-md text-gray-600 hover:text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700 transition-colors"
                 >
-                  <Menu className="h-5 w-5" />
+                  <Menu className="h-6 w-6" />
                 </button>
-                <h1 className="ml-2 text-2xl font-semibold text-gray-900 dark:text-white">
+                {/* hide the text beside the hamburger on small screens */}
+                <h1 className="ml-2 text-2xl font-semibold text-gray-900 dark:text-white hidden lg:block">
                   Smart Communications Admin
                 </h1>
               </div>
@@ -189,8 +192,8 @@ export default function AdminLayout({
           </header>
 
           {/* Page content - Natural scrolling */}
-          <main className="flex-1 p-6 bg-gray-50 dark:bg-gray-900">
-            <div className="max-w-7xl mx-auto">
+          <main className="flex-1 p-4 sm:p-6 bg-gray-50 dark:bg-gray-900">
+            <div className="max-w-7xl mx-auto px-2 sm:px-6 w-full">
               {children}
             </div>
           </main>

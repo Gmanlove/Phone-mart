@@ -482,63 +482,46 @@ export default function AdminEarningsPage() {
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Earnings Breakdown</h3>
           <p className="text-gray-600 dark:text-gray-400 text-sm mt-1">Detailed revenue analysis for the selected period</p>
         </div>
-        <div className="p-6">
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="border-b border-gray-200 dark:border-gray-700">
-                  <th className="text-left py-3 text-sm font-medium text-gray-500 dark:text-gray-400">Date</th>
-                  <th className="text-right py-3 text-sm font-medium text-gray-500 dark:text-gray-400">Revenue</th>
-                  <th className="text-right py-3 text-sm font-medium text-gray-500 dark:text-gray-400">Orders</th>
-                  <th className="text-right py-3 text-sm font-medium text-gray-500 dark:text-gray-400">Avg Order</th>
-                  <th className="text-right py-3 text-sm font-medium text-gray-500 dark:text-gray-400">Growth</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
-                {earningsData.slice(-10).map((item, index) => {
-                  const dateStr = item._id ? `${item._id.day || ''}/${item._id.month}/${item._id.year}` : 'N/A'
-                  const avgOrder = item.count > 0 ? item.total / item.count : 0
-                  const prevItem = earningsData[earningsData.indexOf(item) - 1]
-                  const growth = prevItem && prevItem.total > 0 ? 
-                    ((item.total - prevItem.total) / prevItem.total) * 100 : 0
-                  
-                  return (
-                    <tr key={index} className="hover:bg-gray-50 dark:hover:bg-gray-700/50">
-                      <td className="py-4 text-gray-900 dark:text-white font-medium">{dateStr}</td>
-                      <td className="py-4 text-right text-gray-900 dark:text-white font-semibold">
-                        {formatCurrency(item.total)}
-                      </td>
-                      <td className="py-4 text-right text-gray-900 dark:text-white">{item.count}</td>
-                      <td className="py-4 text-right text-gray-900 dark:text-white">
-                        {formatCurrency(avgOrder)}
-                      </td>
-                      <td className="py-4 text-right">
-                        <div className={`flex items-center justify-end ${
-                          growth >= 0 ? 'text-green-600' : 'text-red-600'
-                        }`}>
-                          {growth !== 0 && (
-                            <>
-                              {growth >= 0 ? (
-                                <ArrowUpRight className="h-4 w-4 mr-1" />
-                              ) : (
-                                <ArrowDownRight className="h-4 w-4 mr-1" />
-                              )}
-                              <span className="font-medium">
-                                {growth >= 0 ? '+' : ''}{growth.toFixed(1)}%
-                              </span>
-                            </>
-                          )}
-                          {growth === 0 && (
-                            <span className="text-gray-500 dark:text-gray-400">-</span>
-                          )}
-                        </div>
-                      </td>
-                    </tr>
-                  )
-                })}
-              </tbody>
-            </table>
-          </div>
+        <div className="p-4 sm:p-6">
+          <table className="w-full table-fixed">
+            <thead>
+              <tr className="border-b border-gray-200 dark:border-gray-700">
+                <th className="text-left py-2 px-2 text-sm font-medium text-gray-500 dark:text-gray-400">Date</th>
+                <th className="text-right py-2 px-2 text-sm font-medium text-gray-500 dark:text-gray-400">Revenue</th>
+                <th className="text-right py-2 px-2 text-sm font-medium text-gray-500 dark:text-gray-400">Orders</th>
+                <th className="text-right py-2 px-2 text-sm font-medium text-gray-500 dark:text-gray-400">Avg Order</th>
+                <th className="text-right py-2 px-2 text-sm font-medium text-gray-500 dark:text-gray-400">Growth</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+              {earningsData.slice(-10).map((item, index) => {
+                const dateStr = item._id ? `${item._id.day || ''}/${item._id.month}/${item._id.year}` : 'N/A'
+                const avgOrder = item.count > 0 ? item.total / item.count : 0
+                const prevItem = earningsData[earningsData.indexOf(item) - 1]
+                const growth = prevItem && prevItem.total > 0 ? ((item.total - prevItem.total) / prevItem.total) * 100 : 0
+
+                return (
+                  <tr key={index} className="hover:bg-gray-50 dark:hover:bg-gray-700/50">
+                    <td className="py-2 px-2 align-top text-gray-900 dark:text-white font-medium whitespace-normal break-words text-sm">{dateStr}</td>
+                    <td className="py-2 px-2 align-top text-right text-gray-900 dark:text-white font-semibold whitespace-normal break-words text-sm">{formatCurrency(item.total)}</td>
+                    <td className="py-2 px-2 align-top text-right text-gray-900 dark:text-white text-sm">{item.count}</td>
+                    <td className="py-2 px-2 align-top text-right text-gray-900 dark:text-white text-sm">{formatCurrency(avgOrder)}</td>
+                    <td className="py-2 px-2 align-top text-right">
+                      <div className={`flex items-center justify-end ${growth >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                        {growth !== 0 && (
+                          <>
+                            {growth >= 0 ? <ArrowUpRight className="h-4 w-4 mr-1" /> : <ArrowDownRight className="h-4 w-4 mr-1" />}
+                            <span className="font-medium">{growth >= 0 ? '+' : ''}{growth.toFixed(1)}%</span>
+                          </>
+                        )}
+                        {growth === 0 && <span className="text-gray-500 dark:text-gray-400">-</span>}
+                      </div>
+                    </td>
+                  </tr>
+                )
+              })}
+            </tbody>
+          </table>
         </div>
       </div>
     </div>

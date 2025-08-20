@@ -9,7 +9,7 @@ const storeImages = [
     id: 1,
     src: "/img1.jpeg",
     alt: "Smart Communications Main Store Interior",
-    caption: "Our flagship store in Uyo, Akwa Ibom",
+  caption: "87 Ikot Ekpene Rd - 89 IKot Ekpene rd ,Uyo",
   },
   {
     id: 2,

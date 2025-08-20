@@ -48,7 +48,7 @@ export default function Footer() {
               
               <div className="flex items-center space-x-3 text-sm text-gray-600 dark:text-gray-300">
                 <MapPin className="h-4 w-4 text-blue-600" />
-                <span>Lagos, Nigeria</span>
+                <span>89 IKot Ekpene rd ,Uyo, Nigeria</span>
               </div>
               
               <div className="flex items-center space-x-3 text-sm text-gray-600 dark:text-gray-300">
