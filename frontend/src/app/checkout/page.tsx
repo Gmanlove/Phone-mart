@@ -52,7 +52,7 @@ export default function CheckoutPage() {
   const [deliveryInfo, setDeliveryInfo] = useState<DeliveryInfo>({
     address: "",
     city: "",
-    state: "89 IKot Ekpene rd ,Uyo",
+  state: "Akwa Ibom",
     zipCode: "",
     deliveryNote: ""
   })
@@ -509,7 +509,7 @@ export default function CheckoutPage() {
                           className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                           required
                         >
-                          <option value="89 IKot Ekpene rd ,Uyo">89 IKot Ekpene rd ,Uyo</option>
+                          <option value="Akwa Ibom">Akwa Ibom</option>
                           <option value="Abuja">Abuja</option>
                           <option value="Kano">Kano</option>
                           <option value="Ibadan">Ibadan</option>

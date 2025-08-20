@@ -134,19 +134,19 @@ export default function ProductsGrid() {
             {/* Results header */}
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <div>
-                    <p className="text-gray-600">
+                    <p className="text-black dark:text-white">
                         {searchQuery ? (
-                            <>Showing results for &quot;<span className="font-semibold text-gray-900">{searchQuery}</span>&quot; - </>
+                            <>Showing results for &quot;<span className="font-semibold text-black dark:text-white">{searchQuery}</span>&quot; - </>
                         ) : ''}
                         {startIndex + 1}-{Math.min(startIndex + productsPerPage, sortedProducts.length)} of {sortedProducts.length} products
                     </p>
                     {searchQuery && sortedProducts.length === 0 && (
-                        <p className="text-red-500 mt-2">No products found for &quot;{searchQuery}&quot;. Try different keywords or browse all products.</p>
+                        <p className="text-black mt-2">No products found for &quot;{searchQuery}&quot;. Try different keywords or browse all products.</p>
                     )}
                 </div>
 
                 <select
-                    className="w-48 block rounded-md border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-blue-500 focus:ring-blue-500 focus:outline-none"
+                    className="w-48 block rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-black shadow-sm focus:border-blue-500 focus:ring-blue-500 focus:outline-none"
                     value={sortBy}
                     onChange={(e) => setSortBy(e.target.value)}
                 >

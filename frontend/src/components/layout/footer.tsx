@@ -34,23 +34,38 @@ export default function Footer() {
             <div className="space-y-3">
               <div className="flex items-center space-x-3 text-sm text-gray-600 dark:text-gray-300">
                 <Phone className="h-4 w-4 text-blue-600" />
-                <a href="tel:08146452793" className="hover:text-blue-600 transition-colors">
+                <a href="tel:+2348146452793" className="hover:text-blue-600 transition-colors">
                   0814 645 2793
+                </a>
+                <a
+                  href="https://wa.me/2348146452793"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Chat with us on WhatsApp"
+                  className="ml-2 text-green-600 hover:text-green-700 transition-colors"
+                >
+                  WhatsApp
                 </a>
               </div>
               
               <div className="flex items-center space-x-3 text-sm text-gray-600 dark:text-gray-300">
                 <Mail className="h-4 w-4 text-blue-600" />
-                <a href="mailto:info@smartcomms.ng" className="hover:text-blue-600 transition-colors">
-                  info@smartcomms.ng
+                <a href="mailto:smartcommunicationsltd01@gmail.com" className="hover:text-blue-600 transition-colors">
+                  smartcommunicationsltd01@gmail.com
                 </a>
               </div>
               
-              <div className="flex items-center space-x-3 text-sm text-gray-600 dark:text-gray-300">
+                <div className="flex items-center space-x-3 text-sm text-gray-600 dark:text-gray-300">
                 <MapPin className="h-4 w-4 text-blue-600" />
-                <span>89 IKot Ekpene rd ,Uyo, Nigeria</span>
-              </div>
-              
+                <a
+                  href="https://maps.app.goo.gl/R9auquxBFEorUpVu7"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-blue-600 transition-colors"
+                >
+                  87 Ikot Ekpene Rd - Uyo, Akwa Ibom
+                </a>
+                </div>
               <div className="flex items-center space-x-3 text-sm text-gray-600 dark:text-gray-300">
                 <Clock className="h-4 w-4 text-blue-600" />
                 <span>Mon-Sat: 9AM-7PM</span>
@@ -146,7 +161,7 @@ export default function Footer() {
         <div className="mt-12 pt-8 border-t border-gray-200 dark:border-gray-700">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
             <p className="text-gray-600 dark:text-gray-300 text-sm">
-              © 2024 Smart Communications. All rights reserved.
+              © {new Date().getFullYear()} Smart Communications. All rights reserved.
             </p>
             <div className="flex space-x-6 text-sm">
               <a href="#" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 transition-colors">

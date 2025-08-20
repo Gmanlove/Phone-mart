@@ -39,7 +39,19 @@ export default function SupportPage() {
     {
       icon: MapPin,
       title: "Visit Our Store",
-      description: "Get hands-on support at 87 Ikot Ekpene Rd - 89 IKot Ekpene rd ,Uyo",
+      description: (
+        <span>
+          Get hands-on support at{' '}
+          <a
+            href="https://maps.app.goo.gl/R9auquxBFEorUpVu7"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline"
+          >
+            87 Ikot Ekpene Rd - Uyo, Akwa Ibom
+          </a>
+        </span>
+      ),
       availability: "Mon-Sat 9AM-8PM WAT",
       action: "Get Directions",
       color: "bg-orange-500",
@@ -60,7 +72,7 @@ export default function SupportPage() {
     {
       category: "orders",
       question: "How long does delivery take in Nigeria?",
-      answer: "We offer same-day delivery in 89 IKot Ekpene rd ,Uyo and Abuja for orders placed before 2PM. Other cities typically receive orders within 1-3 business days."
+  answer: "We offer same-day delivery in Uyo (87 Ikot Ekpene Rd) and Abuja for orders placed before 2PM. Other cities typically receive orders within 1-3 business days."
     },
     {
       category: "products",

@@ -9,7 +9,7 @@ const storeImages = [
     id: 1,
     src: "/img1.jpeg",
     alt: "Smart Communications Main Store Interior",
-  caption: "87 Ikot Ekpene Rd - 89 IKot Ekpene rd ,Uyo",
+    caption: "87 Ikot Ekpene Rd - Uyo, Akwa Ibom",
   },
   {
     id: 2,
@@ -63,7 +63,21 @@ export default function StorePhotos() {
           {/* Image overlay with caption */}
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
           <div className="absolute bottom-4 left-4 right-4">
-            <p className="text-white font-semibold text-lg mb-2">{storeImages[currentImage].caption}</p>
+            {/* If caption mentions the store address, render it as a link to Google Maps */}
+            {String(storeImages[currentImage].caption).includes("Ikot Ekpene") ? (
+              <p className="text-white font-semibold text-lg mb-2">
+                <a
+                  href="https://maps.app.goo.gl/R9auquxBFEorUpVu7"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline hover:text-gray-200"
+                >
+                  {storeImages[currentImage].caption}
+                </a>
+              </p>
+            ) : (
+              <p className="text-white font-semibold text-lg mb-2">{storeImages[currentImage].caption}</p>
+            )}
             <div className="flex items-center justify-between">
               <div className="flex space-x-2">
                 {storeImages.map((_, index) => (
