@@ -7,6 +7,7 @@ import ProductCard from "@/components/product/product-card"
 import type { Review } from "@/components/product/product-card"
 
 export interface Product {
+    stock?: number | boolean | null
     specs?: Record<string, unknown>
     _id: string
     id: string
@@ -173,7 +174,8 @@ export default function ProductsGrid() {
                                                             : 0,
                             specs: product.specs || {}, // Also fix specs if needed
                             features: product.features || [], // Provide default for features
-                            inStock: product.inStock ?? false, // Ensure boolean value
+                            // Map backend numeric `stock` to boolean `inStock` so items with stock > 0 are available
+                            inStock: (typeof product.stock === 'number' ? product.stock : (product.inStock ? 1 : 0)) > 0,
                             warranty: product.warranty || "1 Year", // Provide default warranty
                             fastDelivery: true, // Default value
                             isFeatured: false, // Default value

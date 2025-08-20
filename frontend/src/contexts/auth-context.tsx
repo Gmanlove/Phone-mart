@@ -5,6 +5,7 @@ import { createContext, useContext, useState, useEffect, ReactNode } from "react
 interface User {
   email: string
   isAdmin: boolean
+  token?: string
 }
 
 interface AuthContextType {
@@ -32,10 +33,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
     const userEmail = localStorage.getItem("userEmail")
     const isAdmin = localStorage.getItem("isAdmin")
     
-    if (isLoggedIn === "true" && userEmail) {
+    const token = localStorage.getItem("token")
+    
+    if (isLoggedIn === "true" && userEmail && token) {
       setUser({
         email: userEmail,
-        isAdmin: isAdmin === "true"
+        isAdmin: isAdmin === "true",
+        token: token
       })
     } else {
       setUser(null)
@@ -58,14 +62,16 @@ export function AuthProvider({ children }: AuthProviderProps) {
       
       const data = await res.json()
       
-      if (res.ok) {
+      if (res.ok && data.token) {
         localStorage.setItem("isLoggedIn", "true")
         localStorage.setItem("userEmail", email)
         localStorage.setItem("isAdmin", data.isAdmin ? "true" : "false")
+        localStorage.setItem("token", data.token)
         
         setUser({
           email,
-          isAdmin: data.isAdmin || false
+          isAdmin: data.isAdmin || false,
+          token: data.token
         })
         
         return true
@@ -81,6 +87,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     localStorage.removeItem("isLoggedIn")
     localStorage.removeItem("userEmail")
     localStorage.removeItem("isAdmin")
+    localStorage.removeItem("token")
     setUser(null)
   }
 

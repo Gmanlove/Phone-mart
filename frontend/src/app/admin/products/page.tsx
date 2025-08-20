@@ -286,8 +286,8 @@ export default function AdminProductsPage() {
       {viewMode === "table" ? (
         /* Table View */
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
-          <div>
-            <table className="w-full table-fixed">
+      <div className="w-full overflow-x-auto">
+        <table className="min-w-[900px] w-full table-fixed">
               <thead className="bg-gray-50 dark:bg-gray-700">
                 <tr>
                   <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Product</th>
@@ -348,6 +348,46 @@ export default function AdminProductsPage() {
               </tbody>
             </table>
           </div>
+          {/* Mobile cards for table view - show on small screens */}
+          <div className="sm:hidden p-4 space-y-4">
+            {products.length > 0 ? (
+              products.map((product) => (
+                <div key={product._id} className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                  <div className="flex items-start justify-between">
+                    <div className="flex items-start gap-3">
+                      <div className="w-16 h-16 flex-shrink-0 rounded-lg overflow-hidden bg-gray-100">
+                        <Image src={product.images[0] || "/placeholder-product.jpg"} alt={product.name} width={64} height={64} className="object-cover w-full h-full" />
+                      </div>
+                      <div>
+                        <div className="text-sm font-medium text-gray-900 dark:text-white">{product.name}</div>
+                        <div className="text-xs text-gray-500 dark:text-gray-300">{product.brand}</div>
+                        <div className="text-sm text-gray-900 dark:text-white mt-1">{formatCurrency(product.price)}</div>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-xs text-gray-500 dark:text-gray-300">{formatDate(product.createdAt)}</div>
+                      <div className="mt-2">
+                        <button onClick={() => toggleProductActive(product._id, !product.isActive)} className={`px-2 py-1 rounded text-xs ${product.isActive ? 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400' : 'bg-gray-100 text-gray-700 dark:bg-gray-900/20 dark:text-gray-300'}`}>
+                          {product.isActive ? 'Active' : 'Inactive'}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2 mt-3">
+                    <QuickPriceEdit product={product} onUpdate={(newPrice) => handleUpdatePrice(product._id, newPrice)} />
+                    <button onClick={() => setDeleteConfirm(product._id)} className="px-3 py-1 bg-red-600 text-white rounded-lg text-sm flex items-center">
+                      <Trash2 className="w-4 h-4 mr-2" /> Delete
+                    </button>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="text-center p-6">
+                <p className="text-gray-500 dark:text-gray-400">No products found.</p>
+              </div>
+            )}
+          </div>
         </div>
       ) : (
         /* Grid View */
@@ -361,9 +401,9 @@ export default function AdminProductsPage() {
                 <Image
                   src={product.images[0] || "/placeholder-product.jpg"}
                   alt={product.name}
-                  width={300}
-                  height={200}
-                  className="w-full h-48 object-cover"
+                  width={600}
+                  height={360}
+                  className="w-full h-40 sm:h-48 object-cover"
                 />
                 {product.isHotDeal && (
                   <div className="absolute top-2 left-2 bg-red-500 text-white px-2 py-1 rounded-lg text-xs font-medium">
@@ -382,7 +422,7 @@ export default function AdminProductsPage() {
                 </div>
               </div>
 
-              <div className="p-4">
+                <div className="p-4">
                 <div className="flex items-start justify-between mb-2">
                   <h3 className="font-semibold text-gray-900 dark:text-white text-sm line-clamp-2">{product.name}</h3>
                 </div>
@@ -413,7 +453,7 @@ export default function AdminProductsPage() {
                   </span>
                 </div>
 
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between flex-wrap gap-2">
                   <span className="text-xs text-gray-500 dark:text-gray-400">{product.category}</span>
                   <div className="flex items-center space-x-1">
                     <QuickPriceEdit
