@@ -3,6 +3,7 @@
 import Image from "next/image"
 import { Minus, Plus, Trash2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { formatCurrency } from "@/lib/utils"
 import { Card, CardContent } from "@/components/ui/card"
 import { useCart } from "@/contexts/cart-context"
 import { useState } from "react"
@@ -119,12 +120,12 @@ export default function CartItem({ item }: CartItemProps) {
                 )}
                 
                 <div className="flex items-center gap-2">
-                  <span className="text-lg font-bold text-gray-900">
-                    ${item.price.toFixed(2)}
-                  </span>
+                    <span className="text-lg font-bold text-gray-900">
+                      {formatCurrency(item.price)}
+                    </span>
                   {item.originalPrice && item.originalPrice > item.price && (
                     <span className="text-sm text-gray-500 line-through">
-                      ${item.originalPrice.toFixed(2)}
+                        {item.originalPrice ? formatCurrency(item.originalPrice) : ''}
                     </span>
                   )}
                 </div>
@@ -175,12 +176,12 @@ export default function CartItem({ item }: CartItemProps) {
               </div>
 
               <div className="text-right">
-                <div className="text-lg font-bold text-gray-900">
-                  ${totalPrice.toFixed(2)}
-                </div>
+                  <div className="text-lg font-bold text-gray-900">
+                    {formatCurrency(totalPrice)}
+                  </div>
                 {savings > 0 && (
                   <div className="text-xs text-green-600 font-medium">
-                    Save ${savings.toFixed(2)}
+                      Save {formatCurrency(savings)}
                   </div>
                 )}
               </div>
@@ -296,15 +297,15 @@ export default function CartItem({ item }: CartItemProps) {
             {/* Item Total */}
             <div className="text-right space-y-1 min-w-[120px]">
               <div className="text-2xl font-bold text-gray-900">
-                ${totalPrice.toFixed(2)}
+                  {formatCurrency(totalPrice)}
               </div>
               {savings > 0 && (
                 <div className="text-sm text-green-600 font-semibold bg-green-50 px-2 py-1 rounded-full">
-                  Save ${savings.toFixed(2)}
+                    Save {formatCurrency(savings)}
                 </div>
               )}
               <div className="text-xs text-gray-500">
-                ${item.price.toFixed(2)} each
+                  {formatCurrency(item.price)} each
               </div>
             </div>
           </div>

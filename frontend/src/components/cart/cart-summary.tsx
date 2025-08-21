@@ -7,6 +7,7 @@ import { Separator } from "@/components/ui/separator"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { ShoppingBag, Tag, Lock, Shield, CreditCard, Truck, Gift, Percent, CheckCircle2, AlertCircle, Sparkles } from "lucide-react"
+import { formatCurrency } from "@/lib/utils"
 import Link from "next/link"
 import { useState, useEffect } from "react"
 
@@ -100,7 +101,7 @@ export default function CartSummary() {
               <div className="flex items-center gap-2 mb-3">
                 <Truck className="h-4 w-4 lg:h-5 lg:w-5 text-green-600" />
                 <span className="text-sm lg:text-base font-semibold text-green-800">
-                  ${remainingForFreeShipping.toFixed(2)} away from FREE shipping!
+                  {formatCurrency(remainingForFreeShipping)} away from FREE shipping!
                 </span>
               </div>
               <div className="w-full bg-green-100 rounded-full h-2 lg:h-3 overflow-hidden">
@@ -112,7 +113,7 @@ export default function CartSummary() {
                 </div>
               </div>
               <p className="text-xs lg:text-sm text-green-700 mt-2">
-                Add ${remainingForFreeShipping.toFixed(2)} more to qualify for free shipping
+                Add {formatCurrency(remainingForFreeShipping)} more to qualify for free shipping
               </p>
             </div>
           )}
@@ -166,7 +167,7 @@ export default function CartSummary() {
                   </div>
                   <div>
                     <p className="font-semibold text-green-800">Code Applied: {appliedPromo}</p>
-                    <p className="text-sm text-green-600">Save ${promoDiscount.toFixed(2)}</p>
+                    <p className="text-sm text-green-600">Save {formatCurrency(promoDiscount)}</p>
                   </div>
                 </div>
                 <Button
@@ -186,7 +187,7 @@ export default function CartSummary() {
           <div className="space-y-4">
             <div className="flex justify-between items-center py-2">
               <span className="text-gray-600 text-sm lg:text-base">Subtotal</span>
-              <span className="font-semibold text-base lg:text-lg">${subtotal.toFixed(2)}</span>
+              <span className="font-semibold text-base lg:text-lg">{formatCurrency(subtotal)}</span>
             </div>
 
             {appliedPromo && (
@@ -195,7 +196,7 @@ export default function CartSummary() {
                   <Percent className="h-4 w-4" />
                   Discount ({appliedPromo})
                 </span>
-                <span className="font-semibold text-base lg:text-lg">-${promoDiscount.toFixed(2)}</span>
+                <span className="font-semibold text-base lg:text-lg">-{formatCurrency(promoDiscount)}</span>
               </div>
             )}
 
@@ -211,14 +212,14 @@ export default function CartSummary() {
                     FREE
                   </span>
                 ) : (
-                  `$${shipping.toFixed(2)}`
+                  formatCurrency(shipping)
                 )}
               </span>
             </div>
 
             <div className="flex justify-between items-center py-2">
               <span className="text-gray-600 text-sm lg:text-base">Tax (8%)</span>
-              <span className="font-semibold text-base lg:text-lg">${tax.toFixed(2)}</span>
+              <span className="font-semibold text-base lg:text-lg">{formatCurrency(tax)}</span>
             </div>
           </div>
 
@@ -227,7 +228,7 @@ export default function CartSummary() {
             <div className="bg-gradient-to-r from-yellow-50 to-orange-50 border border-yellow-200 rounded-xl p-4 animate-fade-in">
               <div className="flex items-center gap-2 text-yellow-800">
                 <Sparkles className="h-5 w-5" />
-                <span className="font-semibold">You&apos;re saving ${totalSavings.toFixed(2)}!</span>
+                <span className="font-semibold">You&apos;re saving {formatCurrency(totalSavings)}!</span>
               </div>
             </div>
           )}
@@ -240,11 +241,11 @@ export default function CartSummary() {
               <span className="text-lg lg:text-xl font-bold text-gray-900">Total</span>
               <div className="text-right">
                 <div className="text-2xl lg:text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                  ${finalTotal.toFixed(2)}
+                  {formatCurrency(finalTotal)}
                 </div>
                 {totalSavings > 0 && (
                   <div className="text-sm text-green-600 font-medium">
-                    Total savings: ${totalSavings.toFixed(2)}
+                    Total savings: {formatCurrency(totalSavings)}
                   </div>
                 )}
               </div>

@@ -35,11 +35,14 @@ export function AuthProvider({ children }: AuthProviderProps) {
     
     const token = localStorage.getItem("token")
     
-    if (isLoggedIn === "true" && userEmail && token) {
+    // Backend currently doesn't always return a token on signin.
+    // Treat the presence of the isLoggedIn flag + userEmail as sufficient
+    // to restore the authenticated user in the client. Token is optional.
+    if (isLoggedIn === "true" && userEmail) {
       setUser({
         email: userEmail,
         isAdmin: isAdmin === "true",
-        token: token
+        token: token || undefined,
       })
     } else {
       setUser(null)
@@ -68,14 +71,15 @@ export function AuthProvider({ children }: AuthProviderProps) {
         localStorage.setItem("isLoggedIn", "true")
         localStorage.setItem("userEmail", email)
         localStorage.setItem("isAdmin", data.isAdmin ? "true" : "false")
-        if (data.token) {
-          localStorage.setItem("token", data.token)
-        }
+        // Backend may not return a JWT token. Persist a token key (empty string)
+        // to keep localStorage consistent for the client-side auth checks.
+        const tokenToStore = data.token || ""
+        localStorage.setItem("token", tokenToStore)
 
         setUser({
           email,
           isAdmin: data.isAdmin || false,
-          token: data.token
+          token: data.token || undefined,
         })
 
         return true

@@ -19,3 +19,13 @@ export function extractCloudinaryPublicId(url: string) {
     return null;
   }
 }
+
+// Format number as Nigerian Naira currency string, e.g. ₦1,234.56
+export function formatCurrency(amount: number) {
+  try {
+    return new Intl.NumberFormat('en-NG', { style: 'currency', currency: 'NGN', maximumFractionDigits: 2 }).format(amount)
+  } catch {
+    // Fallback
+    return `₦${amount.toFixed(2)}`
+  }
+}
