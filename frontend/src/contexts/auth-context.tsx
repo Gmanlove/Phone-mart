@@ -71,10 +71,16 @@ export function AuthProvider({ children }: AuthProviderProps) {
         localStorage.setItem("isLoggedIn", "true")
         localStorage.setItem("userEmail", email)
         localStorage.setItem("isAdmin", data.isAdmin ? "true" : "false")
-        // Backend may not return a JWT token. Persist a token key (empty string)
-        // to keep localStorage consistent for the client-side auth checks.
-        const tokenToStore = data.token || ""
-        localStorage.setItem("token", tokenToStore)
+        // Backend may not return a JWT token. Only persist the token when
+        // the backend actually returns one. Avoid storing an empty string
+        // because sending "Authorization: Bearer " (with an empty token)
+        // causes the backend auth middleware to treat it as present and
+        // then jwt.verify('') will fail with an invalid token (401).
+        if (data.token) {
+          localStorage.setItem("token", data.token)
+        } else {
+          localStorage.removeItem("token")
+        }
 
         setUser({
           email,

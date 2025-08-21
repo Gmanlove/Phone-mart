@@ -1,8 +1,126 @@
 "use client"
 
 import React from "react"
+import { useState, useEffect } from 'react'
+import { useAuth } from '@/contexts/auth-context'
+import { useOrders } from '@/contexts/order-context'
+
+type Billing = {
+  fullName?: string
+  addressLine1?: string
+  addressLine2?: string
+  city?: string
+  state?: string
+  country?: string
+  postalCode?: string
+  phone?: string
+  totalSpent?: number
+  totalChange?: string
+}
+
+type Profile = {
+  email?: string
+  name?: string
+  phone?: string
+  createdAt?: string
+  isAdmin?: boolean
+  billing?: Billing
+}
 
 export default function ProfilePage() {
+  const { user } = useAuth()
+  const [profile, setProfile] = useState<Profile | null>(null)
+  const { orders = [], fetchUserOrders = async () => {} } = useOrders() || {}
+  const [billing, setBilling] = useState<Billing>({
+    fullName: '',
+    addressLine1: '',
+    addressLine2: '',
+    city: '',
+    state: '',
+    country: '',
+    postalCode: '',
+    phone: ''
+  })
+  const [loadingBilling, setLoadingBilling] = useState(false)
+  const [message, setMessage] = useState<string | null>(null)
+
+  useEffect(() => {
+    const fetchBilling = async () => {
+      if (!user || !user.email) return
+      setLoadingBilling(true)
+      try {
+        const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://smartcoms.onrender.com'
+  const token = localStorage.getItem('token') || ''
+  console.log('fetchBilling: using token length', token ? token.length : 0)
+  const headers: Record<string, string> = {}
+  if (token) headers.Authorization = `Bearer ${token}`
+  const res = await fetch(`${API_BASE_URL}/api/auth/billing`, { headers })
+        if (res.ok) {
+          const data = await res.json()
+          setBilling({ ...(data.billing || {}) })
+        }
+      } catch (err) {
+        console.error('Failed to fetch billing', err)
+      } finally {
+        setLoadingBilling(false)
+      }
+    }
+    const fetchProfile = async () => {
+      if (!user?.email) return
+      try {
+        const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://smartcoms.onrender.com'
+  const token = localStorage.getItem('token') || ''
+  console.log('fetchProfile: using token length', token ? token.length : 0)
+  const headersP: Record<string, string> = {}
+  if (token) headersP.Authorization = `Bearer ${token}`
+  const res = await fetch(`${API_BASE_URL}/api/auth/profile`, { headers: headersP })
+        if (res.ok) {
+          const data = await res.json()
+          setProfile(data)
+          // also set billing from profile if empty
+          if (!billing.fullName && data.billing) setBilling(prev => ({ ...prev, ...(data.billing || {}) }))
+        }
+      } catch (err) {
+        console.error('Failed to fetch profile', err)
+      }
+    }
+
+    fetchBilling()
+    fetchProfile()
+  }, [user])
+
+  const handleChange = (field: string, value: string) => {
+    setBilling(prev => ({ ...prev, [field]: value }))
+  }
+
+  const saveBilling = async () => {
+    if (!user || !user.email) {
+      setMessage('You must be signed in to save billing information.')
+      return
+    }
+    try {
+      const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://smartcoms.onrender.com'
+      const token = localStorage.getItem('token') || ''
+      console.log('saveBilling: token present?', !!token)
+      const headers: Record<string, string> = { 'Content-Type': 'application/json' }
+      if (token) headers.Authorization = `Bearer ${token}`
+      const res = await fetch(`${API_BASE_URL}/api/auth/billing`, {
+        method: 'PUT',
+        headers,
+        body: JSON.stringify({ billing })
+      })
+      if (res.ok) {
+        setMessage('Billing information saved')
+      } else {
+        const err = await res.json()
+        setMessage(err.error || 'Failed to save billing')
+      }
+    } catch (err) {
+      console.error(err)
+      setMessage('Failed to save billing')
+    }
+    setTimeout(() => setMessage(null), 3000)
+  }
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header Section */}
@@ -28,17 +146,17 @@ export default function ProfilePage() {
               {/* Profile Info */}
               <div className="flex-1">
                 <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-2">
-                  Welcome, John Doe!
+                  Welcome, {profile?.email || user?.email || 'Customer'}
                 </h1>
                 <p className="text-blue-100 text-base sm:text-lg mb-4">
-                  Member since January 2024 • Premium Account
+                  Member since {profile?.createdAt ? new Date(profile.createdAt).toLocaleDateString() : '—'} • {profile?.isAdmin ? 'Admin' : 'Member'}
                 </p>
                 <div className="flex flex-wrap gap-2 sm:gap-3">
                   <span className="inline-flex items-center px-3 py-1 bg-white/20 backdrop-blur-sm rounded-full text-sm text-white">
                     <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
-                    Verified
+                    {profile?.email ? 'Verified' : 'Unverified'}
                   </span>
                   <span className="inline-flex items-center px-3 py-1 bg-yellow-500/30 backdrop-blur-sm rounded-full text-sm text-white">
                     <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 24 24">
@@ -163,11 +281,36 @@ export default function ProfilePage() {
               </div>
             </div>
 
+            {/* Billing Information */}
+            <div className="bg-white rounded-2xl shadow-xl p-6 sm:p-8">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Billing Information</h2>
+                <p className="text-sm text-gray-500">{user?.email || ''}</p>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <input className="p-3 border rounded-lg" placeholder="Full name" value={billing.fullName} onChange={(e) => handleChange('fullName', e.target.value)} />
+                <input className="p-3 border rounded-lg" placeholder="Phone" value={billing.phone} onChange={(e) => handleChange('phone', e.target.value)} />
+                <input className="p-3 border rounded-lg col-span-2" placeholder="Address line 1" value={billing.addressLine1} onChange={(e) => handleChange('addressLine1', e.target.value)} />
+                <input className="p-3 border rounded-lg col-span-2" placeholder="Address line 2" value={billing.addressLine2} onChange={(e) => handleChange('addressLine2', e.target.value)} />
+                <input className="p-3 border rounded-lg" placeholder="City" value={billing.city} onChange={(e) => handleChange('city', e.target.value)} />
+                <input className="p-3 border rounded-lg" placeholder="State/Region" value={billing.state} onChange={(e) => handleChange('state', e.target.value)} />
+                <input className="p-3 border rounded-lg" placeholder="Country" value={billing.country} onChange={(e) => handleChange('country', e.target.value)} />
+                <input className="p-3 border rounded-lg" placeholder="Postal Code" value={billing.postalCode} onChange={(e) => handleChange('postalCode', e.target.value)} />
+              </div>
+
+              <div className="mt-4 flex items-center gap-3">
+                <button onClick={saveBilling} className="bg-blue-600 text-white px-4 py-2 rounded-lg">Save Billing</button>
+                {message && <span className="text-sm text-green-600">{message}</span>}
+                {loadingBilling && <span className="text-sm text-gray-500">Loading...</span>}
+              </div>
+            </div>
+
             {/* Account Statistics */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
               {[
-                { label: "Total Orders", value: "24", icon: "shopping-bag", change: "+3 this month" },
-                { label: "Total Spent", value: "$2,450", icon: "currency", change: "+$340 this month" },
+                { label: "Total Orders", value: String(orders?.length || 0), icon: "shopping-bag", change: "+3 this month" },
+                { label: "Total Spent", value: profile?.billing?.totalSpent ? profile.billing.totalSpent : '-', icon: "currency", change: profile?.billing?.totalChange ? profile.billing.totalChange : '' },
                 { label: "Saved Items", value: "18", icon: "heart", change: "+2 recently" },
                 { label: "Reward Points", value: "1,250", icon: "star", change: "+50 earned" }
               ].map((stat, index) => (

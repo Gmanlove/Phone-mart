@@ -15,7 +15,7 @@ export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
-  const [form, setForm] = useState({ email: "", phone: "", password: "", confirmPassword: "" })
+  const [form, setForm] = useState({ name: "", email: "", phone: "", password: "", confirmPassword: "" })
   const [message, setMessage] = useState("")
   const [passwordStrength, setPasswordStrength] = useState(0)
   const { toast } = useToast()
@@ -67,6 +67,7 @@ export default function RegisterPage() {
     }
     
     const payload = {
+      name: form.name,
       email: form.email,
       phone: form.phone,
       password: form.password,
@@ -231,6 +232,24 @@ export default function RegisterPage() {
               <div className="px-6 sm:px-8 py-8">
                 <form onSubmit={handleSubmit} className="space-y-6">
                   {/* Email Field */}
+                  {/* Name Field */}
+                  <div>
+                    <Label htmlFor="name" className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                      Full Name
+                    </Label>
+                    <div className="relative mt-2">
+                      <Input
+                        id="name"
+                        name="name"
+                        type="text"
+                        required
+                        placeholder="Enter your full name"
+                        className="pl-10 h-12 border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-500 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                        value={form.name}
+                        onChange={handleChange}
+                      />
+                    </div>
+                  </div>
                   <div>
                     <Label htmlFor="email" className="text-sm font-semibold text-gray-700 dark:text-gray-300">
                       Email Address
