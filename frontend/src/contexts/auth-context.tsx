@@ -62,20 +62,25 @@ export function AuthProvider({ children }: AuthProviderProps) {
       
       const data = await res.json()
       
-      if (res.ok && data.token) {
+      // Backend currently returns { message, isAdmin } on success and may not include a token.
+      // Treat any successful (2xx) response as a successful login.
+      if (res.ok) {
         localStorage.setItem("isLoggedIn", "true")
         localStorage.setItem("userEmail", email)
         localStorage.setItem("isAdmin", data.isAdmin ? "true" : "false")
-        localStorage.setItem("token", data.token)
-        
+        if (data.token) {
+          localStorage.setItem("token", data.token)
+        }
+
         setUser({
           email,
           isAdmin: data.isAdmin || false,
           token: data.token
         })
-        
+
         return true
       }
+
       return false
     } catch (error) {
       console.error("Login error:", error)

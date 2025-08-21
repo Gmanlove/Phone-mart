@@ -19,6 +19,7 @@ function LoginForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const returnTo = searchParams.get('returnTo') || '/products'
+  const prefillEmail = searchParams.get('email') || ''
 
   // Redirect if already authenticated
   useEffect(() => {
@@ -26,6 +27,13 @@ function LoginForm() {
       router.push(returnTo)
     }
   }, [isAuthenticated, router, returnTo])
+
+  // Prefill email if provided in query params
+  useEffect(() => {
+    if (prefillEmail) {
+      setForm((f) => ({ ...f, email: decodeURIComponent(prefillEmail) }))
+    }
+  }, [prefillEmail])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value })

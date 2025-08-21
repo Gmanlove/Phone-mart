@@ -84,16 +84,19 @@ export default function RegisterPage() {
       setIsLoading(false)
       
       if (res.ok) {
-        setMessage("Signup successful!")
+        setMessage("Signup successful! Redirecting to login...")
         toast({
           title: "Account created successfully!",
-          description: "Welcome to Smart Communications. Signing you in now...",
+          description: "Please sign in to continue.",
         })
-        
-        // Automatically log the user in after successful registration
-        const loginSuccess = await login(form.email, form.password)
-        if (loginSuccess) {
-          router.push("/products")
+
+        // Redirect the user to the login page so they can sign in
+        // include the email as a query param to prefill the login form
+        try {
+          const encodedEmail = encodeURIComponent(form.email || "")
+          router.push(`/login?email=${encodedEmail}`)
+        } catch (e) {
+          router.push('/login')
         }
       } else {
         setMessage(data.error || "Signup failed")
