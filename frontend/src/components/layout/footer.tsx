@@ -27,7 +27,7 @@ export default function Footer() {
               </span>
             </div>
             <p className="text-gray-600 dark:text-gray-300 mb-6 max-w-md">
-              Nigeria&apos;s trusted mobile store. Authentic smartphones, competitive prices, and exceptional service since 2020.
+              Nigeria&apos;s trusted mobile store. Authentic smartphones, competitive prices, and exceptional service since 2015.
             </p>
 
             {/* Contact Info */}
@@ -38,7 +38,7 @@ export default function Footer() {
                   0814 645 2793
                 </a>
                 <a
-                  href="https://wa.me/2348146452793"
+                  href="https://wa.me/+2348057266289"
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label="Chat with us on WhatsApp"
