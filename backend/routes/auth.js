@@ -29,6 +29,12 @@ router.post('/signup', async (req, res) => {
     return res.status(400).json({ error: 'All fields are required: email, phone, password.' });
   }
   try {
+    // Check if user with this email already exists
+    const existing = await User.findOne({ email });
+    if (existing) {
+      return res.status(409).json({ error: 'User with this email already exists' });
+    }
+
     const user = new User({ name, email, phone, password });
     await user.save();
     // Issue token
@@ -36,6 +42,10 @@ router.post('/signup', async (req, res) => {
     const token = jwt.sign({ email: user.email, id: user._id }, secret, { expiresIn: '7d' })
     res.status(201).json({ message: 'User created successfully', token, user: { email: user.email, name: user.name, isAdmin: user.isAdmin } });
   } catch (err) {
+    // If it's a duplicate key error, give a friendly message
+    if (err && err.code === 11000) {
+      return res.status(409).json({ error: 'User with this email already exists' })
+    }
     res.status(400).json({ error: err.message });
   }
 });
@@ -45,9 +55,9 @@ router.post('/signin', async (req, res) => {
   const { email, password } = req.body;
   try {
     const user = await User.findOne({ email });
-    if (!user) return res.status(400).json({ error: 'Invalid credentials' });
-    const isMatch = await user.comparePassword(password);
-    if (!isMatch) return res.status(400).json({ error: 'Invalid credentials' });
+  if (!user) return res.status(404).json({ error: 'User not found' });
+  const isMatch = await user.comparePassword(password);
+  if (!isMatch) return res.status(401).json({ error: 'Incorrect password' });
     const secret = process.env.JWT_SECRET || 'dev_secret'
     const token = jwt.sign({ email: user.email, id: user._id }, secret, { expiresIn: '7d' })
     res.json({ message: 'Signin successful', token, user: { email: user.email, name: user.name, isAdmin: user.isAdmin } });

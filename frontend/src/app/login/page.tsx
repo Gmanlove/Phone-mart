@@ -45,21 +45,22 @@ function LoginForm() {
     setIsLoading(true)
     
     try {
-      const success = await login(form.email, form.password)
-      
-      if (success) {
+      const result = await login(form.email, form.password)
+
+      if (result.success) {
         setMessage("Sign in successful! Redirecting...")
         setMessageType("success")
-        
+
         // Redirect after a short delay
         setTimeout(() => {
           router.push(returnTo)
         }, 1500)
       } else {
-        setMessage("Invalid credentials. Please check your email and password.")
+        // Show backend provided error message when available
+        setMessage(result.error || "Invalid credentials. Please check your email and password.")
         setMessageType("error")
       }
-  } catch {
+    } catch {
       setMessage("Network error. Please check your connection and try again.")
       setMessageType("error")
     } finally {

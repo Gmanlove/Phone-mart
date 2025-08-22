@@ -12,7 +12,8 @@ interface AuthContextType {
   user: User | null
   isAuthenticated: boolean
   isLoading: boolean
-  login: (email: string, password: string) => Promise<boolean>
+  // login now returns an object with success and optional error message
+  login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>
   logout: () => void
   checkAuth: () => void
 }
@@ -54,7 +55,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     checkAuth()
   }, [])
 
-  const login = async (email: string, password: string): Promise<boolean> => {
+  const login = async (email: string, password: string): Promise<{ success: boolean; error?: string }> => {
     try {
       const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "https://smartcoms.onrender.com"
       const res = await fetch(`${API_BASE_URL}/api/auth/signin`, {
@@ -88,13 +89,14 @@ export function AuthProvider({ children }: AuthProviderProps) {
           token: data.token || undefined,
         })
 
-        return true
+        return { success: true }
       }
 
-      return false
+      // If the response was not ok, return the backend error message if present
+      return { success: false, error: data && data.error ? data.error : 'Invalid credentials' }
     } catch (error) {
       console.error("Login error:", error)
-      return false
+      return { success: false, error: 'Network error' }
     }
   }
 
