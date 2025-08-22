@@ -16,8 +16,8 @@ const products = [
   {
     name: 'iPhone 15 Pro Max',
     brand: 'Apple',
-    price: 1199,
-    originalPrice: 1299,
+  price: 1199000,
+  originalPrice: 1299000,
     description: 'The most advanced iPhone yet with titanium design, A17 Pro chip, and Pro camera system.',
     category: 'iPhone',
     subcategory: 'Pro Max',
@@ -38,8 +38,8 @@ const products = [
   {
     name: 'iPhone 14',
     brand: 'Apple',
-    price: 699,
-    originalPrice: 799,
+  price: 699000,
+  originalPrice: 799000,
     description: 'iPhone 14 features the A15 Bionic chip with 5-core GPU, advanced camera system, and all-day battery.',
     category: 'iPhone',
     specs: {
@@ -57,8 +57,8 @@ const products = [
   {
     name: 'iPhone 13 Mini',
     brand: 'Apple',
-    price: 529,
-    originalPrice: 629,
+  price: 529000,
+  originalPrice: 629000,
     description: 'Compact iPhone 13 Mini with A15 Bionic chip in a perfectly sized design.',
     category: 'iPhone',
     subcategory: 'Mini',
@@ -79,8 +79,8 @@ const products = [
   {
     name: 'iPhone 12 Pro',
     brand: 'Apple',
-    price: 799,
-    originalPrice: 999,
+  price: 799000,
+  originalPrice: 999000,
     description: 'iPhone 12 Pro with A14 Bionic, Pro camera system, and LiDAR Scanner.',
     category: 'iPhone',
     subcategory: 'Pro',
@@ -99,7 +99,7 @@ const products = [
   {
     name: 'iPhone SE (3rd generation)',
     brand: 'Apple',
-    price: 429,
+  price: 429000,
     description: 'iPhone SE with A15 Bionic chip and Touch ID in a classic design.',
     category: 'iPhone',
     subcategory: 'SE',
@@ -120,8 +120,8 @@ const products = [
   {
     name: 'Samsung Galaxy S24 Ultra',
     brand: 'Samsung',
-    price: 1299,
-    originalPrice: 1399,
+  price: 1299000,
+  originalPrice: 1399000,
     description: 'Ultimate Galaxy experience with S Pen, 200MP camera, and Galaxy AI features.',
     category: 'Samsung',
     subcategory: 'Galaxy S',
@@ -142,8 +142,8 @@ const products = [
   {
     name: 'Samsung Galaxy S23',
     brand: 'Samsung',
-    price: 799,
-    originalPrice: 899,
+  price: 799000,
+  originalPrice: 899000,
     description: 'Galaxy S23 with enhanced camera capabilities and flagship performance.',
     category: 'Samsung',
     subcategory: 'Galaxy S',
@@ -162,7 +162,7 @@ const products = [
   {
     name: 'Samsung Galaxy A54 5G',
     brand: 'Samsung',
-    price: 449,
+  price: 449000,
     description: 'Mid-range Galaxy with premium features, great camera, and 5G connectivity.',
     category: 'Samsung',
     subcategory: 'Galaxy A',
@@ -183,8 +183,8 @@ const products = [
   {
     name: 'Samsung Galaxy Z Flip5',
     brand: 'Samsung',
-    price: 999,
-    originalPrice: 1099,
+  price: 999000,
+  originalPrice: 1099000,
     description: 'Innovative foldable phone with larger cover screen and improved hinge.',
     category: 'Samsung',
     subcategory: 'Galaxy Z',
@@ -203,8 +203,8 @@ const products = [
   {
     name: 'Samsung Galaxy Note 20',
     brand: 'Samsung',
-    price: 699,
-    originalPrice: 999,
+  price: 699000,
+  originalPrice: 999000,
     description: 'Powerful Note series with S Pen and productivity features.',
     category: 'Samsung',
     subcategory: 'Galaxy Note',
@@ -225,8 +225,8 @@ const products = [
   {
     name: 'Google Pixel 8 Pro',
     brand: 'Google',
-    price: 999,
-    originalPrice: 1099,
+  price: 999000,
+  originalPrice: 1099000,
     description: 'Most advanced Pixel with Magic Eraser, Best Take, and pure Android experience.',
     category: 'Android/Pixel',
     specs: {
@@ -246,8 +246,8 @@ const products = [
   {
     name: 'Google Pixel 7a',
     brand: 'Google',
-    price: 499,
-    originalPrice: 599,
+  price: 499000,
+  originalPrice: 599000,
     description: 'Affordable Pixel with flagship camera features and clean Android.',
     category: 'Android/Pixel',
     specs: {
@@ -265,8 +265,8 @@ const products = [
   {
     name: 'OnePlus 11',
     brand: 'OnePlus',
-    price: 699,
-    originalPrice: 799,
+  price: 699000,
+  originalPrice: 799000,
     description: 'Flagship killer with Snapdragon 8 Gen 2 and fast charging.',
     category: 'Android/Pixel',
     specs: {
@@ -284,8 +284,8 @@ const products = [
   {
     name: 'Xiaomi 13 Pro',
     brand: 'Xiaomi',
-    price: 899,
-    originalPrice: 999,
+  price: 899000,
+  originalPrice: 999000,
     description: 'Premium flagship with Leica cameras and powerful performance.',
     category: 'Android/Pixel',
     specs: {
@@ -305,8 +305,8 @@ const products = [
   {
     name: 'AirPods Pro (2nd generation)',
     brand: 'Apple',
-    price: 249,
-    originalPrice: 279,
+  price: 249000,
+  originalPrice: 279000,
     description: 'Premium wireless earbuds with Active Noise Cancellation and Spatial Audio.',
     category: 'Accessories',
     subcategory: 'Audio',
@@ -327,8 +327,8 @@ const products = [
   {
     name: 'Samsung Galaxy Buds2 Pro',
     brand: 'Samsung',
-    price: 199,
-    originalPrice: 229,
+  price: 199000,
+  originalPrice: 229000,
     description: 'Premium earbuds with Intelligent ANC and 360 Audio.',
     category: 'Accessories',
     subcategory: 'Audio',
@@ -346,8 +346,8 @@ const products = [
   {
     name: 'Anker PowerCore 10000',
     brand: 'Anker',
-    price: 29,
-    originalPrice: 39,
+  price: 29000,
+  originalPrice: 39000,
     description: 'Compact 10000mAh portable charger with PowerIQ technology.',
     category: 'Accessories',
     subcategory: 'Charging',
@@ -367,8 +367,8 @@ const products = [
   {
     name: 'MacBook Air M2',
     brand: 'Apple',
-    price: 1199,
-    originalPrice: 1299,
+  price: 1199000,
+  originalPrice: 1299000,
     description: 'Incredibly thin and light laptop powered by Apple M2 chip.',
     category: 'Laptops',
     specs: {
@@ -388,8 +388,8 @@ const products = [
   {
     name: 'Dell XPS 13',
     brand: 'Dell',
-    price: 999,
-    originalPrice: 1199,
+  price: 999000,
+  originalPrice: 1199000,
     description: 'Premium ultrabook with InfinityEdge display and powerful performance.',
     category: 'Laptops',
     specs: {
@@ -409,8 +409,8 @@ const products = [
   {
     name: 'Refurbished iPhone 11',
     brand: 'Apple',
-    price: 399,
-    originalPrice: 599,
+  price: 399000,
+  originalPrice: 599000,
     description: 'Certified refurbished iPhone 11 with dual camera system and A13 Bionic chip.',
     category: 'Hot Deals',
     specs: {
