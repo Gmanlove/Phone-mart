@@ -518,34 +518,45 @@ export default function AdminProductsPage() {
       )}
 
       {/* Delete Confirmation Modal */}
-      {deleteConfirm && (
-        <div className="fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center z-50">
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-xl max-w-md w-full mx-4 p-6">
-            <div className="flex items-center mb-4">
-              <AlertCircle className="h-6 w-6 text-red-600 mr-3" />
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Confirm Delete</h3>
-            </div>
-            <p className="text-gray-600 dark:text-gray-400 mb-6">
+{deleteConfirm && (
+  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-3 sm:p-4">
+    <div
+      className="w-full max-w-sm sm:max-w-md lg:max-w-lg bg-white dark:bg-gray-800 rounded-xl shadow-xl"
+      style={{ marginRight: "580px", marginBottom: "350pc" }}
+    >
+      <div className="p-4 sm:p-6 lg:p-8">
+        <div className="flex items-start gap-3 sm:gap-4 mb-4 sm:mb-6">
+          <div className="flex-shrink-0">
+            <AlertCircle className="h-5 w-5 sm:h-6 sm:w-6 text-red-600" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white mb-2">
+              Confirm Delete
+            </h3>
+            <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
               Are you sure you want to delete this product? This action cannot be undone.
             </p>
-            <div className="flex items-center justify-end space-x-3">
-              <button
-                onClick={() => setDeleteConfirm(null)}
-                className="px-4 py-2 text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={() => handleDelete(deleteConfirm)}
-                className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
-              >
-                Delete
-              </button>
-            </div>
           </div>
         </div>
-      )}
 
+        <div className="flex flex-col-reverse gap-2 sm:gap-3 sm:flex-row sm:justify-end">
+          <button
+            onClick={() => setDeleteConfirm(null)}
+            className="w-full sm:w-auto px-4 py-2.5 sm:py-3 text-sm sm:text-base text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors text-center font-medium order-2 sm:order-1"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={() => handleDelete(deleteConfirm)}
+            className="w-full sm:w-auto px-4 py-2.5 sm:py-3 text-sm sm:text-base bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium order-1 sm:order-2"
+          >
+            Delete Product
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+)}
       {/* Loading Overlay */}
       {loading && products.length > 0 && (
         <div className="fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center z-50">
@@ -568,13 +579,18 @@ function QuickPriceEdit({ product, onUpdate }: { product: Product; onUpdate: (ne
   const [loading, setLoading] = useState(false)
 
   const handleUpdate = async () => {
-    const price = Number.parseFloat(newPrice)
-    if (isNaN(price) || price < 0) return
+    const price = parseFloat(newPrice)
+    if (isNaN(price) || price <= 0) return
 
     setLoading(true)
-    await onUpdate(price)
-    setLoading(false)
-    setIsEditing(false)
+    try {
+      await onUpdate(price)
+      setIsEditing(false)
+    } catch (error) {
+      console.error("Price update error:", error)
+    } finally {
+      setLoading(false)
+    }
   }
 
   if (isEditing) {
@@ -584,9 +600,9 @@ function QuickPriceEdit({ product, onUpdate }: { product: Product; onUpdate: (ne
           type="number"
           value={newPrice}
           onChange={(e) => setNewPrice(e.target.value)}
-          className="w-20 px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-          step="0.01"
+          className="w-20 px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded focus:ring-1 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
           min="0"
+          step="0.01"
         />
         <button
           onClick={handleUpdate}
