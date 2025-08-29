@@ -330,7 +330,7 @@ export default function ProductDetailPage({
                 <Shield className="h-5 w-5 text-blue-600 mt-0.5" />
                 <div>
                   <h3 className="font-medium text-gray-900">Warranty</h3>
-                  <p className="text-sm text-gray-600">1 year manufacturer warranty included</p>
+                  <p className="text-sm text-gray-600">3 months manufacturer warranty included</p>
                 </div>
               </div>
             </div>
