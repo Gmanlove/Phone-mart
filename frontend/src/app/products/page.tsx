@@ -51,7 +51,7 @@ export default function ProductsPage() {
                   <div className="text-sm sm:text-base text-blue-200 mt-1">Expert Support</div>
                 </div>
                 <div className="text-center bg-white/10 rounded-xl p-4 backdrop-blur-sm">
-                  <div className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white">1 Year</div>
+                  <div className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white">3 months</div>
                   <div className="text-sm sm:text-base text-blue-200 mt-1">Warranty</div>
                 </div>
               </div>

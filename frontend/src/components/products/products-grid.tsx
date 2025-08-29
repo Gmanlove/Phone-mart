@@ -176,7 +176,7 @@ export default function ProductsGrid() {
                             features: product.features || [], // Provide default for features
                             // Map backend numeric `stock` to boolean `inStock` so items with stock > 0 are available
                             inStock: (typeof product.stock === 'number' ? product.stock : (product.inStock ? 1 : 0)) > 0,
-                            warranty: product.warranty || "1 Year", // Provide default warranty
+                            warranty: product.warranty || "3 months", // Provide default warranty
                             fastDelivery: true, // Default value
                             isFeatured: false, // Default value
                             isNew: product.isNew || false // Handle optional isNew

@@ -269,7 +269,7 @@ export default function ProductDetailPage({
                 </div>
                 <div className="flex items-center gap-2">
                   <Shield className="h-5 w-5 text-blue-600" />
-                  <span className="text-sm text-gray-700">1 Year Warranty</span>
+                  <span className="text-sm text-gray-700">3 Months Warranty</span>
                 </div>
               </div>
 
