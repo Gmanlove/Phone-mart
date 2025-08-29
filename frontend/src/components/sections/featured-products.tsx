@@ -215,16 +215,11 @@ export default function FeaturedProducts() {
     // Fetch products from API
     useEffect(() => {
         setLoading(true)
-        fetchProducts()
+        fetchProducts({ sort: 'newest' })
             .then((data: Product[]) => {
                 console.log("Fetched products for featured section:", data)
-                // Show featured/hot deal products first, then others
-                const sortedProducts = data.sort((a, b) => {
-                  if (a.isHotDeal && !b.isHotDeal) return -1
-                  if (!a.isHotDeal && b.isHotDeal) return 1
-                  return b.rating - a.rating
-                })
-                setProducts(sortedProducts.slice(0, 8)) // Show top 8 products
+                // Show newest products first
+                setProducts(data.slice(0, 8)) // Show top 8 newest products
                 setLoading(false)
             })
             .catch((err) => {

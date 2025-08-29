@@ -314,7 +314,7 @@ export default function Hero() {
     const loadProducts = async () => {
       try {
         setIsLoading(true)
-        const products = await fetchProducts()
+        const products = await fetchProducts({ sort: 'newest' })
         setAllProducts(products || [])
       } catch (err) {
         console.error('Error fetching products:', err)

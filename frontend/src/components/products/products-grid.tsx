@@ -56,6 +56,27 @@ export default function ProductsGrid() {
           queryParams.set('category', categoryFilter)
         }
         
+        // Add sort parameter based on sortBy state
+        let apiSortParam = 'newest' // Default to newest
+        switch (sortBy) {
+            case "price-low":
+                apiSortParam = 'price-low'
+                break
+            case "price-high":
+                apiSortParam = 'price-high'
+                break
+            case "rating":
+                apiSortParam = 'rating'
+                break
+            case "newest":
+                apiSortParam = 'newest'
+                break
+            default:
+                apiSortParam = 'newest' // Default to newest instead of featured
+                break
+        }
+        queryParams.set('sort', apiSortParam)
+        
         // Fetch with search parameters
         const apiUrl = queryParams.toString() 
           ? `${API_BASE_URL}/api/products?${queryParams.toString()}`
@@ -83,22 +104,10 @@ export default function ProductsGrid() {
                 setError("Failed to load products")
                 setLoading(false)
             })
-    }, [searchQuery, categoryFilter])
+    }, [searchQuery, categoryFilter, sortBy])
 
-    const sortedProducts = [...filteredProducts].sort((a, b) => {
-        switch (sortBy) {
-            case "price-low":
-                return a.price - b.price
-            case "price-high":
-                return b.price - a.price
-            case "rating":
-                return (b.rating || 4.5) - (a.rating || 4.5)
-            case "newest":
-                return (b.isNew ? 1 : 0) - (a.isNew ? 1 : 0)
-            default:
-                return 0
-        }
-    })
+    // Products are already sorted from the API, so we use filteredProducts directly
+    const sortedProducts = filteredProducts
 
     const totalPages = Math.ceil(sortedProducts.length / productsPerPage)
     const startIndex = (currentPage - 1) * productsPerPage
@@ -151,11 +160,10 @@ export default function ProductsGrid() {
                     value={sortBy}
                     onChange={(e) => setSortBy(e.target.value)}
                 >
-                    <option value="featured">Featured</option>
+                    <option value="newest">Newest First</option>
                     <option value="price-low">Price: Low to High</option>
                     <option value="price-high">Price: High to Low</option>
                     <option value="rating">Highest Rated</option>
-                    <option value="newest">Newest First</option>
                 </select>
             </div>
 

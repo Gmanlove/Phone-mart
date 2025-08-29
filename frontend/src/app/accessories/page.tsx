@@ -27,7 +27,7 @@ export default function AccessoriesPage() {
     const fetchAccessories = async () => {
       try {
         setLoading(true)
-        const products: Product[] = await fetchProducts()
+        const products: Product[] = await fetchProducts({ sort: 'newest' })
         
         // Filter products by category "Accessories" or similar
         const accessoryProducts = products.filter(product => 

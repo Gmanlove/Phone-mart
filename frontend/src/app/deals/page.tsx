@@ -34,7 +34,7 @@ export default function DealsPage() {
     const fetchDeals = async () => {
       try {
         setLoading(true)
-        const products: Product[] = await fetchProducts()
+        const products: Product[] = await fetchProducts({ sort: 'newest' })
         
         // Transform products into deals with mock discounts
         const dealsData: Deal[] = products.map((product, index) => {
