@@ -14,6 +14,7 @@ interface Product {
   description: string
   category: string
   images: string[]
+  rating?: number
   createdAt?: string
   updatedAt?: string
 }
@@ -160,7 +161,7 @@ export default function AccessoriesPage() {
                   <div className="text-sm sm:text-base text-blue-200 mt-1">Authentic</div>
                 </div>
                 <div className="text-center bg-white/10 rounded-xl p-4 backdrop-blur-sm">
-                  <div className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white">★ 4.8</div>
+                  <div className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white">★ 4.0</div>
                   <div className="text-sm sm:text-base text-blue-200 mt-1">Rating</div>
                 </div>
               </div>
@@ -263,11 +264,11 @@ export default function AccessoriesPage() {
                             {[...Array(5)].map((_, i) => (
                               <Star
                                 key={i}
-                                className={`h-4 w-4 ${i < 4 ? 'text-yellow-400 fill-current' : 'text-gray-300'}`}
+                                className={`h-4 w-4 ${i < (accessory.rating || 4.0) ? 'text-yellow-400 fill-current' : 'text-gray-300'}`}
                               />
                             ))}
                           </div>
-                          <span className="text-sm text-gray-600 dark:text-gray-400">(4.8)</span>
+                          <span className="text-sm text-gray-600 dark:text-gray-400">({(accessory.rating || 4.0).toFixed(1)})</span>
                         </div>
 
                         {/* Pricing */}

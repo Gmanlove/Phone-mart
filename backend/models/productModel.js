@@ -59,7 +59,7 @@ const productSchema = new mongoose.Schema({
   }],
   rating: {
     type: Number,
-    default: 0
+    default: 4.0
   },
   reviewCount: {
     type: Number,

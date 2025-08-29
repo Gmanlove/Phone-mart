@@ -176,7 +176,7 @@ export default function ProductsGrid() {
                             ...product,
                             id: product._id || product.id || '',
                             image: getImageUrl(product),
-                            rating: product.rating || 4.5,
+                            rating: product.rating || 4.0,
                                                         reviews: typeof product.reviews === 'number' || Array.isArray(product.reviews)
                                                             ? product.reviews
                                                             : 0,

@@ -29,3 +29,23 @@ export function formatCurrency(amount: number) {
     return `₦${amount.toFixed(2)}`
   }
 }
+
+// Convert numeric rating to text description
+export function getRatingText(rating: number): string {
+  if (rating >= 4.5) return "Excellent"
+  if (rating >= 4.0) return "Good"
+  if (rating >= 3.5) return "Average"
+  if (rating >= 3.0) return "Fair"
+  return "Poor"
+}
+
+// Get default rating for products without ratings
+export function getDefaultRating(): number {
+  return 4.0 // "Good" rating
+}
+
+// Generate random review count for products without review counts
+export function getRandomReviewCount(): number {
+  // Generate random number between 50 and 500 for realistic review counts
+  return Math.floor(Math.random() * (500 - 50 + 1)) + 50
+}

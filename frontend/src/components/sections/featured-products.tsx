@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge"
 import { fetchProducts } from "@/lib/api"
 import { useCart } from "@/contexts/cart-context"
 import { useToast } from "@/hooks/use-toast"
+import { getDefaultRating, getRandomReviewCount } from "@/lib/utils"
 import { Star, Heart, ShoppingCart, Eye, ArrowRight, Zap, TrendingUp } from "lucide-react"
 
 interface Product {
@@ -184,8 +185,8 @@ function ProductCard({ product }: { product: Product }) {
             </div>
 
             <div className="flex items-center gap-2">
-              <StarRating rating={product.rating} />
-              <span className="text-xs text-gray-400">({product.rating})</span>
+                            <StarRating rating={product.rating ?? 4.0} />
+              <span className="text-xs text-gray-400">({getRandomReviewCount()})</span>
             </div>
           </div>
 

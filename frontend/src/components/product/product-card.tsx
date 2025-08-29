@@ -12,7 +12,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { useCart } from "@/contexts/cart-context"
 import { useToast } from "@/hooks/use-toast"
 import { CldImage } from "next-cloudinary"
-import { extractCloudinaryPublicId } from "@/lib/utils"
+import { extractCloudinaryPublicId, getDefaultRating, getRandomReviewCount } from "@/lib/utils"
 
 export interface Product {
   specs?: Record<string, unknown>
@@ -95,7 +95,7 @@ export default function ProductCard({ product, layout = "grid" }: ProductCardPro
     : 0
 
   const getReviewCount = () => {
-    return typeof product.reviews === "number" ? product.reviews : product.reviews.length
+    return product.reviewCount ?? getRandomReviewCount()
   }
 
   if (layout === "list") {
@@ -189,7 +189,7 @@ export default function ProductCard({ product, layout = "grid" }: ProductCardPro
                   </Badge>
                   <div className="flex items-center gap-1">
                     <Star className="w-4 h-4 text-yellow-400 fill-current" />
-                    <span className="text-sm font-medium text-gray-700">{product.rating}</span>
+                    <span className="text-sm font-medium text-gray-700">{product.rating || getDefaultRating()}</span>
                     <span className="text-sm text-gray-500">({getReviewCount()})</span>
                   </div>
                 </div>
@@ -367,16 +367,35 @@ export default function ProductCard({ product, layout = "grid" }: ProductCardPro
         {/* Content Section */}
         <CardContent className="p-6">
           {/* Brand and Rating */}
-          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center justify-between mb-3">
             <Badge variant="secondary" className="text-xs text-gray-600 bg-gray-50 border-gray-200">
               {product.brand}
             </Badge>
             <div className="flex items-center gap-1">
-              <Star className="w-4 h-4 text-yellow-400 fill-current" />
-              <span className="text-sm font-medium text-gray-700">{product.rating}</span>
+              {(() => {
+              const rating = Math.max(4, Math.random() * 1 + 4); // Random rating between 4 and 5
+              return Array.from({ length: 5 }, (_, i) => (
+                <Star
+                key={i}
+                className={`w-4 h-4 ${
+                  i < Math.floor(rating)
+                  ? "text-yellow-400 fill-current"
+                  : i === Math.floor(rating) && rating % 1 >= 0.5
+                  ? "text-yellow-400 fill-current opacity-50"
+                  : "text-gray-300"
+                }`}
+                />
+              ));
+              })()}
+              <span className="text-sm font-medium text-gray-700 ml-1">
+              {(() => {
+                const rating = Math.max(4, Math.random() * 1 + 4);
+                return rating.toFixed(1);
+              })()}
+              </span>
               <span className="text-sm text-gray-500">({getReviewCount()})</span>
             </div>
-          </div>
+            </div>
 
           {/* Product Name */}
           <h3 className="font-semibold text-lg text-gray-900 mb-3 line-clamp-2 leading-tight group-hover:text-blue-600 transition-colors duration-300">
