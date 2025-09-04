@@ -160,9 +160,22 @@ export default function Footer() {
         {/* Bottom Bar */}
         <div className="mt-12 pt-8 border-t border-gray-200 dark:border-gray-700">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
-            <p className="text-gray-600 dark:text-gray-300 text-sm">
-              © {new Date().getFullYear()} Smart Communications. All rights reserved.
-            </p>
+            <div className="flex flex-col md:flex-row items-center space-y-2 md:space-y-0 md:space-x-4">
+              <p className="text-gray-600 dark:text-gray-300 text-sm">
+                © {new Date().getFullYear()} Smart Communications. All rights reserved.
+              </p>
+              <p className="text-gray-600 dark:text-gray-300 text-sm">
+                Built by{' '}
+                <a
+                  href="https://tomudoh.xyz"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 transition-colors font-medium"
+                >
+                  tom.dev
+                </a>
+              </p>
+            </div>
             <div className="flex space-x-6 text-sm">
               <a href="#" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 transition-colors">
                 Privacy Policy
