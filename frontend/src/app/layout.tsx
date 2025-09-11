@@ -31,35 +31,127 @@ const poppins = Poppins({
 })
 
 export const metadata: Metadata = {
-  title: "Smart Communications | Premium Mobile Experience",
-  description: "Shop the latest smartphones and accessories with unbeatable prices, fast delivery, and expert support.",
-  icons: {
-    icon: '/smart.png',
-    shortcut: '/smart.png',
-    apple: '/smart.png',
+  title: {
+    default: "Smart Communications | Premium Mobile Phones & Accessories Nigeria",
+    template: "%s | Smart Communications"
+  },
+  description: "Nigeria's premier destination for premium smartphones, mobile accessories, and tech gadgets. Shop iPhone, Samsung, Android phones with warranty. Fast delivery across Nigeria.",
+  keywords: [
+    "smartphones Nigeria",
+    "mobile phones Lagos",
+    "iPhone Nigeria",
+    "Samsung Galaxy",
+    "Android phones",
+    "mobile accessories",
+    "phone cases",
+    "wireless chargers",
+    "tech gadgets Nigeria",
+    "Smart Communications",
+    "phone repair",
+    "mobile shopping Nigeria"
+  ],
+  authors: [{ name: "Smart Communications Ltd" }],
+  creator: "Smart Communications Ltd",
+  publisher: "Smart Communications Ltd",
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
+  metadataBase: new URL('https://smartcommunicationsltd.ng'),
+  alternates: {
+    canonical: '/',
+  },
+  openGraph: {
+    title: "Smart Communications | Premium Mobile Phones & Accessories Nigeria",
+    description: "Nigeria's premier destination for premium smartphones, mobile accessories, and tech gadgets. Shop iPhone, Samsung, Android phones with warranty.",
+    url: 'https://smartcommunicationsltd.ng',
+    siteName: 'Smart Communications',
+    images: [
+      {
+        url: '/smartfull.png',
+        width: 1200,
+        height: 630,
+        alt: 'Smart Communications - Premium Mobile Experience',
+      },
+    ],
+    locale: 'en_NG',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: "Smart Communications | Premium Mobile Phones Nigeria",
+    description: "Shop premium smartphones, iPhone, Samsung, Android phones & accessories in Nigeria. Fast delivery, warranty included.",
+    images: ['/smartfull.png'],
+    creator: '@smartcommunications',
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+  verification: {
+    google: 'dQUtIiYHODk5aVHdYhk6h4FTyagIbx6BEpWAz2eVGYY', // Replace with your actual code
   },
 }
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
   return (
-    <html lang="en" className={`${inter.variable} ${poppins.variable} scroll-smooth dark`}>
+    <html lang="en" className="dark">
       <head>
         <script dangerouslySetInnerHTML={{ __html: forceDarkMode }} />
+        <link rel="canonical" href="https://smartcommunicationsltd.ng" />
+        <meta name="geo.region" content="NG" />
+        <meta name="geo.placename" content="Nigeria" />
+        <meta name="geo.position" content="9.0765;7.3986" />
+        <meta name="ICBM" content="9.0765, 7.3986" />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Organization",
+              "name": "Smart Communications Ltd",
+              "url": "https://smartcommunicationsltd.ng",
+              "logo": "https://smartcommunicationsltd.ng/smartfull.png",
+              "description": "Nigeria's premier destination for premium smartphones and mobile accessories",
+              "address": {
+                "@type": "PostalAddress",
+                "addressCountry": "NG",
+                "addressRegion": "Nigeria"
+              },
+              "sameAs": [
+                "https://www.facebook.com/smartcommunications",
+                "https://www.instagram.com/smartcommunications"
+              ]
+            })
+          }}
+        />
       </head>
-      <body className="min-h-screen flex flex-col bg-gray-900 text-white font-sans antialiased">
+      <body className={`${inter.variable} ${poppins.variable} font-sans antialiased`}>
         <AuthProvider>
-          <OrderProvider>
-            <CartProvider>
-              <div className="flex flex-col min-h-screen">
+          <CartProvider>
+            <OrderProvider>
+              <div className="min-h-screen bg-background text-foreground">
                 <Header />
-                <main className="flex-1 page-transition">
+                <main className="flex-1">
                   {children}
                 </main>
                 <Footer />
               </div>
               <Toaster />
-            </CartProvider>
-          </OrderProvider>
+            </OrderProvider>
+          </CartProvider>
         </AuthProvider>
       </body>
     </html>
