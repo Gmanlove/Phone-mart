@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "prebuild": "npm cache clean --force && rm -rf node_modules package-lock.json && npm install",
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
@@ -15,7 +16,8 @@
     "next": "^15.4.4",
     "next-cloudinary": "^6.16.0",
     "react": "19.1.0",
-    "react-dom": "19.1.0"
+    "react-dom": "19.1.0",
+    "zod": "^4.1.8"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
