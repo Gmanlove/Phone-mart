@@ -116,6 +116,7 @@ export default function StorePhotos() {
           src="/img2.jpeg"
           alt="Product Display"
           fill
+          sizes="(max-width: 768px) 50vw, 33vw"
           className="object-cover transition-transform duration-300 group-hover:scale-105"
         />
         <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300"></div>
@@ -126,6 +127,7 @@ export default function StorePhotos() {
           src="/img4.jpeg"
           alt="Customer Service"
           fill
+          sizes="(max-width: 768px) 50vw, 33vw"
           className="object-cover transition-transform duration-300 group-hover:scale-105"
         />
         <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300"></div>

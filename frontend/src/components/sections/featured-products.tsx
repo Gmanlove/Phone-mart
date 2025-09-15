@@ -132,6 +132,7 @@ function ProductCard({ product }: { product: Product }) {
               src={getImageUrl(product)}
               alt={product.name}
               fill
+              sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
               className="object-cover transition-transform duration-300 group-hover:scale-105"
               onError={(e) => {
                 const target = e.target as HTMLImageElement

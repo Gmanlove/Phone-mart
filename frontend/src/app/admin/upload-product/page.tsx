@@ -31,8 +31,8 @@ const categories = [
 ]
 
 const subcategories = {
-  "iPhone": ["iPhone 15", "iPhone 14", "iPhone 13", "iPhone 12", "iPhone 11", "iPhone SE"],
-  "Samsung": ["Galaxy S24", "Galaxy S23", "Galaxy A Series", "Galaxy Note", "Galaxy Z Fold", "Galaxy Z Flip"],
+  "iPhone": ["iPhone 17", "iPhone 16", "iPhone 15", "iPhone 14", "iPhone 13", "iPhone 12", "iPhone 11", "iPhone SE"],
+  "Samsung": ["Flip Series", "Fold Series", "Galaxy A Series", "Galaxy S Series"],
   "Android/Pixel": ["Google Pixel", "OnePlus", "Xiaomi", "Huawei", "Oppo", "Vivo"],
   "Laptops": ["MacBook", "Dell", "HP", "Lenovo", "Asus", "Acer", "Gaming Laptops"],
   "Accessories": ["Cases & Covers", "Screen Protectors", "Chargers", "Headphones", "Speakers", "Power Banks"],
